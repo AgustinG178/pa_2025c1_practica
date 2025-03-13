@@ -1,8 +1,6 @@
-# Ejemplo de aplicación principal en Flask
 from flask import render_template
 from modules.config import app
 
-# Página de inicio
 @app.route('/')
 def index():
     cantidad = 32

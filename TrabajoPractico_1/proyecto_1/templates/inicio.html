@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplicación Flask</title>
+    <title>Film Trivia</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="decorado.css">
 </head>
 <body>
-    <h1>Bienvenido a mi Aplicación Flask</h1>
-    <p>Esta es la página de inicio.</p>
-    <p>Una cantidad aleatoria es: {{una_cantidad}}</p>
+    <center><header><h1>Bienvenido a <b>FILM TRIVIA</b></h1></header></center>
+    <center><p>El juego consiste en adivinar de que frase es la pelicula, donde cada frase es elegida aleatoriamente de una base de ddatos y donde puedes elegir la dificultad y dependiendo de cada una las vidas y las opciones variaran</p></center>
+    <ul style="width: 200px; margin: 0 auto;">
+        <li>facil: 3 preguntas, 5 vidas</li>
+        <li>normal: 5 preguntas, 3 vidas</li>
+        <li>10 preguntas, 1 vida</li>
+    </ul>  
 </body>
 </html>
