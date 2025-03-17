@@ -29,4 +29,5 @@ header h1 {
 button{
     text-align: center;
     align-items: center;
+    border-style: double;
 }
