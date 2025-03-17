@@ -3,12 +3,6 @@ from modules.config import app
 import sys
 import os
 
-ruta_juego = "C:\Users\agugr\OneDrive\Programacion\Programacion_Avanzada\REPO_tp1\pa_2025c1_practica\TrabajoPractico_1\proyecto_1\templates"
-
-sys.path.append(ruta_juego)
-
-from Juego import frases
-
 @app.route('/')
 def index():
     return render_template('inicio.html')
@@ -16,7 +10,7 @@ def index():
 @app.route("/Film Trivia Facil")
 def pagjuego_facil():
     frasespelis = frases
-    return render_template("Facil.html", frasespelis=frases)
+    return render_template("Facil.html")
 
 @app.route("/Film Trivia Normal")
 def pagjuego_normal():
