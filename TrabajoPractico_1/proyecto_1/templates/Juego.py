@@ -1,3 +1,5 @@
+import random
+
 def leer_frases_de_peliculas(nombre_archivo):
 
     lista_de_frases = []

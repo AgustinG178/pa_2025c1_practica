@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film Trivia Facil</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
 <body>
     <p>esta es la dificultad Facil</p>
     <form action="{{url_for('index')}}">        
         <center><button type="submit">Volver al menu</button></center>
+        <py-script>
+            from js import document
+            frases = {{frases}}
+            print(frases)
+        </py-script>
 </body>
 </html>
