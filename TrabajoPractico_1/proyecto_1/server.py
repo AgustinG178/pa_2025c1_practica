@@ -1,7 +1,7 @@
 from flask import render_template
 from modules.config import app
-import sys
-import os
+
+from modules.Juego import frases
 
 @app.route('/')
 def index():
@@ -9,7 +9,6 @@ def index():
 
 @app.route("/Film Trivia Facil")
 def pagjuego_facil():
-    frasespelis = frases
     return render_template("Facil.html")
 
 @app.route("/Film Trivia Normal")
