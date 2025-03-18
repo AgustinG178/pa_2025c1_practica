@@ -1,4 +1,5 @@
 import random
+frases_usadas = []
 
 def leer_frases_de_peliculas(nombre_archivo):
 
@@ -13,9 +14,12 @@ def leer_frases_de_peliculas(nombre_archivo):
 def seleccionar_frase(frases):
 
     sublista_random = random.choice(frases)
-    
-    frase = sublista_random[0]
-    
-    pelicula = sublista_random[1]
-    
-    return frase, pelicula
+    if sublista_random not in frases_usadas:
+
+        frase = sublista_random[0]
+        
+        pelicula = sublista_random[1]
+        
+        return frase, pelicula
+    else:
+        seleccionar_frase(frases)
