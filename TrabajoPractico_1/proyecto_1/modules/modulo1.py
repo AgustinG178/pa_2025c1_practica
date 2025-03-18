@@ -19,7 +19,8 @@ def seleccionar_frase(frases):
         frase = sublista_random[0]
         
         pelicula = sublista_random[1]
-        
+
+        frases_usadas.append(sublista_random)
         return frase, pelicula
     else:
         seleccionar_frase(frases)
