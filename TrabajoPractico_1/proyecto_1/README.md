@@ -47,8 +47,8 @@ Explica la funcionalidad de tu aplicación:
 
 ## 🙎‍♀️🙎‍♂️Autores
 
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
+- Grioni Agustin
+- Ramirez Nicolas
 
 ---
 
