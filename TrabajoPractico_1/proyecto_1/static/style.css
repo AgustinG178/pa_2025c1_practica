@@ -26,6 +26,9 @@ header {
 header h1 {
     margin: 0; 
 }
+label{
+    color: white;
+}
 button{
     width:270px;
     height:70px;

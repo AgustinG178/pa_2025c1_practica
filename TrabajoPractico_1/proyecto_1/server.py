@@ -1,14 +1,24 @@
-from flask import render_template
+from flask import render_template, request
 from modules.config import app
+from modules.Juego import frases
+
+
+
 
 @app.route('/')
 def index():
     return render_template('inicio.html')
 
-@app.route("/Film Trivia Facil")
+@app.route("/Film Trivia Facil", methods=["GET", "POST"])
 def pagjuego_facil():
-    
-    return render_template("Facil.html")
+    if request.method == "POST":
+        respuesta_usuario = request.form.get("respuesta")
+        resultado = procesar_respuesta(respuesta_usuario)
+        return render_template("Facil.html", basejuego1=frases, resultado=resultado)
+    return render_template("Facil.html", basejuego1=frases)
+
+def procesar_respuesta(respuesta):
+    return "Respuesta correcta" if respuesta == "la correcta" else "Respuesta incorrecta"
 
 @app.route("/Film Trivia Normal")
 def pagjuego_normal():

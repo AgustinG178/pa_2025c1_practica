@@ -10,6 +10,13 @@
 </head>
 <body>
     <p>esta es la dificultad Facil</p>
+
+    <form action="/Film Trivia Facil" method="POST">
+        <label for="respuesta">Tu respuesta:</label>
+        <input type="text" id="respuesta" name="respuesta">
+        <button type="submit">Enviar</button>
+    </form>    
+
     <form action="{{url_for('index')}}">        
         <center><button type="submit">Volver al menu</button></center>
 </body>
