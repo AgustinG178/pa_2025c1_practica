@@ -30,10 +30,12 @@ def pagjuego_dificil():
     opciones=[]
 
     for i in range(3): 
-        opciones.append([seleccionar_frase(frases)[0],seleccionar_frase(frases)[1]]) #seleccionamos las 3 películas
-        
-    frase_random = random.choice(opciones)[1] #de esas 3 películas tomamos una frase
-    
+        try:
+            opciones.append([seleccionar_frase(frases)[0],seleccionar_frase(frases)[1]]) #seleccionamos las 3 películas
+        except TypeError:
+            return render_template("Inicio.html")
+        frase_random = random.choice(opciones)[1] #de esas 3 películas tomamos una frase
+
     return render_template("Dificil.html",opciones=opciones,frase_random=frase_random)
 
 if __name__ == "__main__":
