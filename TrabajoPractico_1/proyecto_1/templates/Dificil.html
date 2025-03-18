@@ -51,15 +51,15 @@
     </p>
     <form action="{{url_for('pagjuego_dificil')}}">
         <p class = "opciones_frases">
-            <button type = "submit"><b>OPCION 1</b></button><br>
-            <button type = "submit"><b>OPCION 2</b></button><br>
-            <button type = "submit"><b>OPCION 1</b></button>
+            <button type = "submit"><b>{{opciones[0]}}</b></button><br>
+            <button type = "submit"><b>{{opciones[1]}}</b></button><br>
+            <button type = "submit"><b>{{opciones[2]}}</b></button>
 
         </p>
     </form>
 
     <p class = "frase_pelicula">
-        <b>FRASE PELICULA</b>
+        <b>{{frase_random}}</b>
 
     </p>
 

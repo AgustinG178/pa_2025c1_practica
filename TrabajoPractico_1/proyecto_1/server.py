@@ -1,7 +1,7 @@
 from flask import render_template, request
 from modules.config import app
-from modules.modulo1 import leer_frases_de_peliculas
-
+from modules.modulo1 import leer_frases_de_peliculas, seleccionar_frase
+import random
 nombre_archivo = "frases_de_peliculas.txt"
 
 @app.route('/')
@@ -26,8 +26,16 @@ def pagjuego_normal():
 
 @app.route("/Film Trivia Dificil")
 def pagjuego_dificil():
-    return render_template("Dificil.html")
+    frases = leer_frases_de_peliculas(nombre_archivo)
+    opciones=[]
+
+    for i in range(3): 
+        opciones.append([seleccionar_frase(frases)[0],seleccionar_frase(frases)[1]]) #seleccionamos las 3 películas
+        
+    frase_random = random.choice(opciones)[1] #de esas 3 películas tomamos una frase
+    
+    return render_template("Dificil.html",opciones=opciones,frase_random=frase_random)
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)
-   
+
