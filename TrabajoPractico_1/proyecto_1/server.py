@@ -1,9 +1,8 @@
 from flask import render_template, request
 from modules.config import app
-from modules.Juego import frases
+from modules.modulo1 import leer_frases_de_peliculas
 
-
-
+nombre_archivo = "frases_de_peliculas.txt"
 
 @app.route('/')
 def index():
@@ -11,11 +10,12 @@ def index():
 
 @app.route("/Film Trivia Facil", methods=["GET", "POST"])
 def pagjuego_facil():
+    frases = leer_frases_de_peliculas(nombre_archivo)
     if request.method == "POST":
         respuesta_usuario = request.form.get("respuesta")
         resultado = procesar_respuesta(respuesta_usuario)
-        return render_template("Facil.html", basejuego1=frases, resultado=resultado)
-    return render_template("Facil.html", basejuego1=frases)
+        return render_template("Facil.html", resultado=resultado)
+    return render_template("Facil.html", frases = frases )
 
 def procesar_respuesta(respuesta):
     return "Respuesta correcta" if respuesta == "la correcta" else "Respuesta incorrecta"
