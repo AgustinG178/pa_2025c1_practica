@@ -1,41 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        .texto_inferior_derecha {
-            position: fixed;
-            bottom: 20px;
-            right: 50px;
-            margin: 15px;
-        
-        }
-        .texto_superior_izquierda {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            margin: 15px;
-
-        }
-        .texto_inferior_centro {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%); /*Ubica el centro del elemento en el centro de la página, mueve el elemento un 50% de su ancho
-                                         hacia la izquierda-*/
-        }
-        .opciones_frases {
-            position: fixed;
-            top: 150px;
-            left: 35%;
-            transform: translateX(-50%);
-        }
-        .frase_pelicula{
-            position: fixed;
-            top: 41%;
-            right: 35%;
-            ;
-        }
-    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film Trivia Dificil</title>
@@ -49,7 +14,7 @@
     <p class = "texto_superior_izquierda">
         <b>Usuario: </b><br>ACA PONEMOS LA FECHA PARA QUE SE ACTUALICE
     </p>
-    <form action="{{url_for('pagjuego_dificil')}}">
+    <form action="/Film Trivia Dificil", method = "post">
         <p class = "opciones_frases">
             <button type = "submit"><b>{{opciones[0]}}</b></button><br>
             <button type = "submit"><b>{{opciones[1]}}</b></button><br>
