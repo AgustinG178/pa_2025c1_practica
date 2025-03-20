@@ -16,18 +16,15 @@
     </p>
     <form action="/Film Trivia Dificil", method = "post">
         <p class = "opciones_frases">
-            <button type = "submit"><b>{{opciones[0]}}</b></button><br>
-            <button type = "submit"><b>{{opciones[1]}}</b></button><br>
-            <button type = "submit"><b>{{opciones[2]}}</b></button>
+            <button type = "text"><b>{{peli_c[1]}}</b></button><br>
+            <button type = "text"><b>{{peli_i[1]}}</b></button><br>
+            <button type = "text"><b>{{peli_i[2]}}</b></button>
         </p>
     </form>
-
     <p class = "frase_pelicula">
-        <b>{{frase}}</b>
+        <b>{{frase[1]}}</b>
 
     </p>
-
-
     </p>
     <form action="{{url_for('index')}}">        
         <p class="texto_inferior_centro"><button type="submit"><b>TERMINAR PARTIDA</b></button></p>

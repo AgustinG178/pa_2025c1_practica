@@ -50,6 +50,10 @@ button{
     margin-top: 20px;
     margin-bottom: 20px;
 }
+button.boton_intentos{
+    width: 70;
+    height: 10;   
+}
 .texto_inferior_derecha {
     position: fixed;
     bottom: 20px;
@@ -264,3 +268,4 @@ footer a {
     color:#ff0000;
   }
 }
+

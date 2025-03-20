@@ -1,8 +1,6 @@
 import random
-from flask import render_template
-frases_usadas = []
-peli_random = []
-peliculas = []
+
+nombre_archivo = "frases_de_peliculas.txt"
 
 def leer_frases_de_peliculas(nombre_archivo):
 
@@ -12,29 +10,27 @@ def leer_frases_de_peliculas(nombre_archivo):
             linea = linea.strip()
             if ';' in linea:  
                 frases.append(linea.split(';'))
-    return frases
+    return frases      
 
-def seleccionar_peli(frases):
-    while len(frases_usadas)<len(frases):
+frases = leer_frases_de_peliculas(nombre_archivo)      
+
+def seleccionar_peli(frases, intentos):
+    frases_usadas = []
+    peli_i = []
+    peli_c = []
+    frase = []
+    for _ in range (intentos):
         sublista_random = random.choice(frases)
         if sublista_random not in frases_usadas:
-            frase = sublista_random[0]
-            for _ in range (3):
-                sublista_random2 = random.choice(frases)
-                randomizador = sublista_random2[1] 
-                peliculas.append(randomizador)
-            frases_usadas.append(sublista_random)
-            return frase, peliculas, frases_usadas
+            frase.append(sublista_random[0])
+            peli_c.append(sublista_random[1])
+            for _ in range(2):
+                peli_i.append(random.choice(frases[1]))
+                frases_usadas.append(frase)
         else:
-            return seleccionar_peli(frases)
+            return seleccionar_peli
 
+    return frase, peli_c, peli_i
+    
 def procesar_respuesta(respuesta):
     return "Respuesta correcta" if respuesta == "la correcta" else "Respuesta incorrecta"
-def dif_dificil(opciones):
-        try:
-            opciones.append(seleccionar_peli(peli_random)[0])
-            opciones.append(seleccionar_peli(peli_random)[1])
-            opciones.append(seleccionar_peli(peli_random)[2]) 
-            return opciones
-        except TypeError:
-            return render_template("Inicio.html")
