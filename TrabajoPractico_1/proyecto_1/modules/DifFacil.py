@@ -1,3 +1,5 @@
 from Juego import frases
 
-print(frases)
+for i in frases:
+
+    print(i)

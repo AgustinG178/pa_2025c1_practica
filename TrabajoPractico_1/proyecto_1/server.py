@@ -1,8 +1,10 @@
 from flask import render_template, request
 from modules.config import app
-from modules.modulo1 import leer_frases_de_peliculas, seleccionar_frase
-import random
-nombre_archivo = "frases_de_peliculas.txt"
+from modules.Juego import dif_dificil, peliculas, frases, frase
+from modules.modulos import procesar_respuesta, dif_dificil
+
+frase = frase
+opciones = []
 
 @app.route('/')
 def index():
@@ -10,34 +12,24 @@ def index():
 
 @app.route("/Film Trivia Facil", methods=["GET", "POST"])
 def pagjuego_facil():
-    frases = leer_frases_de_peliculas(nombre_archivo)
     if request.method == "POST":
         respuesta_usuario = request.form.get("respuesta")
         resultado = procesar_respuesta(respuesta_usuario)
         return render_template("Facil.html", resultado=resultado)
-    return render_template("Facil.html", frases = frases )
-
-def procesar_respuesta(respuesta):
-    return "Respuesta correcta" if respuesta == "la correcta" else "Respuesta incorrecta"
+    return render_template("Facil.html", frasesitas = frases )
 
 @app.route("/Film Trivia Normal")
 def pagjuego_normal():
     return render_template("Normal.html")
 
-@app.route("/Film Trivia Dificil")
-def pagjuego_dificil():
-    frases = leer_frases_de_peliculas(nombre_archivo)
-    opciones=[]
-
-    for i in range(3): 
-        try:
-            opciones.append([seleccionar_frase(frases)[0],seleccionar_frase(frases)[1]]) #seleccionamos las 3 películas
-        except TypeError:
-            return render_template("Inicio.html") #Al no poder mostrar mas películas, llevamos al usuario al inicio      
-
-        frase_random = random.choice(opciones)[1] #de esas 3 películas tomamos una frase
-
-    return render_template("Dificil.html",opciones=opciones,frase_random=frase_random)
+@app.route("/Film Trivia Dificil", methods=["GET", "POST"])
+def dificil():
+    if request.method == "POST":
+        respuesta_usuario = request.form.get("respuesta")
+        resultado2 = procesar_respuesta(respuesta_usuario)  
+        return render_template("Dificil.html", resultado2=resultado2, opciones=opciones)
+    dif_dificil(peliculas)
+    return render_template("Dificil.html",opciones=peliculas, frase = frase)
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)

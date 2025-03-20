@@ -1,4 +1,7 @@
-from modules.modulo1 import leer_frases_de_peliculas, seleccionar_frase
+from modules.modulos import leer_frases_de_peliculas, seleccionar_peli, dif_dificil
+import random
+from flask import render_template
+
 
 frases_usadas = []
 
@@ -6,9 +9,19 @@ nombre_archivo = "frases_de_peliculas.txt"
 
 frases = leer_frases_de_peliculas(nombre_archivo)
 
-frase, pelicula = seleccionar_frase(frases) #podriamos meter esta funcion en un for de 3 ciclos cada vez que se seleccione o una dificultad o una respuesta 
-                                            #asi se seleccionan 3 películas constantemente
+frase, peliculas, frases_usadas = seleccionar_peli(frases) 
 
-print(f"Frase seleccionada: {frase}")
+"""juego principal"""
 
-print(f"Película: {pelicula}")
+frases = leer_frases_de_peliculas(nombre_archivo)
+frase = random.choice(frases[0])
+opciones=[]
+peli_random = []
+
+    
+print(peliculas) 
+        
+
+    
+
+
