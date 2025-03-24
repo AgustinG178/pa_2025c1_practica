@@ -23,6 +23,28 @@ header {
     justify-content: center;
     align-items: center;
 }
+div.frase_pelicula{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    padding: 10px;
+    border: 1px;
+}
+p.frase_pelicula2{
+    color: white    ;
+}
+fieldset.frase_pelicula3{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-left: 500px;
+    top: 0px;
+    left: -50px;
+    right: auto;
+    width: 100%;
+    border: 0px;
+    color:#fff;
+    
+}
 header h1 {
     margin: 0; 
 }

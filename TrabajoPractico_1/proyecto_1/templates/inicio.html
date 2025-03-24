@@ -10,11 +10,13 @@
     <center><header><h1><b>FILM TRIVIA</b></h1></header></center>
     <center><p>El juego consiste en adivinar de que frase es la pelicula, donde cada frase es elegida aleatoriamente de una base de datos y donde puedes elegir la dificultad y dependiendo de cada una las vidas y las opciones variaran</p></center>
     <ul style="width: 200px; margin: 0 auto;">
+        <form>
         <fieldset>
-
             <legend>¿cuantos intentos haras?</legend>
+            <input type="text">  
         </form>
-        <form action="{{url_for('juego')}}">        
+        </fieldset>
+        <form action="{{url_for('dificil')}}">        
             <li><center><button type="submit">Jugar<span></span>
                 <span></span>
                 <span></span>

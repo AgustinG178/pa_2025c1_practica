@@ -21,9 +21,13 @@
             <button type = "text"><b>{{peli_i[2]}}</b></button>
         </p>
     </form>
-    <p class = "frase_pelicula">
-        <b>{{frase[1]}}</b>
+    <div id="frase_pelicula" class="frase_pelicula">
+    <p class = "frase_pelicula2">
+        <fieldset id="frase_pelicula3" class="frase_pelicula">
+            <b>{{frase[1]}}</b>
+        </fieldset>
     </p>
+    </div>
     </p>
     <form action="{{url_for('index')}}">        
         <p class="texto_inferior_centro"><button type="submit"><b>TERMINAR PARTIDA</b></button></p>

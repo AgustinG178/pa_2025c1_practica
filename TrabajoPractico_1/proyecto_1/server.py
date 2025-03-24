@@ -1,6 +1,6 @@
 from flask import render_template, request
 from modules.config import app
-from modules.modulos import procesar_respuesta, seleccionar_peli, frases
+from modules.modulos import seleccionar_peli, frases
 
 @app.route('/')
 def index():    
