@@ -13,30 +13,9 @@
         <fieldset>
 
             <legend>¿cuantos intentos haras?</legend>
-
-        <center><form action="" method="POST">
-            <label for="respuesta">Tu respuesta:</label>
-            <input type="text" id="intentos" name="intentos">
-            <button type="submit" class="boton_intentos">Enviar</button>
-        </fieldset>
-        <form action="{{url_for('pagjuego_facil')}}"> 
-            </form> </center>       
-            <li><center><button type="submit">Facil: 3 preguntas, 5 vidas
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </button></center></li>
         </form>
-        <form action="{{url_for('pagjuego_normal')}}">        
-            <li><center><button type="submit">Normal: 5 preguntas, 3 vidas<span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </button></center></li>
-        </form>
-        <form action="{{url_for('dificil')}}">        
-            <li><center><button type="submit">Dificil: 10 preguntas, 1 vida<span></span>
+        <form action="{{url_for('juego')}}">        
+            <li><center><button type="submit">Jugar<span></span>
                 <span></span>
                 <span></span>
                 <span></span>
