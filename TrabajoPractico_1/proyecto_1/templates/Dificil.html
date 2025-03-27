@@ -15,14 +15,15 @@
         <b>Usuario: </b><br>ACA PONEMOS LA FECHA PARA QUE SE ACTUALICE
     </p>
     <form action="/Film Trivia Dificil", method = "post">
+        
         <p class = "opciones_frases">
-            <button type = "text"><b>{{peli_c[1]}}</b></button><br>
-            <button type = "text"><b>{{peli_i[1]}}</b></button><br>
-            <button type = "text"><b>{{peli_i[2]}}</b></button>
+            {%for i in pelis%}
+                <button type = "text"><b>{{i}}</b></button><br>
+            {%endfor%}
         </p>
     </form>
     <p class = "frase_pelicula">
-        <b>{{frase[1]}}</b>
+        <b>{{frase}}</b>
 
     </p>
     </p>

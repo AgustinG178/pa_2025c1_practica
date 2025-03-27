@@ -1,6 +1,6 @@
 from flask import render_template, request
 from modules.config import app
-from modules.modulos import procesar_respuesta, seleccionar_peli, frases
+from modules.modulos import procesar_respuesta, juego_opciones, frases
 
 @app.route('/')
 def index():    
@@ -20,14 +20,8 @@ def pagjuego_normal():
 
 @app.route("/Film Trivia Dificil", methods=["GET", "POST"])
 def dificil():
-
-    frase, peli_c, peli_i = seleccionar_peli(frases, 10)
-
-    if request.method == "POST":
-        
-        return render_template("Dificil.html", frase=frase, peli_c=peli_c, peli_i=peli_i)
+     return render_template("Dificil.html")
     
-    return render_template("Dificil.html", frase=frase, peli_c=peli_c, peli_i=peli_i)
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)
