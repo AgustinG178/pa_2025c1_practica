@@ -5,7 +5,7 @@ nombre_archivo = "frases_de_peliculas.txt"
 def leer_frases_de_peliculas(nombre_archivo):
 
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
