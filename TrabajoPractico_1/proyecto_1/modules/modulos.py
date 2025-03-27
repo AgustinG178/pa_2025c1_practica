@@ -40,11 +40,36 @@ def juego_opciones(frases, intentos):
         juego.append(ronda)
         #juego[i] = ronda, entonces juego[i][0] = opcion correcta (lista: frase,peli) y juego[i][1] =  peliculas a mostrar
 
-               
+        return juego
     #devolvemos la opcion correcta junto con una lista juego, que será lo que se mostrará
     #cada ronda
+listaop = []
+
+def seleccionar_peli(frases, intentos):
+    frases_usadas = []
+    peli_i = []
+    peli_c = []
+    frase = []
+    for _ in range (intentos):
+        sublista_random = random.choice(frases)
+        if sublista_random not in frases_usadas:
+            frase.append(sublista_random[0])
+            peli_c = sublista_random[1]
+            
+            peli_i.append(random.choice(frases[1]))
+            peli_i.append(random.choice(frases[1]))
+        else:
+            return seleccionar_peli
+        print(peli_i)
+        print(type(peli_i))
+
+        dic = { peli_c : "correcto", 
+                peli_i[0] : "incorrecto", 
+                peli_i[1] : "incorrecto" }
+
+    return frase , dic 
     
-    return juego
+
 
 if __name__ == "__main__":
         
