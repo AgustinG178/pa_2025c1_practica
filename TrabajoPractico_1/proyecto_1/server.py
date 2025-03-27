@@ -1,6 +1,7 @@
 from flask import render_template, request
 from modules.config import app
 from modules.modulos import juego_opciones, frases, opcion_correcta
+from datetime import datetime
 
 @app.route('/')
 def index():    
@@ -9,14 +10,15 @@ def index():
 def dificil():
     try: 
         aciertos = 0
+        fecha = datetime.now()
         vidas = 0
         juego = juego_opciones(frases, 10)
         if request.method == "POST":
             peli_correcta = juego[0][1]
-            return render_template("juego.html", juego=juego, resultado = request.method == "POST", aciertos = aciertos)
+            return render_template("juego.html", juego=juego, resultado = request.method == "POST", aciertos = aciertos, fecha = fecha)
     except IndexError:
         return render_template('inicio.html')
-    return render_template("juego.html", juego=juego )
+    return render_template("juego.html", juego=juego, fecha = fecha )
 
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)
