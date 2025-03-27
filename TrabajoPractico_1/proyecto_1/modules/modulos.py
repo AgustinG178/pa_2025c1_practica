@@ -43,7 +43,13 @@ def juego_opciones(frases, intentos):
         return juego
     #devolvemos la opcion correcta junto con una lista juego, que será lo que se mostrará
     #cada ronda
-    
+
+def opcion_correcta(pelicula,pelicula_correcta):
+    if pelicula == pelicula_correcta:
+        return True
+    else:
+        return False
+
 if __name__ == "__main__":
         
     for ronda in juego_opciones(frases,1):
