@@ -14,6 +14,8 @@ def leer_frases_de_peliculas(nombre_archivo):
 
 frases = leer_frases_de_peliculas(nombre_archivo)      
 
+listaop = []
+
 def seleccionar_peli(frases, intentos):
     frases_usadas = []
     peli_i = []
@@ -23,14 +25,20 @@ def seleccionar_peli(frases, intentos):
         sublista_random = random.choice(frases)
         if sublista_random not in frases_usadas:
             frase.append(sublista_random[0])
-            peli_c.append(sublista_random[1])
-            for _ in range(2):
-                peli_i.append(random.choice(frases[1]))
-                frases_usadas.append(frase)
+            peli_c = sublista_random[1]
+            
+            peli_i.append(random.choice(frases[1]))
+            peli_i.append(random.choice(frases[1]))
         else:
             return seleccionar_peli
+        print(peli_i)
+        print(type(peli_i))
 
-    return frase, peli_c, peli_i
+        dic = { peli_c : "correcto", 
+                peli_i[0] : "incorrecto", 
+                peli_i[1] : "incorrecto" }
+
+    return frase , dic 
     
 def procesar_respuesta(respuesta):
     return "Respuesta correcta" if respuesta == "la correcta" else "Respuesta incorrecta"
