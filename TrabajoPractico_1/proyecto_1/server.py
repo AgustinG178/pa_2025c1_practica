@@ -1,6 +1,7 @@
 from flask import render_template, request, session
 from modules.config import app
 from modules.modulos import juego_opciones, frases, opcion_correcta
+from datetime import datetime
 
 @app.route('/')
 def index():   
