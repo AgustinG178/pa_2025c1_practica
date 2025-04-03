@@ -21,8 +21,12 @@ def index():
 
 @app.route("/Film Trivia Juego", methods=["GET", "POST"])
 def juego():
+    ahora = datetime.now()
+    solo_fecha = ahora.strftime("%d/%m/%Y")
+
     if "num_aciertos" not in session:
         session["num_aciertos"] = 0
+
     intentos = session["intentos"]
     juego = juego_opciones(frases, intentos)
     
@@ -34,22 +38,22 @@ def juego():
                 if ronda_actual < len(juego) + 1:
                     peli_correcta = request.form["peli_correcta"]
                     peli_elegida = request.form["respuesta"]
-                    
-                    if opcion_correcta(peli_correcta,peli_elegida) == True: 
-                        session["num_aciertos"] +=1
+                    session["num_aciertos"] += opcion_correcta(peli_correcta,peli_elegida)
                         
-                    return render_template("juego.html", ronda = juego[ronda_actual-1],num_ronda = ronda_actual, resultado = request.method == "POST", aciertos = session["num_aciertos"])
+                    return render_template("juego.html", ronda = juego[ronda_actual-1],num_ronda = ronda_actual, resultado = request.method == "POST", aciertos = session["num_aciertos"], fecha = solo_fecha, opcion_anterior = opcion_correcta(peli_correcta,peli_elegida),peli_correcta = peli_correcta)
+
+                    
                     #session mantiene el estado de la variable aciertos entre solicitudes, es decir, cuando se llama nuevamente a def dificil,
                     #se mantiene la cantidad de aciertos
                 
                 else:
-                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"],datetime.today())
+                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"], fecha = solo_fecha)
                     return render_template("inicio.html")
                      
     else:
         ronda_actual = 1
     
-        return render_template("juego.html", ronda=juego[ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"]) #devulve la primera pagina
+        return render_template("juego.html", ronda=juego[ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"], fecha = solo_fecha) #devulve la primera pagina
     
 @app.route("/historial", methods=["GET", "POST"])
 def historial():

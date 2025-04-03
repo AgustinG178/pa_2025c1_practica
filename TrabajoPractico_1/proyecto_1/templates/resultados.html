@@ -8,10 +8,10 @@
 </head>
 <body>
     {%if not juegos_data%}
-        <p><center>No se han jugado partidas.</center></p>
+        <p style = "color: white;"><center>No se han jugado partidas.</center></p>
     {%else%}
         {%for data in juegos_data%}
-            <p><center>{{ data }}</center></p><br>
+            <p style = "color: white;"><center>{{ data }}</center></p><br>
         {%endfor%}
     {%endif%}
     <form action = "{{url_for('index')}}">

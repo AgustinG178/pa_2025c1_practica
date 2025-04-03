@@ -7,36 +7,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
+<h1><center>Ronda: {{num_ronda}}</center></h1>
+<h2><center>Aciertos: {{aciertos}}</center></h2>
+<h3><center> {%if num_ronda == 1%}Seleccione una opción  
+             {%else%}
+                {%if opcion_anterior == 1%} ¡¡La opción elegida fue correcta!! ¡¡Muy Bien!! 
+                {%else%} La respuesta anterior fue incorrecta, la opción correcta era "{{peli_correcta}} (sos alto bot hermano)" 
+                {%endif%}  
+             {%endif%}
+    </center></h3>
+
 <body>
-    
-    <p><center>MODO DIFICIL</center></p>
-    
-        <p class = "texto_inferior_derecha">
-            <b>Aciertos: {{aciertos}} </b><br>
-            <b>Ronda: {{num_ronda}}  </b>
-            
-        </p>
+        
     <p class = "texto_superior_izquierda">
-        <b>Fecha: </b><br>{{fecha}}
+        <b>Fecha: {{fecha}} </b><br>
     </p>
     <form action="/Film Trivia Juego", method = "post">
       
         <p class = "opciones_frases">
-            <button type = "text", name="respuesta" value="{{ronda[1][0]}}"><b>{{ronda[1][0]}}</b></button><br>
-            <button type = "text", name="respuesta" value="{{ronda[1][1]}}"><b>{{ronda[1][1]}}</b></button><br>
-            <button type = "text", name="respuesta" value="{{ronda[1][2]}}"><b>{{ronda[1][2]}}</b></button>
-
-
+            
             <input type="hidden" id="aciertos_0" name="num_aciertos" value="{{aciertos}}">
             <input type="hidden" id="peli_correcta" name="peli_correcta" value="{{ ronda[0][0][1] }}">
             <input type="hidden" name="ronda_actual" value="{{num_ronda}}">
+
+            <button type = "sumbit", name="respuesta" value="{{ronda[1][0]}}"><b>{{ronda[1][0]}}</b></button><br>
+            <button type = "submit", name="respuesta" value="{{ronda[1][1]}}"><b>{{ronda[1][1]}}</b></button><br>
+            <button type = "sumbit", name="respuesta" value="{{ronda[1][2]}}"><b>{{ronda[1][2]}}</b></button>
+            
         </p>
 
     </form>
     
-    <div id="frase_pelicula" class="frase_pelicula">
+    <div id="div_pelicula" class="div_pelicula">
     <p class = "frase_pelicula2">
-        <fieldset id="frase_pelicula3" class="frase_pelicula3">
+        <fieldset id="fieldset_frase" class="fieldset_frase">
             <b>{{ronda[0][0][0]}}</b>
         </fieldset>
     </p>
