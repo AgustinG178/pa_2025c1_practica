@@ -6,23 +6,30 @@
     <title>Film Trivia Dificil</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+    
     <p><center>MODO DIFICIL</center></p>
+    
         <p class = "texto_inferior_derecha">
-            <b>Aciertos: {{aciertos}} </b>    
+            <b>Aciertos: {{aciertos}} </b><br>
+            <b>Ronda: {{num_ronda}}  </b>
+            
         </p>
     <p class = "texto_superior_izquierda">
         <b>Fecha: </b><br>{{fecha}}
     </p>
     <form action="/Film Trivia Juego", method = "post">
-      {%for i in juego%}
       
         <p class = "opciones_frases">
-            <button type = "text", name="respuesta" value="{{i[1][0]}}"><b>{{i[1][0]}}</b></button><br>
-            <button type = "text", name="respuesta" value="{{i[1][1]}}"><b>{{i[1][1]}}</b></button><br>
-            <button type = "text", name="respuesta" value="{{i[1][2]}}"><b>{{i[1][2]}}</b></button>
+            <button type = "text", name="respuesta" value="{{ronda[1][0]}}"><b>{{ronda[1][0]}}</b></button><br>
+            <button type = "text", name="respuesta" value="{{ronda[1][1]}}"><b>{{ronda[1][1]}}</b></button><br>
+            <button type = "text", name="respuesta" value="{{ronda[1][2]}}"><b>{{ronda[1][2]}}</b></button>
+
+
             <input type="hidden" id="aciertos_0" name="num_aciertos" value="{{aciertos}}">
-            <input type="hidden" id="peli_correcta" name="peli_correcta" value="{{ i[0][0][1] }}">
+            <input type="hidden" id="peli_correcta" name="peli_correcta" value="{{ ronda[0][0][1] }}">
+            <input type="hidden" name="ronda_actual" value="{{num_ronda}}">
         </p>
 
     </form>
@@ -30,11 +37,10 @@
     <div id="frase_pelicula" class="frase_pelicula">
     <p class = "frase_pelicula2">
         <fieldset id="frase_pelicula3" class="frase_pelicula3">
-            <b>{{i[0][0][0]}}</b>
+            <b>{{ronda[0][0][0]}}</b>
         </fieldset>
     </p>
     </div>
-    {%endfor%}
     <form action="{{url_for('index')}}">        
         <p class="texto_inferior_centro"><button type="submit"><b>TERMINAR PARTIDA</b></button></p>
     </form>

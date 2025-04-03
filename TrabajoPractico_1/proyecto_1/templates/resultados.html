@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESULTADOS HISTÓRICOS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {%if not juegos_data%}
+        <p><center>No se han jugado partidas.</center></p>
+    {%else%}
+        {%for data in juegos_data%}
+            <p><center>{{ data }}</center></p><br>
+        {%endfor%}
+    {%endif%}
+    <form action = "{{url_for('index')}}">
+        <p class = "texto_inferior_centro">
+            <button type = "submit">Inicio</button>
+        </p>
+    </form>
+</body>
+</html>
