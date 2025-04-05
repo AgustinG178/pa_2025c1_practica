@@ -1,106 +1,132 @@
+/* Global Styles */
 body {
-    background: linear-gradient(to bottom, purple 0%, black 100%);
-    height: 100vh;
     margin: 0;
-}
-h1{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, purple 0%, black 100%);
     color: white;
+    overflow: hidden; /* Esto elimina la barra de desplazamiento vertical */
+    margin: 0;        /* Asegúrate de que no haya márgenes que provoquen desbordamiento */
+    height: 100vh;    /* Fija el alto de la página al tamaño de la ventana */
 }
-h2{
-    color: white;
-    font-size: large;
-}
-h3{
-    color: white;
-}
-p{
-    color: white;
-}
-ul{
-    color: transparent;
-}
-input{
-    width: 150px;
-}
-.fieldset_inicio{
-    left: 20%;
-    margin-left: 400px;
-}
-.div_inicio {
-    display: flex;
-    justify-content: center;
-    width: 700px;
-    height: 200px;
-    align-items: center;
-    font-size: x-large;
-    align-content: center;
-    margin-top: 100px;
-    border: 5px, dotted white;
-}
-.boton_inicio{
-    width:270px;
-    height:70px;
-    background: linear-gradient(to left top, #c32c71 50%, #b33771 50%);
-    border-style: none;
-    color:#fff;
-    font-size: 15px;
-    letter-spacing: 3px;
-    font-family: 'Lato';
-    font-weight: 6;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-    padding: 0px;
-    overflow: hidden;
-    transition: all .5s;
-    box-shadow: 0px 1px 2px rgba(0,0,0,.2);
-    margin: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    left: 20%;
-    margin-left: 330px;
-    margin-bottom: 150px;
-}
-header {
+  
+  /* Encabezado */
+  header {
     background-image: url("https://www.rd.com/wp-content/uploads/2021/07/movie-trivia-header-scaled.jpg");
-    background-size: cover; 
+    background-size: cover;
     background-position: center;
-    background-repeat: no-repeat; 
-    height: 200px; 
-    text-align: center;
+    height: 150px;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  header h1 {
+    margin: 0;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Contenedor principal: dos columnas */
+  .main-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+  }
+  
+  /* Columna izquierda: texto explicativo */
+  .left-side {
+    flex: 1.8;
+    padding: 18px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    height: 450px;
+  }
+  
+  .left-side p {
+    font-size: 22px;
+    line-height: 1.6;
+    text-align: justify;
+    margin: 0;
+  }
+  
+  /* Columna derecha: formulario y botones */
+  .right-side {
+    flex: 0.9;
+    padding: 18px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .left-side,
+  .right-side {
+  transform: scale(0.95); /* Reduce todo al 95% del tamaño original */
+  transform-origin: top left; /* Escala desde la esquina superior izquierda */
 }
-div{
-    display: grid;
-    color: #fff;
-    width: 0px;
-    height: 100px;
-    grid-template-columns: 1fr 1fr;
+
+
+  /* Fieldset para el formulario */
+  .fieldset_inicio {
+
+    border: 2px solid white;
+    padding: 13px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+  
+  .fieldset_inicio legend {
+    font-size: 18px;
+    padding: 0 5px;
+  }
+  
+  .fieldset_inicio label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+  
+  .fieldset_inicio input {
+    width: 100%;
     padding: 10px;
-    border: 1px;
-}
-p.frase_pelicula2{
+    margin-bottom: 15px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
     color: white;
-}
-.fieldset_frase{
-    color:#fff;
-    margin-left: 150px;
-    margin-right: 60px;
-    overflow: auto;
-    top: 0px;
-    left: -50px;
-    right: auto;
-    width: 170%;
-    border: 2px;
-}
-header h1 {
-    margin: 0; 
-}
-label{
+    box-sizing: border-box;
+  }
+  
+  /* Botones: Estilos para "Jugar" y "Resultados" */
+  .boton_inicio,
+  .boton_resultados {
+    width: 270px;
+    height: 70px;
+    background: linear-gradient(to left top, #c32c71 50%, #b33771 50%);
+    border: none;
     color: white;
-}
+    font-size: 15px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    transform: translateX(40px);
+    margin-bottom: 2px;
+  }
+  
+  .boton_inicio:hover,
+  .boton_resultados:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.4);
+  }
+  
 button{
     width:270px;
     height:70px;
@@ -122,48 +148,7 @@ button{
     margin-top: 20px;
     margin-bottom: 20px;
 }
-button.correcto{
-    width:270px;
-    height:70px;
-    background: linear-gradient(to left top, #15ff00 50%, #135901 50%) !important;
-    border-style: none;
-    color:#fff;
-    font-size: 15px;
-    letter-spacing: 3px;
-    font-family: 'Lato';
-    font-weight: 6;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-    padding: 0px;
-    overflow: hidden;
-    transition: all .5s;
-    box-shadow: 0px 1px 2px rgba(0,0,0,.2);
-    margin: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-button.incorrecto{
-    width:270px;
-    height:70px;
-    background: linear-gradient(to left top, #700000 50%, #780202 50%);
-    border-style: none;
-    color:#fff;
-    font-size: 15px;
-    letter-spacing: 3px;
-    font-family: 'Lato';
-    font-weight: 6;
-    outline: none;
-    cursor: pointer;
-    position: relative;
-    padding: 0px;
-    overflow: hidden;
-    transition: all .5s;
-    box-shadow: 0px 1px 2px rgba(0,0,0,.2);
-    margin: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
+
 button.boton_intentos{
     width: 70;
     height: 10;   
@@ -195,12 +180,21 @@ button.boton_intentos{
     left: 35%;
     transform: translateX(-50%);
 }
-.div_pelicula{
+.div_pelicula {
     position: fixed;
-    left: 570px;    
-    right: 100px;
-    top: 300px;
+    left: 50%; /* Centra horizontalmente */
+    top: 350px; /* Ajusta la posición vertical (subiéndolo un poco) */
+    transform: translateY(-80%);
 }
+
+
+.fieldset_frase{
+    border: outset 3px;
+    margin-right: 20%;
+    justify-content: auto;
+}
+
+/* De aca en adelante solo se incluye CSS de la animaciones de los botnoes generales, nada especifico del programa, animacion sacada de internet: Autor: desconocido. Creative Commons: Libre de uso */
 button span{
     position: absolute;
     display: block;

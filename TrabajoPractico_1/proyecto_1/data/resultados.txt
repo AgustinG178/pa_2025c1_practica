@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Usuario:Laura / Aciertos:3 / Fecha: 03/04/2025
 Usuario:Mechita / Aciertos:7 / Fecha: 03/04/2025
 Usuario:Mechita / Resultado:5/10 / Fecha: 03/04/2025
@@ -5,3 +6,51 @@ Usuario:hola / Resultado: 1/5 / Fecha: 03/04/2025
 Usuario:hola / Resultado: 1/5 / Fecha: 03/04/2025
 Usuario:hola / Resultado: 1/5 / Fecha: 03/04/2025
 Usuario:hola / Resultado: 1/5 / Fecha: 03/04/2025
+=======
+Usuario:Agustin / Aciertos:1 / Fecha: 03/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
+>>>>>>> b754318017fd6777a152da63d3dd64c90ea2c35a
