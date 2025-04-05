@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Film Trivia</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Film Trivia</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <center><header><h1><b>FILM TRIVIA</b></h1></header></center>
-    <div id="div_inicio" class="div_inicio" name="div_inicio"><center><p>El juego consiste en adivinar de que frase es la pelicula, donde cada frase es elegida aleatoriamente de una base de datos y donde puedes elegir la dificultad y dependiendo de cada una las vidas y las opciones variaran</center></div>
-    <ul style="width: 200px; margin: 0 auto;">
-        <fieldset id="fieldset_inicio" class="fieldset_inicio" name="fieldset_inicio" >
-            <form action = "{{url_for('index')}}" method="POST">
-
-                <label for = "usuario">Nombre de usuario:</label>
-                <input type = "text" id = "usuario" name = "input_usuario" value = "" required><br>
-
-                <label for = "intentos">Cantidad de intentos:</label>
-                <input type = "number" min="1" max="18" id = "intentos" name = "input_intentos" value = "" required>
+  <header>
+    <h1>FILM TRIVIA</h1>
+  </header>
+  
+  <!-- Contenedor principal dividido en dos columnas -->
+  <div class="main-container">
+    <!-- Columna Izquierda: Texto explicativo grande -->
+    <div class="left-side">
+      <p>
+        ¡Prepárate para poner a prueba tus conocimientos cinematográficos! En este juego, te mostraremos una película al azar y tu misión será adivinar su título correcto. Para ayudarte, te daremos tres opciones posibles. ¡Piensa rápido y elige la respuesta correcta! Cada acierto te dará puntos y te acercará a la victoria. ¿Estás listo para convertirte en un experto en películas? ¡Que comience el juego!
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        Autores: Nicolas Ramirez y Agustín Grioni
+      </p>
+    </div>
+    
+    <!-- Columna Derecha: Formulario y botones -->
+    <div class="right-side">
+      <form action="{{ url_for('index') }}" method="POST">
+        <fieldset class="fieldset_inicio">
+          <legend>Datos del jugador</legend>
+          <label for="usuario">Nombre de usuario:</label>
+          <input type="text" id="usuario" name="input_usuario" required>
+          
+          <label for="intentos">Cantidad de intentos:</label>
+          <input type="number" id="intentos" name="input_intentos" min="1" max="18" required>
         </fieldset>
-                <li><center><button type="submit", id="boton_inicio", class="boton_inicio", name="boton_inicio">Jugar<span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button></center></li>
-            </form>
-
+        <button type="submit" id="boton_inicio" class="boton_inicio" name="boton_inicio">Jugar</button>
+      </form>
       
-    <form action = "{{url_for('historial')}}">
-        <li><center><button type="submit", id="boton_inicio", class="boton_inicio", name="boton_inicio">Resultados<span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </button></center></li></form>
-    </ul>
+      <form action="{{ url_for('historial') }}">
+        <button type="submit" id="boton_resultados" class="boton_resultados" name="boton_resultados">Resultados</button>
+      </form>
+    </div>
+  </div>
+  
 </body>
 </html>

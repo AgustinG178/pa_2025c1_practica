@@ -12,7 +12,7 @@
 <h3><center> {%if num_ronda == 1%}Seleccione una opción  
              {%else%}
                 {%if opcion_anterior == 1%} ¡¡La opción elegida fue correcta!! ¡¡Muy Bien!! 
-                {%else%} La respuesta anterior fue incorrecta, la opción correcta era "{{peli_correcta}} (sos alto bot hermano)" 
+                {%else%} La respuesta anterior fue incorrecta, la opción correcta era "{{peli_correcta}}" 
                 {%endif%}  
              {%endif%}
     </center></h3>
@@ -40,6 +40,7 @@
     
     <div id="div_pelicula" class="div_pelicula">
     <p class = "frase_pelicula2">
+        <h4>Frase:</h4>
         <fieldset id="fieldset_frase" class="fieldset_frase">
             <b>{{ronda[0][0][0]}}</b>
         </fieldset>
