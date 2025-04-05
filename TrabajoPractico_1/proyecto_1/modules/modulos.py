@@ -5,7 +5,7 @@ nombre_archivo = "frases_de_peliculas.txt"
 def leer_frases_de_peliculas(nombre_archivo):
 
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -54,13 +54,13 @@ def opcion_correcta(pelicula,pelicula_correcta):
     else:
         return 0
    
-def escribir_resultados_archivo(usuario,resultado,fecha): #Escribimos en un txt los resultados de un usuario
-    with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
-        historial.write(f"Usuario:{usuario} / Aciertos:{resultado} / Fecha: {fecha}\n")
+def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'a', encoding="utf-8") as historial:
+        historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
 
 
 def leer_archivo_resultados ():
-    with open("data/resultados.txt", 'r', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'r', encoding="utf-8") as historial:
         juego_data = historial.read().splitlines()
         return juego_data
 
@@ -76,6 +76,6 @@ if __name__ == "__main__":
         print(f"Opciones: {ronda_0[1]}")
         print(len(frases))  
         print(juego_opciones(frases,4))
-
+    
   
 

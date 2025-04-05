@@ -47,7 +47,7 @@ def juego():
                     #se mantiene la cantidad de aciertos
                 
                 else:
-                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"], fecha = solo_fecha)
+                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"],intentos,solo_fecha)
                     return render_template("inicio.html")
                      
     else:
