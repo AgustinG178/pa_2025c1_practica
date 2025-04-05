@@ -23,13 +23,19 @@ input{
     width: 150px;
 }
 .fieldset_inicio{
+    display: flex;
+    margin-top: 0%;
+    align-self: auto;
+    width: 10px;
     left: 20%;
     margin-left: 400px;
+
+    
 }
 .div_inicio {
     display: flex;
     justify-content: center;
-    width: 700px;
+    width: 400px;
     height: 200px;
     align-items: center;
     font-size: x-large;
