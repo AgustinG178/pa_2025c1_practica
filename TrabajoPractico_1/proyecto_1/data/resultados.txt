@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 Usuario:Laura / Aciertos:3 / Fecha: 03/04/2025
 Usuario:Mechita / Aciertos:7 / Fecha: 03/04/2025
 Usuario:Mechita / Resultado:5/10 / Fecha: 03/04/2025
@@ -56,3 +57,10 @@ Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
 >>>>>>> b754318017fd6777a152da63d3dd64c90ea2c35a
 Usuario:Agustin / Resultado: 3/8 / Fecha: 06/04/2025
 Usuario:Agustin / Resultado: 8/8 / Fecha: 06/04/2025
+=======
+x|
+Usuario:mercedez / Resultado: 3/4 / Fecha: 05/04/2025
+Usuario:mercedez / Resultado: 2/14 / Fecha: 06/04/2025
+Usuario:cata / Resultado: 4/10 / Fecha: 06/04/2025
+Usuario:cata / Resultado: 5/10 / Fecha: 06/04/2025
+>>>>>>> b612f93a94d02fd2b62367bb7fabd85ff8552982
