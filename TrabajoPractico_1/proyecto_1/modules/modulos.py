@@ -14,32 +14,48 @@ def leer_frases_de_peliculas(nombre_archivo):
 
 frases = leer_frases_de_peliculas(nombre_archivo)      
 
+def opciones_pelis (frases_pelis,lista_peliculas):
+    while len(lista_peliculas) < 3: 
+        opcion_ronda =random.choice(frases_pelis)
+        pelicula = opcion_ronda[1].title()    
+    #La función asegura que por ronda no haya repeticiones en las opciones de películas, ya que cada película tiene varias frases
+        if pelicula not in lista_peliculas: 
+            lista_peliculas.append(pelicula)
+            frases_pelis.remove(opcion_ronda)
+    
+    return lista_peliculas, frases_pelis
+
+                
+   
+
 def juego_opciones(frases, intentos):
-    frases = frases.copy() #copiamos la lista original, de esta manera cada vez que se llame a la funcion juego_opciones, siempre se podrá jugar
+    frases_0 = frases.copy() #copiamos la lista original, de esta manera cada vez que se llame a la funcion juego_opciones, siempre se podrá jugar
                            #frases.copy() crea una nueva lista con dirección de memoria diferente 
     
     juego = [] #[[[opcion_correcta],[peliculas]]] opcion correcta es una lista, en el indice 0 se ubica la frase correcta y en el 1 la pelicula que le corresponde
                #peliculas es una lista que incluirá 3 peliculas, una justamentes es la que le corresponde a la frase.
     
     for _ in range (intentos):
+
         opcion_correcta = []
         pelis=[]
         ronda =[] 
-        sublista_random = random.choice(frases)
-        opcion_correcta.append([sublista_random[0],sublista_random[1]])
-        ronda.append(opcion_correcta)
-        pelis.append(sublista_random[1]) #añadimos la opcion correcta
-        frases.remove(sublista_random)
-        
-        for _ in range(2):
 
-              peli_aleatoria = random.choice(frases)
-              pelis.append(peli_aleatoria[1])
-              frases.remove(peli_aleatoria)
+        sublista_random = random.choice(frases_0)
+        opcion_correcta.append([sublista_random[0],sublista_random[1].title()])
+        ronda.append(opcion_correcta)
+
+        #añadimos la opcion correcta
+        pelis.append(sublista_random[1].title()) 
+        frases_0.remove(sublista_random)
         
-        
-        random.shuffle(pelis)
-        ronda.append(pelis) #ronda interpretacion: ronda[0] = opcion correcta, ronda[1] = lista de películas a usar en la ronda
+        #creamos el total de opciones a mostrar
+        opciones_pelis_juego,frases_0 = opciones_pelis(frases_0,pelis)[0],opciones_pelis(frases_0,pelis)[1]
+
+              
+
+        random.shuffle(opciones_pelis_juego)
+        ronda.append(opciones_pelis_juego) #ronda interpretacion: ronda[0] = opcion correcta, ronda[1] = lista de películas a usar en la ronda
         juego.append(ronda)
         
         #juego[i] = ronda, entonces juego[i][0] = opcion correcta (lista: frase,peli) y juego[i][1] =  peliculas a mostrar
@@ -65,17 +81,23 @@ def leer_archivo_resultados ():
         return juego_data
 
 
+
         
 if __name__ == "__main__":
-     print(leer_archivo_resultados())
-     for i in leer_archivo_resultados():
+    print(juego_opciones(frases,7))
+    #for ronda_0 in juego_opciones(frases,4):
+        #print(f"Frase: {ronda_0[0][0][0]}")
+        #print(f"Opciones: {ronda_0[1]}")
+        #print(len(frases))  
+        
+    #print(opciones_pelis(frases,["El Padrino"]))
+     
+"""
+    print(leer_archivo_resultados())
+    for i in leer_archivo_resultados():
          print(i)
-
-     for ronda_0 in juego_opciones(frases,4):
-        print(f"Frase: {ronda_0[0][0][0]}")
-        print(f"Opciones: {ronda_0[1]}")
-        print(len(frases))  
-        print(juego_opciones(frases,4))
+"""
+    
     
   
 
