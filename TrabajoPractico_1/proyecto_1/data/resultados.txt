@@ -54,3 +54,5 @@ Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
 Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
 Usuario:99 / Aciertos:4 / Fecha: 05/04/2025
 >>>>>>> b754318017fd6777a152da63d3dd64c90ea2c35a
+Usuario:Agustin / Resultado: 3/8 / Fecha: 06/04/2025
+Usuario:Agustin / Resultado: 8/8 / Fecha: 06/04/2025

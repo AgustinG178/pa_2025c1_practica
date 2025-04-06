@@ -1,14 +1,12 @@
-/* Global Styles */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: linear-gradient(to bottom, purple 0%, black 100%);
     color: white;
-    overflow: hidden; /* Esto elimina la barra de desplazamiento vertical */
-    margin: 0;        /* Asegúrate de que no haya márgenes que provoquen desbordamiento */
-    height: 100vh;    /* Fija el alto de la página al tamaño de la ventana */
+    overflow: hidden;
+    margin: 0;
+    height: 100vh;
 }
-  
   /* Encabezado */
   header {
     background-image: url("https://www.rd.com/wp-content/uploads/2021/07/movie-trivia-header-scaled.jpg");
