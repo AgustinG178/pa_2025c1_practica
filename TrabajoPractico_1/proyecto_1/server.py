@@ -38,6 +38,7 @@ def juego():
 
                 ronda_actual = int(request.form.get("ronda_actual",0)) + 1 #actualiza el valor de la ronda
 
+                
                 if ronda_actual <= intentos:
 
                     #verificamos la opción elegida por el usuario
@@ -63,9 +64,10 @@ def juego():
                     return render_template("inicio.html")
                     
     else:
+        #Se devuelve la primera página de juego (primera ronda)
         ronda_actual = 1
     
-        return render_template("juego.html", ronda=session["rondas"][ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"], fecha = solo_fecha) #devulve la primera pagina
+        return render_template("juego.html", ronda=session["rondas"][ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"], fecha = solo_fecha) 
     
 @app.route("/historial", methods=["GET", "POST"])
 def historial():
