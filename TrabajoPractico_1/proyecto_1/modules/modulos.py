@@ -1,11 +1,17 @@
 import random
 from copy import deepcopy
+import matplotlib as plt
+
+
 nombre_archivo = "frases_de_peliculas.txt"
 
 def leer_frases_de_peliculas(nombre_archivo):
+    '''
+    Carga las frases desde un archivo a una lista
+    '''
 
     frases = []
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -75,20 +81,58 @@ def opcion_correcta(pelicula,pelicula_correcta):
         return 0
    
 def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
-        historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
+    with open("data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
+        historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
 
 
 def leer_archivo_resultados ():
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as historial:
+    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as historial:
         juego_data = historial.read().splitlines()
         return juego_data
 
+def crear_archivo_grafico_torta():
+    """
+    Lee los resultados del archivo 'resultados.txt' y genera un gráfico de torta basado en los resultados de los usuarios.
+    """
+    resultados_path = "data/resultados.txt"
+    categorias = {}
 
+    # Leer el archivo de resultados
+    try:
+        with open(resultados_path, 'r', encoding="utf-8") as archivo:
+            for linea in archivo:
+                # Suponiendo que el formato es: "Usuario: X / Resultado: Y/Z / Fecha: DD-MM-YYYY"
+                partes = linea.split('/')
+                if len(partes) >= 2:
+                    resultado = partes[1].strip().split(' ')[0]  # Extraer el resultado (Y)
+                    if resultado.isdigit():
+                        resultado = int(resultado)
+                        categorias[resultado] = categorias.get(resultado, 0) + 1
+    except FileNotFoundError:
+        print(f"El archivo {resultados_path} no existe.")
+        return
 
+    # Preparar los datos para el gráfico
+    labels = [f"Resultado {key}" for key in categorias.keys()]
+    sizes = list(categorias.values())
+
+    # Crear el gráfico de torta
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')  # Asegurar que el gráfico sea un círculo
+
+    # Guardar el gráfico
+    output_path = "static/grafico_torta.png"
+    fig.savefig(output_path)
+    print(f"Gráfico de torta guardado en {output_path}")
         
 if __name__ == "__main__":
-    print(juego_opciones(frases,7))
+    # print(juego_opciones(frases,7))
+    
+    crear_archivo_grafico_torta()
+    
+    
+    
     """
     frases_prueba = deepcopy(frases)
     lista_aletoria = random.choice(frases_prueba)
