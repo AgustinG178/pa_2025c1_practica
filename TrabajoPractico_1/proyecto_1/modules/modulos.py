@@ -1,9 +1,10 @@
 import random
 from copy import deepcopy
-nombre_archivo = "frases_de_peliculas.txt"
+
 
 def leer_frases_de_peliculas(nombre_archivo):
-
+    
+    
     frases = []
     with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
@@ -12,7 +13,7 @@ def leer_frases_de_peliculas(nombre_archivo):
                 frases.append(linea.split(';'))
     return frases      
 
-frases = leer_frases_de_peliculas(nombre_archivo)      
+
 
 
 
@@ -75,12 +76,12 @@ def opcion_correcta(pelicula,pelicula_correcta):
         return 0
    
 def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
 
 
 def leer_archivo_resultados ():
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'r', encoding="utf-8") as historial:
         juego_data = historial.read().splitlines()
         return juego_data
 
@@ -88,7 +89,6 @@ def leer_archivo_resultados ():
 
         
 if __name__ == "__main__":
-    print(juego_opciones(frases,7))
     """
     frases_prueba = deepcopy(frases)
     lista_aletoria = random.choice(frases_prueba)
