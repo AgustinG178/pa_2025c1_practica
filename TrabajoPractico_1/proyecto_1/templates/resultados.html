@@ -12,7 +12,7 @@
         flex-wrap: wrap;
         justify-content: center;
         gap: 20px;
-        max-height: 80vh; /* Altura máxima del contenedor */
+        max-height: 70vh; /* Altura máxima del contenedor */
         overflow-y: auto; /* Habilitar barra de desplazamiento vertical */
         padding: 20px;
         border: 0px solid #ccc;
@@ -29,7 +29,9 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .boton-inicio {
-        text-align: center;
+        display: flex; /* Usar Flexbox para alinear los botones */
+        justify-content: center; /* Centrar los botones horizontalmente */
+        gap: 20px; /* Espacio entre los botones */
         margin-top: 20px;
     }
     button {

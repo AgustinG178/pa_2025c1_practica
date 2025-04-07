@@ -15,3 +15,5 @@ Usuario:Faustina / Resultado: 9/18 / Fecha: 07/04/2025
 Usuario:Andres / Resultado: 6/16 / Fecha: 07/04/2025
 Usuario:Juan Ignacio / Resultado: 2/7 / Fecha: 07/04/2025
 Usuario:Agustin / Resultado: 3/14 / Fecha: 07/04/2025
+Usuario:Antonela / Resultado: 1/4 / Fecha: 07/04/2025
+Usuario:Lucia / Resultado: 0/6 / Fecha: 07/04/2025

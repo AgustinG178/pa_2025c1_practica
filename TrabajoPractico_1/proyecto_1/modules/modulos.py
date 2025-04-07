@@ -15,7 +15,7 @@ nombre_archivo = "frases_de_peliculas.txt"
 def leer_frases_de_peliculas(nombre_archivo):
     
     frases = []
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -75,17 +75,9 @@ def opcion_correcta(pelicula,pelicula_correcta):
     else:
         return 0
 def escribir_resultados_archivo(usuario, resultado, intentos, fecha):
+    os.makedirs("data", exist_ok=True)  # Crea la carpeta 'data' si no existe
     with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
-
-def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
-
-    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
-        
-        historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
-        
-        
-
 
 def leer_archivo_resultados ():
    

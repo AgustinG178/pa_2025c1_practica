@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
 from datetime import datetime
-file_path = "TrabajoPractico_1/proyecto_1/data/resultados.txt"
+file_path = "data/resultados.txt"
 folder = "TrabajoPractico_1/proyecto_1/static/graficos"
 
 nombre_archivo = "frases_de_peliculas.txt"
