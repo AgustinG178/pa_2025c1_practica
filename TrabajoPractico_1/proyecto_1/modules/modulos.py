@@ -1,18 +1,16 @@
 import random
 from copy import deepcopy
 import matplotlib.pyplot as plt
+import os
+from collections import defaultdict
 
 # Constants
 STATIC_GRAPH_PATH = "static/grafico_torta.png"
 
 
 nombre_archivo = "frases_de_peliculas.txt"
-
-def leer_frases_de_peliculas(nombre_archivo):
-    '''
-    Carga las frases desde un archivo a una lista
-    '''
-
+    
+#Carga las frases desde un archivo a una lista
 
 def leer_frases_de_peliculas(nombre_archivo):
     
@@ -34,11 +32,6 @@ def opciones_pelis (frases_pelis,lista_peliculas):
             frases_pelis.remove(opcion_ronda)
 
     return lista_peliculas, frases_pelis
-
-                
-   
-
-
 
 def juego_opciones(frases, intentos):
     frases_0 = deepcopy(frases) #copiamos la lista original, de esta manera cada vez que se llame a la funcion juego_opciones, siempre se podrá jugar
@@ -82,34 +75,22 @@ def opcion_correcta(pelicula,pelicula_correcta):
     else:
         return 0
    
-def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
-
-    with open("data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
-        
-        historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
-        
-        
+def escribir_resultados_archivo(usuario, resultado, intentos, fecha):
+    with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
+        historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
 
 def leer_archivo_resultados ():
    
-    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'r', encoding="utf-8") as historial:
+    with open("data/resultados.txt", 'r', encoding="utf-8") as historial:
    
         juego_data = historial.read().splitlines()
    
         return juego_data
 
-import matplotlib.pyplot as plt
-import os
-
 def graficar_intentos_vs_aciertos(file_path, output_folder):
-    """
-    Grafica un gráfico de torta general con los aciertos y errores totales
-    de todos los usuarios combinados y guarda el gráfico en una carpeta.
-    """
     aciertos_totales = 0
     intentos_totales = 0
 
-    # Leer el archivo y calcular los totales
     with open(file_path, 'r') as file:
         for line in file:
             if line.strip() and "Usuario:" in line and "Resultado:" in line:
@@ -123,29 +104,71 @@ def graficar_intentos_vs_aciertos(file_path, output_folder):
                     print(f"Línea con formato incorrecto: {line.strip()}")
                     continue
 
-    # Crear el gráfico de torta
     labels = ['Aciertos', 'Errores']
     sizes = [aciertos_totales, intentos_totales - aciertos_totales]
     colors = ['skyblue', 'lightcoral']
-    explode = (0.1, 0)  # Resaltar la porción de aciertos
+    explode = (0.1, 0)
 
     plt.figure(figsize=(6, 6))
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors, explode=explode)
     plt.title('Resultados Generales')
-    plt.axis('equal')  # Asegurar que el gráfico sea un círculo
+    plt.axis('equal')
 
-    # Crear la carpeta si no existe
     os.makedirs(output_folder, exist_ok=True)
-
-    # Guardar el gráfico en la carpeta
     output_path = os.path.join(output_folder, "grafico_torta_general.png")
     plt.savefig(output_path)
-    plt.close()  # Cerrar el gráfico para liberar memoria
+    plt.close()
 
-    print(f"Gráfico guardado en: {output_path}")
+def graficar_aciertos_vs_desaciertos_por_fecha(file_path, output_folder):
+    """
+    Genera un gráfico con dos curvas: una para los aciertos y otra para los desaciertos,
+    en función de las fechas de juego para todos los usuarios.
+    """
+    fechas = defaultdict(lambda: {"aciertos": 0, "desaciertos": 0})
+
+    # Leer el archivo y procesar los datos
+    with open(file_path, 'r', encoding="utf-8") as file:
+        for line in file:
+            if line.strip() and "Usuario:" in line and "Resultado:" in line:
+                parts = line.strip().split(" / ")
+                try:
+                    fecha = parts[2].split(":")[1].strip()
+                    resultado = parts[1].split(":")[1]
+                    aciertos, total = map(int, resultado.split("/"))
+                    desaciertos = total - aciertos
+
+                    fechas[fecha]["aciertos"] += aciertos
+                    fechas[fecha]["desaciertos"] += desaciertos
+                except (IndexError, ValueError):
+                    print(f"Línea con formato incorrecto: {line.strip()}")
+                    continue
+
+    # Ordenar las fechas
+    fechas_ordenadas = sorted(fechas.items())
+
+    # Extraer datos para el gráfico
+    fechas_labels = [fecha for fecha, _ in fechas_ordenadas]
+    aciertos_totales = [data["aciertos"] for _, data in fechas_ordenadas]
+    desaciertos_totales = [data["desaciertos"] for _, data in fechas_ordenadas]
+
+    # Crear el gráfico
+    plt.figure(figsize=(10, 6))
+    plt.plot(fechas_labels, aciertos_totales, label="Aciertos", marker="o", color="green")
+    plt.plot(fechas_labels, desaciertos_totales, label="Desaciertos", marker="o", color="red")
+    plt.xlabel("Fechas")
+    plt.ylabel("Cantidad")
+    plt.title("Aciertos vs Desaciertos por Fecha")
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.tight_layout()
+
+    # Guardar el gráfico
+    os.makedirs(output_folder, exist_ok=True)
+    output_path = os.path.join(output_folder, "grafico_curvas_aciertos_desaciertos.png")
+    plt.savefig(output_path)
+    plt.close()
 
 # Ejemplo de uso
-
 
 if __name__ == "__main__":
 
@@ -155,6 +178,7 @@ if __name__ == "__main__":
     file_path = "data/resultados.txt"
     folder = "static/graficos"
     graficar_intentos_vs_aciertos(file_path, folder)
+    graficar_aciertos_vs_desaciertos_por_fecha(file_path, folder)
     
 
     """
@@ -176,9 +200,9 @@ if __name__ == "__main__":
         #print(f"Opciones: {ronda_0[1]}")  
     """
 
-    
 
-    
-    
-  
+
+
+
+
 
