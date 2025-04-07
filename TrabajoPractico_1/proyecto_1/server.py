@@ -1,7 +1,11 @@
 from flask import render_template, request, session,redirect,url_for
 from modules.config import app
-from modules.modulos import juego_opciones, frases, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados
+from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas
 from datetime import datetime
+
+nombre_archivo = "frases_de_peliculas.txt"
+frases = leer_frases_de_peliculas(nombre_archivo)      
+
 
 @app.route("/",methods=["GET","POST"])
 def index():   
@@ -42,7 +46,7 @@ def juego():
 
 
                 if ronda_actual <= intentos:
-
+                    
                     #verificamos la opción elegida por el usuario
                     peli_correcta = request.form["peli_correcta"]
                     peli_elegida = request.form["respuesta"]
@@ -68,7 +72,7 @@ def juego():
     else:
         #Se devuelve la primera página de juego (primera ronda)
         ronda_actual = 1
-    
+
         return render_template("juego.html", ronda=session["rondas"][ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"], fecha = solo_fecha) 
     
 @app.route("/historial", methods=["GET", "POST"])

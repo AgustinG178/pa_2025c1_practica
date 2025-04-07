@@ -1,5 +1,6 @@
 import random
 from copy import deepcopy
+<<<<<<< HEAD
 import matplotlib as plt
 
 
@@ -10,6 +11,13 @@ def leer_frases_de_peliculas(nombre_archivo):
     Carga las frases desde un archivo a una lista
     '''
 
+=======
+
+
+def leer_frases_de_peliculas(nombre_archivo):
+    
+    
+>>>>>>> 7e5921528d20ded79985ccbc62aa564158f05183
     frases = []
     with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
@@ -18,7 +26,7 @@ def leer_frases_de_peliculas(nombre_archivo):
                 frases.append(linea.split(';'))
     return frases      
 
-frases = leer_frases_de_peliculas(nombre_archivo)      
+
 
 
 
@@ -81,12 +89,21 @@ def opcion_correcta(pelicula,pelicula_correcta):
         return 0
    
 def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
+<<<<<<< HEAD
     with open("data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
 
 
 def leer_archivo_resultados ():
     with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as historial:
+=======
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'a', encoding="utf-8") as historial:
+        historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
+
+
+def leer_archivo_resultados ():
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'r', encoding="utf-8") as historial:
+>>>>>>> 7e5921528d20ded79985ccbc62aa564158f05183
         juego_data = historial.read().splitlines()
         return juego_data
 
@@ -127,12 +144,15 @@ def crear_archivo_grafico_torta():
     print(f"Gráfico de torta guardado en {output_path}")
         
 if __name__ == "__main__":
+<<<<<<< HEAD
     # print(juego_opciones(frases,7))
     
     crear_archivo_grafico_torta()
     
     
     
+=======
+>>>>>>> 7e5921528d20ded79985ccbc62aa564158f05183
     """
     frases_prueba = deepcopy(frases)
     lista_aletoria = random.choice(frases_prueba)
