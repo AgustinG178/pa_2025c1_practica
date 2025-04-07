@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 from collections import defaultdict
 
-# Constants
+
 STATIC_GRAPH_PATH = "static/grafico_torta.png"
 
 
@@ -15,7 +15,7 @@ nombre_archivo = "frases_de_peliculas.txt"
 def leer_frases_de_peliculas(nombre_archivo):
     
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -75,9 +75,19 @@ def opcion_correcta(pelicula,pelicula_correcta):
     else:
         return 0
    
+<<<<<<< HEAD
 def escribir_resultados_archivo(usuario, resultado, intentos, fecha):
     with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
+=======
+def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
+
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
+        
+        historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
+        
+        
+>>>>>>> 8d7e4372524bae2515ef9fa65b48deecd1273235
 
 def leer_archivo_resultados ():
    
@@ -119,6 +129,7 @@ def graficar_intentos_vs_aciertos(file_path, output_folder):
     plt.savefig(output_path)
     plt.close()
 
+<<<<<<< HEAD
 def graficar_aciertos_vs_desaciertos_por_fecha(file_path, output_folder):
     """
     Genera un gráfico con dos curvas: una para los aciertos y otra para los desaciertos,
@@ -167,8 +178,9 @@ def graficar_aciertos_vs_desaciertos_por_fecha(file_path, output_folder):
     output_path = os.path.join(output_folder, "grafico_curvas_aciertos_desaciertos.png")
     plt.savefig(output_path)
     plt.close()
+=======
+>>>>>>> 8d7e4372524bae2515ef9fa65b48deecd1273235
 
-# Ejemplo de uso
 
 if __name__ == "__main__":
 
@@ -199,7 +211,11 @@ if __name__ == "__main__":
         #print(f"Frase: {ronda_0[0][0][0]}")
         #print(f"Opciones: {ronda_0[1]}")  
     """
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 8d7e4372524bae2515ef9fa65b48deecd1273235
 
 
 
