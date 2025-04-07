@@ -1,6 +1,6 @@
 from flask import render_template, request, session, redirect, url_for, send_file, make_response
 from modules.config import app
-<<<<<<< HEAD
+
 from modules.modulos import (
     juego_opciones,
     opcion_correcta,
@@ -15,12 +15,11 @@ import os
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-=======
 from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
 from datetime import datetime
 file_path = "TrabajoPractico_1/proyecto_1/data/resultados.txt"
 folder = "TrabajoPractico_1/proyecto_1/static/graficos"
->>>>>>> 8d7e4372524bae2515ef9fa65b48deecd1273235
+
 nombre_archivo = "frases_de_peliculas.txt"
 
 frases = leer_frases_de_peliculas(nombre_archivo)      
@@ -81,7 +80,6 @@ def juego():
                         peli_correcta=peli_correcta,
                     )
                 else:
-<<<<<<< HEAD
                     # Escribimos los resultados en un archivo solo una vez
                     escribir_resultados_archivo(
                         session["usuario"], session["num_aciertos"], intentos, solo_fecha
@@ -92,13 +90,13 @@ def juego():
                     graficar_aciertos_vs_desaciertos_por_fecha("data/resultados.txt", "static/graficos")
 
                     # Limpiamos todos los valores de las claves de la sesión
-=======
+
                     #escribimos los resultados en un archivo
 
                     escribir_resultados_archivo(session["usuario"],session["num_aciertos"],intentos,solo_fecha)
                     graficar_intentos_vs_aciertos(file_path, folder)
                     #eliminamos todos los valores de las claves de la sesion, de esta manera la proxima partida no contiene ningún dato de la anterior
->>>>>>> 8d7e4372524bae2515ef9fa65b48deecd1273235
+
                     session.clear()
 
                     # Redirigimos al historial
