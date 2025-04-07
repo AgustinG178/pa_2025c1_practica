@@ -38,7 +38,9 @@ def juego():
 
                 ronda_actual = int(request.form.get("ronda_actual",0)) + 1 #actualiza el valor de la ronda
 
-                
+                #Verificamos si el usuario selecciona el metodo terminar partida (no se guardan los datos)
+
+
                 if ronda_actual <= intentos:
 
                     #verificamos la opción elegida por el usuario

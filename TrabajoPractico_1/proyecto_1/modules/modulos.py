@@ -80,7 +80,7 @@ def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos e
 
 
 def leer_archivo_resultados ():
-    with open("data/resultados.txt", 'r', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as historial:
         juego_data = historial.read().splitlines()
         return juego_data
 
