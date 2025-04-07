@@ -5,7 +5,7 @@ nombre_archivo = "frases_de_peliculas.txt"
 def leer_frases_de_peliculas(nombre_archivo):
 
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -24,8 +24,7 @@ def opciones_pelis (frases_pelis,lista_peliculas):
         if pelicula not in lista_peliculas: 
             lista_peliculas.append(pelicula)
             frases_pelis.remove(opcion_ronda)
-            if opcion_ronda in frases_pelis:
-                print ("No se removio de la lista la opcion de ronda")
+
     return lista_peliculas, frases_pelis
 
                 
@@ -76,7 +75,7 @@ def opcion_correcta(pelicula,pelicula_correcta):
         return 0
    
 def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
-    with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
 
 
