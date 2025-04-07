@@ -1,9 +1,11 @@
 from flask import render_template, request, session,redirect,url_for
 from modules.config import app
-from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas
+from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
 from datetime import datetime
-
+file_path = "TrabajoPractico_1/proyecto_1/data/resultados.txt"
+folder = "TrabajoPractico_1/proyecto_1/static/graficos"
 nombre_archivo = "frases_de_peliculas.txt"
+
 frases = leer_frases_de_peliculas(nombre_archivo)      
 
 
@@ -61,8 +63,9 @@ def juego():
                 
                 else:
                     #escribimos los resultados en un archivo
-                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"],intentos,solo_fecha)
 
+                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"],intentos,solo_fecha)
+                    graficar_intentos_vs_aciertos(file_path, folder)
                     #eliminamos todos los valores de las claves de la sesion, de esta manera la proxima partida no contiene ningún dato de la anterior
                     session.clear()
 

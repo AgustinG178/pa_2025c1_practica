@@ -2,7 +2,7 @@ import random
 from copy import deepcopy
 import matplotlib.pyplot as plt
 
-# Constants
+
 STATIC_GRAPH_PATH = "static/grafico_torta.png"
 
 
@@ -17,7 +17,7 @@ def leer_frases_de_peliculas(nombre_archivo):
 def leer_frases_de_peliculas(nombre_archivo):
     
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:  
@@ -84,7 +84,7 @@ def opcion_correcta(pelicula,pelicula_correcta):
    
 def escribir_resultados_archivo(usuario,resultado,intentos,fecha): #Escribimos en un txt los resultados de un usuario
 
-    with open("data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'a', encoding="utf-8") as historial:
         
         historial.write(f"Usuario:{usuario} / Resultado: Acietos:{resultado}/ Rondas:{intentos} / Fecha: {fecha}\n")
         
@@ -142,9 +142,7 @@ def graficar_intentos_vs_aciertos(file_path, output_folder):
     plt.savefig(output_path)
     plt.close()  # Cerrar el gráfico para liberar memoria
 
-    print(f"Gráfico guardado en: {output_path}")
 
-# Ejemplo de uso
 
 
 if __name__ == "__main__":
@@ -175,7 +173,6 @@ if __name__ == "__main__":
         #print(f"Frase: {ronda_0[0][0][0]}")
         #print(f"Opciones: {ronda_0[1]}")  
     """
-
     
 
     
