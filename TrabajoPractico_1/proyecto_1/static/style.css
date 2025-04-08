@@ -21,7 +21,9 @@ body {
   
   header h1 {
     margin: 0;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    font-size: 2.5em;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
   }
   
   /* Contenedor principal: dos columnas */
@@ -122,6 +124,8 @@ body {
   .boton_resultados:hover {
     transform: scale(1.05);
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.4);
+    background-color: white;
+    color: #1c1c1c; /* Cambia el texto a oscuro al pasar el mouse */
   }
   
 button{

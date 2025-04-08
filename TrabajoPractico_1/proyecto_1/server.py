@@ -3,12 +3,14 @@ from modules.config import app
 
 from modules.modulos import (
     juego_opciones,
+    listar_peliculas,
     opcion_correcta,
     escribir_resultados_archivo,
     leer_archivo_resultados,
     leer_frases_de_peliculas,
-    graficar_intentos_vs_aciertos,  # Importar la función para graficar
-    graficar_aciertos_vs_desaciertos_por_fecha  # Importar la nueva función para graficar
+    graficar_intentos_vs_aciertos,
+    graficar_aciertos_vs_desaciertos_por_fecha  
+
 )
 from datetime import datetime
 import os
@@ -90,13 +92,6 @@ def juego():
                     graficar_aciertos_vs_desaciertos_por_fecha("data/resultados.txt", "static/graficos")
 
                     # Limpiamos todos los valores de las claves de la sesión
-
-                    #escribimos los resultados en un archivo
-
-                    escribir_resultados_archivo(session["usuario"],session["num_aciertos"],intentos,solo_fecha)
-                    graficar_intentos_vs_aciertos(file_path, folder)
-                    #eliminamos todos los valores de las claves de la sesion, de esta manera la proxima partida no contiene ningún dato de la anterior
-
                     session.clear()
 
                     # Redirigimos al historial
@@ -142,6 +137,11 @@ def descargar_grafico2(filename):
     # Enviar el archivo PDF al cliente
     return send_file(pdf_path, as_attachment=True)
 
+@app.route("/listado_peliculas", methods=["GET"])
+def listado_peliculas():
+    file_path = "data/frases_de_peliculas.txt"  # Ruta al archivo frases_de_peliculas.txt
+    peliculas = listar_peliculas(file_path)  # Llama a la función para obtener las películas
+    return render_template("listado_peliculas.html", peliculas=peliculas)
      
 if __name__ == "__main__":
    app.run(host="0.0.0.0", debug=True)

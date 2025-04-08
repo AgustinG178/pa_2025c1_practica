@@ -16,11 +16,11 @@
     <!-- Columna Izquierda: Texto explicativo grande -->
     <div class="left-side">
       <p>
-        ¡Prepárate para poner a prueba tus conocimientos cinematográficos! En este juego, te mostraremos una película al azar y tu misión será adivinar su título correcto. Para ayudarte, te daremos tres opciones posibles. ¡Piensa rápido y elige la respuesta correcta! Cada acierto te dará puntos y te acercará a la victoria. Una vez terminadas las rondas serás llevado al inicio y podrás ver tus resultados en la pestaña "RESULTADOS". ¿Estás listo para convertirte en un experto en películas? ¡Que comience el juego!
+        ¡Prepárate para poner a prueba tus conocimientos cinematográficos! En este juego, te mostraremos una película al azar y tu misión será adivinar su título correcto. Para ayudarte, te daremos tres opciones posibles. ¡Piensa rápido y elige la respuesta correcta! Cada acierto te dará puntos y te acercará a la victoria. Una vez terminadas las rondas serás llevado a la pestaña resultados y podrás ver los resultados historicos del jeugo, junto a su usuario que consiguio dichos puntajes.
         <br>
         <br>
+        <strong>¿Estás listo para convertirte en un experto en películas? ¡Que comience el juego! </strong>
         <br>
-        
         <br>
         <br>
         <strong> Nicolas Ramirez y Agustín Grioni</strong>
@@ -44,6 +44,9 @@
       <form action="{{ url_for('historial') }}">
         <button type="submit" id="boton_resultados" class="boton_resultados" name="boton_resultados">Resultados</button>
       </form>
+      <form action="{{ url_for('listado_peliculas') }}">
+        <button class="boton_resultados">Listado de Películas</button>
+    </form>
     </div>
   </div>
   

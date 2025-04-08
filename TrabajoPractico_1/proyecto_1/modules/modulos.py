@@ -1,5 +1,7 @@
 import random
 from copy import deepcopy
+import matplotlib
+matplotlib.use('Agg')  # Configura un backend no interactivo
 import matplotlib.pyplot as plt
 import os
 from collections import defaultdict
@@ -32,6 +34,27 @@ def opciones_pelis (frases_pelis,lista_peliculas):
             frases_pelis.remove(opcion_ronda)
 
     return lista_peliculas, frases_pelis
+
+def listar_peliculas(file_path):
+    """
+    Lee el archivo frases_de_peliculas.txt, extrae las películas, elimina duplicados y las ordena alfabéticamente.
+    """
+    peliculas = set()  # Usamos un conjunto para evitar duplicados
+
+    with open(file_path, 'r', encoding="utf-8") as file:
+        for line in file:
+            if line.strip() and ';' in line:
+                try:
+                    # Extraer la película después del ';'
+                    pelicula = line.split(';')[1].strip()
+                    peliculas.add(pelicula)
+                except IndexError:
+                    print(f"Línea con formato incorrecto: {line.strip()}")
+                    continue
+
+    # Convertir el conjunto a una lista y ordenarlo alfabéticamente
+    peliculas_ordenadas = sorted(peliculas)
+    return peliculas_ordenadas
 
 def juego_opciones(frases, intentos):
     frases_0 = deepcopy(frases) #copiamos la lista original, de esta manera cada vez que se llame a la funcion juego_opciones, siempre se podrá jugar
