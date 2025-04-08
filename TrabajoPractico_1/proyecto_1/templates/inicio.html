@@ -10,13 +10,12 @@
   <header>
     <h1>FILM TRIVIA</h1>
   </header>
-  
   <!-- Contenedor principal dividido en dos columnas -->
-  <div class="main-container">
+  <div class="cont_principal">
     <!-- Columna Izquierda: Texto explicativo grande -->
-    <div class="left-side">
+    <div class="cont_izq">
       <p>
-        ¡Prepárate para poner a prueba tus conocimientos cinematográficos! En este juego, te mostraremos una película al azar y tu misión será adivinar su título correcto. Para ayudarte, te daremos tres opciones posibles. ¡Piensa rápido y elige la respuesta correcta! Cada acierto te dará puntos y te acercará a la victoria. Una vez terminadas las rondas serás llevado a la pestaña resultados y podrás ver los resultados historicos del jeugo, junto a su usuario que consiguio dichos puntajes.
+        ¡Prepárate para poner a prueba tus conocimientos cinematográficos! En este juego, te mostraremos una película al azar y tu misión será adivinar su título correcto. Para ayudarte, te daremos tres opciones posibles. ¡Piensa rápido y elige la respuesta correcta! Cada acierto te dará puntos y te acercará a la victoria. Una vez terminadas las rondas serás llevado a la pestaña resultados y podrás ver los resultados historicos del juego, junto a su usuario que consiguio dichos puntajes.
         <br>
         <br>
         <strong>¿Estás listo para convertirte en un experto en películas? ¡Que comience el juego! </strong>
@@ -26,9 +25,8 @@
         <strong> Nicolas Ramirez y Agustín Grioni</strong>
       </p>
     </div>
-    
     <!-- Columna Derecha: Formulario y botones -->
-    <div class="right-side">
+    <div class="cont_der">
       <form action="{{ url_for('index') }}" method="POST">
         <fieldset class="fieldset_inicio">
           <legend>Datos del jugador</legend>
@@ -40,7 +38,6 @@
         </fieldset>
         <button type="submit" id="boton_inicio" class="boton_inicio" name="boton_inicio">Jugar</button>
       </form>
-      
       <form action="{{ url_for('historial') }}">
         <button type="submit" id="boton_resultados" class="boton_resultados" name="boton_resultados">Resultados</button>
       </form>
@@ -49,6 +46,5 @@
     </form>
     </div>
   </div>
-  
 </body>
 </html>

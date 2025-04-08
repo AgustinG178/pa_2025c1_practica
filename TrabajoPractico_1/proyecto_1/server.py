@@ -1,6 +1,5 @@
 from flask import render_template, request, session, redirect, url_for, send_file, make_response
 from modules.config import app
-
 from modules.juego import (
     juego_opciones,
     listar_peliculas,
@@ -10,37 +9,45 @@ from modules.juego import (
     leer_frases_de_peliculas,
     graficar_intentos_vs_aciertos,
     graficar_aciertos_vs_desaciertos_por_fecha  
-
 )
 from datetime import datetime
 import os
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
-
 from modules.juego import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
 from datetime import datetime
+
+# Definimos la ruta del archivo de resultados y el nombre del archivo de frases, las cuale son constantes
+
 file_path = "data/resultados.txt"
 folder = "TrabajoPractico_1/proyecto_1/static/graficos"
-
 nombre_archivo = "frases_de_peliculas.txt"
+frases = leer_frases_de_peliculas(nombre_archivo)
+STATIC_GRAPH_PATH = "static/grafico_torta.png"
+nombre_archivo = "frases_de_peliculas.txt"      
 
-frases = leer_frases_de_peliculas(nombre_archivo)      
-
-
-@app.route("/",methods=["GET","POST"])
-def index():   
+@app.route("/", methods=["GET", "POST"])
+def index():
+    """
+    Ruta de pagina de inicio.
+    - GET: Muestra la página de inicio con el formulario para ingresar el nombre de usuario y la cantidad de intentos.
+    - POST: Guarda los datos del usuario en la sesión y redirige a la página del juego.
+    """
     if request.method == "POST":
-        
         session["usuario"] = request.form.get("input_usuario")
         session["intentos"] = int(request.form.get("input_intentos"))
-
         return redirect(url_for("juego"))
-    
     else:
         return render_template('inicio.html')
 
 @app.route("/Film Trivia Juego", methods=["GET", "POST"])
 def juego():
+    """
+    Maneja la lógica principal del juego.
+    - GET: Muestra la primera ronda del juego.
+    - POST: Procesa las respuestas del usuario, actualiza los aciertos y genera la siguiente ronda.
+    - Al finalizar las rondas, guarda los resultados en el archivo y redirige al historial.
+    """
     ahora = datetime.now()
     solo_fecha = ahora.strftime("%d/%m/%Y")
 
@@ -105,42 +112,55 @@ def juego():
     
 @app.route("/historial", methods=["GET", "POST"])
 def historial():
-     juegos_data = leer_archivo_resultados()
-     return render_template("resultados.html",juegos_data = juegos_data) 
- 
+    """
+    Muestra el historial de resultados de las partidas jugadas.
+    - Lee los datos del archivo de resultados y los envía al HTML para su visualización.
+    """
+    juegos_data = leer_archivo_resultados()
+    return render_template("resultados.html", juegos_data=juegos_data)
+
 @app.route("/graficos", methods=["GET"])
 def graficos():
-    # Ruta para mostrar el gráfico de torta
+    """
+    Muestra la página de gráficos.
+    - Incluye los gráficos generados a partir de los resultados de las partidas.
+    """
     return render_template("graficos.html", grafico_url=url_for('static', filename='graficos/grafico_torta_general.png'))
 
 @app.route("/descargar_grafico", methods=["GET"])
 def descargar_grafico():
-    file_path = "static/graficos/grafico_torta_general.png"  # Ruta al gráfico
+    """
+    Descarga el gráfico de torta en formato PNG.
+    """
+    file_path = "static/graficos/grafico_torta_general.png"
     return send_file(file_path, as_attachment=True)
 
 @app.route("/descargar_grafico/<filename>", methods=["GET"])
 def descargar_grafico2(filename):
-    # Ruta al archivo de imagen
+    """
+    Convierte un gráfico en formato PNG a PDF y lo descarga.
+    Args:
+        filename (str): Nombre del archivo PNG a convertir.
+    """
     image_path = os.path.join("static/graficos", filename)
-    
-    # Crear un archivo PDF temporal
     pdf_path = os.path.join("static/graficos", f"{os.path.splitext(filename)[0]}.pdf")
     with PdfPages(pdf_path) as pdf:
-        # Leer la imagen y agregarla al PDF
         img = plt.imread(image_path)
         plt.figure(figsize=(8, 6))
         plt.imshow(img)
-        plt.axis('off')  # Ocultar los ejes
-        pdf.savefig()  # Guardar la figura en el PDF
+        plt.axis('off')
+        pdf.savefig()
         plt.close()
-
-    # Enviar el archivo PDF al cliente
     return send_file(pdf_path, as_attachment=True)
 
 @app.route("/listado_peliculas", methods=["GET"])
 def listado_peliculas():
-    file_path = "data/frases_de_peliculas.txt"  # Ruta al archivo frases_de_peliculas.txt
-    peliculas = listar_peliculas(file_path)  # Llama a la función para obtener las películas
+    """
+    Muestra un listado de todas las películas únicas ordenadas alfabéticamente.
+    - Lee las películas del archivo frases_de_peliculas.txt.
+    """
+    file_path = "data/frases_de_peliculas.txt"
+    peliculas = listar_peliculas(file_path)
     return render_template("listado_peliculas.html", peliculas=peliculas)
      
 if __name__ == "__main__":
