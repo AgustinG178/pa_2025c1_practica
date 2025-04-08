@@ -1,7 +1,7 @@
 from flask import render_template, request, session, redirect, url_for, send_file, make_response
 from modules.config import app
 
-from modules.modulos import (
+from modules.juego import (
     juego_opciones,
     listar_peliculas,
     opcion_correcta,
@@ -17,7 +17,7 @@ import os
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 
-from modules.modulos import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
+from modules.juego import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
 from datetime import datetime
 file_path = "data/resultados.txt"
 folder = "TrabajoPractico_1/proyecto_1/static/graficos"
