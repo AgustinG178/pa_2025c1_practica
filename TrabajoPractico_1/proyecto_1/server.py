@@ -1,21 +1,22 @@
 from flask import render_template, request, session, redirect, url_for, send_file, make_response
 from modules.config import app
+import os
+import datetime
 from modules.juego import (
     juego_opciones,
     listar_peliculas,
     opcion_correcta,
     escribir_resultados_archivo,
     leer_archivo_resultados,
-    leer_frases_de_peliculas,
+    leer_frases_de_peliculas
+)
+
+from modules.graficos import (
+    convertir_pdf,
     graficar_intentos_vs_aciertos,
     graficar_aciertos_vs_desaciertos_por_fecha  
 )
-from datetime import datetime
-import os
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.pyplot as plt
-from modules.juego import juego_opciones, opcion_correcta, escribir_resultados_archivo, leer_archivo_resultados, leer_frases_de_peliculas,graficar_intentos_vs_aciertos
-from datetime import datetime
+
 
 # Definimos la ruta del archivo de resultados y el nombre del archivo de frases, las cuale son constantes
 
@@ -127,30 +128,14 @@ def graficos():
     """
     return render_template("graficos.html", grafico_url=url_for('static', filename='graficos/grafico_torta_general.png'))
 
-@app.route("/descargar_grafico", methods=["GET"])
-def descargar_grafico():
-    """
-    Descarga el gráfico de torta en formato PNG.
-    """
-    file_path = "static/graficos/grafico_torta_general.png"
-    return send_file(file_path, as_attachment=True)
-
 @app.route("/descargar_grafico/<filename>", methods=["GET"])
-def descargar_grafico2(filename):
+def descargar_grafico(filename):
     """
     Convierte un gráfico en formato PNG a PDF y lo descarga.
     Args:
         filename (str): Nombre del archivo PNG a convertir.
     """
-    image_path = os.path.join("static/graficos", filename)
-    pdf_path = os.path.join("static/graficos", f"{os.path.splitext(filename)[0]}.pdf")
-    with PdfPages(pdf_path) as pdf:
-        img = plt.imread(image_path)
-        plt.figure(figsize=(8, 6))
-        plt.imshow(img)
-        plt.axis('off')
-        pdf.savefig()
-        plt.close()
+    pdf_path = convertir_pdf(filename)
     return send_file(pdf_path, as_attachment=True)
 
 @app.route("/listado_peliculas", methods=["GET"])
