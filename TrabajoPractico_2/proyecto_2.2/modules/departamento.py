@@ -19,7 +19,6 @@ class  departamento:
             """
             Se le asigna un nombre al departamento académico.
             """
-            
             self.nombre_departamento = input("Ingrese el nombre del departamento: ")
         
         def agregar_profesor(profesor:object):
@@ -39,7 +38,7 @@ class  departamento:
             self.cursos = []
             self.nombre_departamento = agregar_profesor(profesor)
             
-            
+        
         
 
         

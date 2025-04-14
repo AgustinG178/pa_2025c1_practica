@@ -70,5 +70,4 @@ class Facultad:
              que se dictan y los profesores que componen el departamento.
              """
 
-             
 
