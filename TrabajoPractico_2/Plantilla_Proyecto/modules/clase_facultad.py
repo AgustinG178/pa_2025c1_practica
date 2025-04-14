@@ -1,0 +1,77 @@
+# módulo para organizar funciones o clases utilizadas en nuestro proyecto
+# Crear tantos módulos como sea necesario para organizar el código
+
+class Facultad:
+    def __init__(self, Nombre:str , Direccion:str , Num_contacto:int, lista_estudiantes:list[object], lista_profesores:list[object], lista_departamento:list[object]):
+
+        """
+        La clase facultad describirá el nombre, dirección y número de contacto, asi como la lista de estudiantes
+
+        """
+        self.Nombre = Nombre
+
+        self.Direccion = Direccion
+        
+        self.Num_contacto = Num_contacto
+
+        self.lista_estudiantes = lista_estudiantes
+
+        self.lista_profesores = lista_profesores
+
+        def listar_estudiantes (lista_estudiantes:list):
+            """
+            Se muestran todos los estudiantes inscriptos en la facultad hasta el momento.
+            """
+
+            for estudiante in lista_estudiantes:
+                    print(estudiante)
+        
+        def listar_profesores (lista_profesores:list):
+
+            """
+            Se muestran todos los profesores contratados por la facultad hasta el momento.
+            """
+
+            for profesor in lista_profesores:
+                    print(profesor)
+        
+        def listar_departamento(lista_departamentos:list):
+             
+             """
+            Se muestran todos los departamentos académicos que existen en la facultad hasta el momento.
+             """
+
+             for departamento in lista_departamentos:
+                  print(departamento)
+
+        def añadir_estudiante(estudiante:object):
+            """
+            Se añade a la facultad un estudiante que debe ser un objeto
+            """
+            if type(estudiante) == object:
+
+                lista_estudiantes.append(estudiante)
+                print(f"¡El estudiante {estudiante.Nombre} ha sido inscripto correctamente!")
+
+            else: raise TypeError("El estudiante debe ser la instancia de una clase (objeto)")
+
+        def contratar_profesor(profesor:object):
+            """
+            Se añade a la facultad un estudiante que debe ser un objeto
+            """
+            if type(profesor) == object:
+
+                lista_profesores.append(profesor)
+                print(f"¡El profesor {profesor.Nombre} ha sido contratado correctamente!")
+
+            else: raise TypeError("El profesor debe ser la instancia de una clase (objeto)")
+
+        def crear_departamento (nombre_departamento:str,cursos:list, profesores_departamento: list, director:object):
+             
+             """
+             Se crea un departamento académico, la función debe recibir el nombre de este y el director que le corresponde, además de los cursos
+             que se dictan y los profesores que componen el departamento.
+             """
+
+             
+

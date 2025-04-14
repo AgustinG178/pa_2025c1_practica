@@ -144,7 +144,7 @@ def listado_peliculas():
     Muestra un listado de todas las películas únicas ordenadas alfabéticamente.
     - Lee las películas del archivo frases_de_peliculas.txt.
     """
-    file_path = "data/frases_de_peliculas.txt"
+    file_path = "TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt"
     peliculas = listar_peliculas(file_path)
     return render_template("listado_peliculas.html", peliculas=peliculas)
      

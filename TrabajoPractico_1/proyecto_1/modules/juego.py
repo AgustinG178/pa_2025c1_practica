@@ -12,7 +12,7 @@ def leer_frases_de_peliculas(nombre_archivo):
         list: Lista de frases y sus respectivas películas.
     """
     frases = []
-    with open("data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
+    with open("TrabajoPractico_1/proyecto_1/data/frases_de_peliculas.txt", 'r', encoding="utf-8") as archivo:
         for linea in archivo:
             linea = linea.strip()
             if ';' in linea:
@@ -107,7 +107,7 @@ def escribir_resultados_archivo(usuario, resultado, intentos, fecha):
         fecha (str): Fecha de la partida.
     """
     os.makedirs("data", exist_ok=True)
-    with open("data/resultados.txt", 'a', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'a', encoding="utf-8") as historial:
         historial.write(f"Usuario:{usuario} / Resultado: {resultado}/{intentos} / Fecha: {fecha}\n")
 
 def leer_archivo_resultados():
@@ -116,7 +116,7 @@ def leer_archivo_resultados():
     Returns:
         list: Lista de resultados de las partidas.
     """
-    with open("data/resultados.txt", 'r', encoding="utf-8") as historial:
+    with open("TrabajoPractico_1/proyecto_1/data/resultados.txt", 'r', encoding="utf-8") as historial:
         return historial.read().splitlines()
 
 
