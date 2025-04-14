@@ -1,7 +1,3 @@
-# módulo para organizar funciones o clases utilizadas en nuestro proyecto
-# Crear tantos módulos como sea necesario para organizar el código
-
-
 class Facultad:
     def __init__(self, Nombre:str , Direccion:str , Num_contacto:int, estudiantes:list[object], profesores:list[object], departamentos:list[object]):
 
