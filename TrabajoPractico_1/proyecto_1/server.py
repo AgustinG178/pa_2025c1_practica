@@ -49,8 +49,6 @@ def juego():
     - POST: Procesa las respuestas del usuario, actualiza los aciertos y genera la siguiente ronda.
     - Al finalizar las rondas, guarda los resultados en el archivo y redirige al historial.
     """
-    ahora = datetime.now()
-    solo_fecha = ahora.strftime("%d/%m/%Y")
 
     #definimos los aciertos como un atributo de session para poder actualizarlos a medida que transcurre el juego
     if "num_aciertos" not in session:
@@ -85,14 +83,13 @@ def juego():
                         num_ronda=ronda_actual,
                         resultado=request.method == "POST",
                         aciertos=session["num_aciertos"],
-                        fecha=solo_fecha,
                         opcion_anterior=opcion_correcta(peli_correcta, peli_elegida),
                         peli_correcta=peli_correcta,
                     )
                 else:
                     # Escribimos los resultados en un archivo solo una vez
                     escribir_resultados_archivo(
-                        session["usuario"], session["num_aciertos"], intentos, solo_fecha
+                        session["usuario"], session["num_aciertos"], intentos,
                     )
 
                     # Actualizar el gráfico de torta y el gráfico de curvas
@@ -109,7 +106,7 @@ def juego():
         #Se devuelve la primera página de juego (primera ronda)
         ronda_actual = 1
 
-        return render_template("juego.html", ronda=session["rondas"][ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"], fecha = solo_fecha) 
+        return render_template("juego.html", ronda=session["rondas"][ronda_actual-1],num_ronda = ronda_actual,aciertos = session["num_aciertos"]) 
     
 @app.route("/historial", methods=["GET", "POST"])
 def historial():

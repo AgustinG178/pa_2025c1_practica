@@ -13,14 +13,14 @@
             <h2>Gráfico de Aciertos vs Desaciertos</h2>
             <img src="{{ url_for('static', filename='graficos/grafico_curvas_aciertos_desaciertos.png') }}" alt="Gráfico de Aciertos vs Desaciertos">
             <form action="{{ url_for('descargar_grafico', filename='grafico_curvas_aciertos_desaciertos.png') }}">
-                <center><button type="submit">Descargar Gráfico en PDF</button></center>
+                <center><button type="submit">Descargar Gráfico de curvas en PDF</button></center>
             </form>
         </div>
         <div class="grafico-torta">
             <h2>Gráfico de Torta</h2>
             <img src="{{ url_for('static', filename='graficos/grafico_torta_general.png') }}" alt="Gráfico de Torta">
             <form action="{{ url_for('descargar_grafico', filename='grafico_torta_general.png') }}">
-                <center><button type="submit">Descargar Gráfico en PDF</button></center>
+                <center><button type="submit">Descargar Gráfico de torta en PDF</button></center>
             </form>
         </div>
     </div>
