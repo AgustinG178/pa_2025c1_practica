@@ -1,10 +1,9 @@
 from comunidad_academica import Profesor
 
-#Diccionario que contendrá todos los departamentos académicos hasta el momento, de forma que se puedan acceder/listar
-departamentos = {} 
+
 
 class  Departamento:
-    def __init__(self,nombre:str, director:object, cursos:list, profesores_departamento:list[object]):
+    def __init__(self,nombre:str, cursos:list, profesores_departamento:list[object]):
         """
         Se crea un departamento académico dentro de una facultad.
         La clase recibe como parámetro el nombre del departamento, el director que le corresponde,
@@ -12,11 +11,10 @@ class  Departamento:
         """
         self.nombre_departamento = nombre
         self.cursos = cursos
-        self.director = director
+
         self.profesores_departamento = profesores_departamento
 
         
-
 
     def agregar_profesor(self,profesor:object):
         """
@@ -27,4 +25,6 @@ class  Departamento:
         
         else:
             self.profesores_departamento.append(profesor)
-            print(f"¡El profesor {profesor.Nombre} ha sido contratado correctamente!")       
+            print(f"¡El profesor {profesor.Nombre} ha sido contratado correctamente!")
+
+           

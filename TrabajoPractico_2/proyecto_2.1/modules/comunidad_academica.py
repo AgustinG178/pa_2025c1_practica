@@ -5,10 +5,6 @@ class Persona:
         self.nombre = nombre
 
         self.dni = dni
-
-    @property
-    def get_nombre(self): #getter general
-        return self.nombre
         
 class Estudiante(Persona):
 
@@ -24,7 +20,7 @@ class Estudiante(Persona):
         """
         Se muestra la información del estudiante.
         """
-        return f"Nombre: {self.nombre}\n DNI: {self.dni}\n Cursos: {self.cursos}\n Facultades: {self.facultades}"
+        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(self.cursos)}/ Facultades: {",".join(self.facultades)}"
         
     def mostrar_cursos(self):
 
@@ -35,7 +31,7 @@ class Estudiante(Persona):
         return f""
 
 class Profesor(Persona):
-    def __init__(self, nombre: str, dni: int, cursos:list, facultades:list):
+    def __init__(self, nombre: str, dni: int, cursos:list, departamentos:list, facultades:list):
 
         super().__init__(nombre, dni)
 
@@ -45,15 +41,19 @@ class Profesor(Persona):
 
         self.facultades = facultades
 
-    @property
-    def mostrar_cargos(self):
+        self.departamento = departamentos
 
+    @property
+    def cargos(self):
+        """
+        Se muestran los cargos directivos del profesor
+        """
         return self.__cargos
 
-    @mostrar_cargos.setter
+    @cargos.setter
 
     
-    def mostrar_cargos(self,cargo):
+    def cargos(self,cargo):
         """
         Se le asigna un cargo al profesor.
         """
@@ -66,18 +66,18 @@ class Profesor(Persona):
         """
         Se muestra la información del profesor.
         """
-        return f"Nombre: {self.nombre}\nDNI: {self.dni}\nCursos: {self.cursos}\nCargos:{self.__cargos}\nFacultades: {self.facultades}"
+        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(self.cursos)} / Cargos:{",".join(self.__cargos)} / Departamentos: {",".join(self.departamento)}/ Facultades: {",".join(self.facultades)}"
 
 
 if __name__ == "__main__":
-    prof1 = Profesor("Lucas", 485, 9853.5, ["matematica","quimica"],["FIUNER","FIQ"])
+    prof1 = Profesor("Lucas", 485,["Matematica","Quimica"],["Fisico Química"],["FIUNER","FIQ"])
 
-    print(f"Cargos iniciales: {prof1.mostrar_cargos}")
-    prof1.mostrar_cargos ="matematica"
+    print(f"Cargos iniciales: {prof1.cargos}")
+    prof1.cargos ="Matematica"
     """
     prof1.mostrar_cargos muestra el atributo privado cargos relacionado al profesor, prof1.mostrar_cargos = "matematica"
     es un setter, define el cargo (en este caso lo añade a la lista de campos)
     """
-    print(f"Cargos actuales: {prof1.mostrar_cargos}")
+    print(f"Cargos actuales: {prof1.cargos}")
 
     print(prof1.mostrar_informacion())
