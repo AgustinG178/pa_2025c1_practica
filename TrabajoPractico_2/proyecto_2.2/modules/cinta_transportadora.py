@@ -17,6 +17,23 @@ considerar al cajón como un contenedor iterable
 import random
 from math import exp, atan
 
+# Diccionario de fórmulas para calcular aw
+FORMULAS_AW = {
+    "kiwi": lambda masa: (0.97 * ((15 * masa) ** 2) / (1 + (15 * masa) ** 2)),
+    "manzana": lambda masa: (0.96 * (1 - exp(-18 * masa)) / (1 + exp(-18 * masa))),
+    "papa": lambda masa: (0.66 * atan(18 * masa)),
+    "zanahoria": lambda masa: (0.96 * (1 - exp(-10 * masa))),
+}
+
+def calcular_aw(nombre, masa):
+    """
+    Calcula la actividad acuosa (aw) de un alimento dado su nombre y masa.
+    Si el alimento no tiene una fórmula definida, devuelve 0.
+    """
+    if nombre in FORMULAS_AW:
+        return FORMULAS_AW[nombre](masa)
+    return 0  # Valor por defecto si el alimento no está en el diccionario
+
 class Sensor:
     def detectar(self):
         # Simula la detección de un alimento
@@ -34,21 +51,7 @@ class alimento:
         self.nombre = nombre  
         self.tipo = tipo      
         self.peso = peso      
-        self.aw = self.calcular_aw(self.peso)
-
-    def calcular_aw(self, masa):
-        masa = self.peso / 1000  # Convertir a kg para las fórmulas
-        # Fórmulas específicas para cada alimento
-        if self.nombre == "kiwi":
-            return (0.97 * ((15*masa)**2)/(1+(15*masa)**2))
-        elif self.nombre == "manzana":
-            return (0.96 * (1-exp(-18 * masa))/(1+exp(-18 * masa)))
-        elif self.nombre == "papa":
-            return (0.66 * atan(18 * masa))
-        elif self.nombre == "zanahoria":
-            return (0.96 * (1-exp(-10 * masa)))
-        else:
-            return 0  # Valor por defecto
+        self.aw = calcular_aw(self.nombre, self.peso / 1000)  # Convertir peso a kg
 
 class Cajon:
     def __init__(self, capacidad):
@@ -58,6 +61,20 @@ class Cajon:
     def agregar_alimento(self, alimento):
         if len(self.alimentos) < self.capacidad:
             self.alimentos.append(alimento)
+        else:
+            raise Exception("El cajón está lleno.")
+
+    def agregar_fruta(self, nombre, peso):
+        if len(self.alimentos) < self.capacidad:
+            fruta = alimento(nombre, "fruta", peso)
+            self.alimentos.append(fruta)
+        else:
+            raise Exception("El cajón está lleno.")
+
+    def agregar_verdura(self, nombre, peso):
+        if len(self.alimentos) < self.capacidad:
+            verdura = alimento(nombre, "verdura", peso)
+            self.alimentos.append(verdura)
         else:
             raise Exception("El cajón está lleno.")
 
@@ -123,5 +140,3 @@ class Controlador:
             "aw_prom_verduras": round(aw_prom_verduras, 2),
             "aw_total": round(aw_total, 2)
         }
-
-
