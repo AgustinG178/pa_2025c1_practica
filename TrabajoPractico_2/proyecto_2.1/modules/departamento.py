@@ -1,7 +1,3 @@
-from comunidad_academica import Profesor
-
-
-
 class  Departamento:
     def __init__(self,nombre:str, cursos:list, profesores_departamento:list[object]):
         """
