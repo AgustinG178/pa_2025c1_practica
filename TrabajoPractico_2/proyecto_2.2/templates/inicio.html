@@ -1,13 +1,40 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplicación Flask</title>
+    <title>Cinta Transportadora</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Bienvenido a mi Aplicación Flask</h1>
-    <p>Esta es la página de inicio.</p>
+    <div class="container">
+        <h1>Configuración de la Cinta Transportadora</h1>
+        <div class="form-section">
+            <form method="POST" action="/">
+                <label for="total_alimentos">Cantidad total de alimentos deseados:</label>
+                <input type="number" id="total_alimentos" name="total_alimentos" required min="1" max="1000">
+                <button type="submit">Iniciar</button>
+            </form>
+        </div>
+
+        <div class="results-section">
+            {% if metricas %}
+                <h2>Resultados</h2>
+                <p><strong>Peso total del cajón:</strong> {{ metricas.peso_total }} kg</p>
+                <p><strong>Actividad acuosa promedio de frutas:</strong> {{ metricas.aw_prom_frutas }}</p>
+                <p><strong>Actividad acuosa promedio de verduras:</strong> {{ metricas.aw_prom_verduras }}</p>
+                <p><strong>Actividad acuosa promedio total:</strong> {{ metricas.aw_total }}</p>
+
+                {% if advertencias %}
+                    <h3>Advertencias</h3>
+                    <ul>
+                        {% for advertencia in advertencias %}
+                            <li>{{ advertencia }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>
