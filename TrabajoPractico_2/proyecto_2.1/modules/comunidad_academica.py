@@ -8,19 +8,19 @@ class Persona:
         
 class Estudiante(Persona):
 
-    def __init__(self, cursos: list, facultades:list, nombre:str , dni:int):
+    def __init__(self,nombre:str , dni:int):
         super().__init__(nombre, dni)
 
-        self.cursos = cursos
+        self.cursos = []
 
-        self.facultades = facultades
+        self.facultades = []
 
     def mostrar_informacion(self):
 
         """
         Se muestra la información del estudiante.
         """
-        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(self.cursos)}/ Facultades: {",".join(self.facultades)}"
+        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(curso.nombre_curso for curso in self.cursos)}/ Facultades: {",".join(facultad.Nombre for facultad in self.facultades)}"
         
     def mostrar_cursos(self):
 
@@ -35,7 +35,9 @@ class Profesor(Persona):
 
         super().__init__(nombre, dni)
 
-        self.__cargos = []
+        self.director_departamento = []
+
+        self.titular_cursos = []
 
         self.cursos = cursos
 
@@ -48,7 +50,7 @@ class Profesor(Persona):
         """
         Se muestran los cargos directivos del profesor
         """
-        return self.__cargos
+        return self.titular_cursos
 
     @cargos.setter
 
@@ -58,7 +60,7 @@ class Profesor(Persona):
         Se le asigna un cargo al profesor.
         """
 
-        self.__cargos.append(cargo)
+        self.titular_cursos.append(cargo)
         
 
     def mostrar_informacion(self) ->str:
@@ -66,7 +68,7 @@ class Profesor(Persona):
         """
         Se muestra la información del profesor.
         """
-        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(self.cursos)} / Cargos:{",".join(self.__cargos)} / Departamentos: {",".join(self.departamento)}/ Facultades: {",".join(self.facultades)}"
+        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(curso.nombre_curso for curso in self.cursos)} / Director de:{",".join(self.titular_cursos)} / Departamentos: {",".join(self.departamento)}/ Facultades: {",".join(facultad.Nombre for facultad in self.facultades)}"
 
 
 if __name__ == "__main__":
