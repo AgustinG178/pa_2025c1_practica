@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from modules.cinta_transportadora import Sensor, CintaTransportadora, Cajon, Controlador
+from modules.cinta_transportadora import CintaTransportadora, Cajon, Controlador
 
 app = Flask(__name__)
 
@@ -17,8 +17,7 @@ def iniciar():
         # La capacidad del cajón será igual a la cantidad total de alimentos deseados
         capacidad = total_alimentos_deseados
 
-        sensor = Sensor()
-        cinta = CintaTransportadora(sensor)
+        cinta = CintaTransportadora(None)
         cajon = Cajon(capacidad)
         controlador = Controlador(cinta, cajon, total_alimentos_deseados)
 
@@ -27,11 +26,11 @@ def iniciar():
 
         # Generar advertencias si alguna métrica supera 0.90
         if metricas["aw_prom_frutas"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa promedio de las frutas supera 0.90")
+            advertencias.append("Advertencia: La actividad acuosa promedio de las frutas supera 0.90, esto la hace suceptible a la proliferación de microorganismos, perjudiciales para la salud")
         if metricas["aw_prom_verduras"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa promedio de las verduras supera 0.90")
+            advertencias.append("Advertencia: La actividad acuosa promedio de las verduras supera 0.90, esto la hace suceptible a la proliferación de microorganismos perjudiciales para la salud")
         if metricas["aw_total"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa total supera 0.90")
+            advertencias.append("Advertencia: La actividad acuosa total supera 0.90, considere revisar la calidad de los alimentos de forma manual")
 
     return render_template("inicio.html", metricas=metricas, advertencias=advertencias)
 
