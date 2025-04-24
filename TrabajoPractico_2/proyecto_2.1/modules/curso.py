@@ -1,6 +1,6 @@
 from modules.comunidad_academica import Estudiante,Profesor
 class Curso:
-    def __init__(self, nombre_curso:str, profesores_curso:list[object], estudiantes_curso:list[object],titular:object,departamento = object):
+    def __init__(self, nombre_curso:str, profesores_curso:list[object], estudiantes_curso:list[object],titular:object):
         """
         La clase curso estará en asociación con estudaintes y profesores, los estudaintes asisten a los cursos, los
         profesores enseñan en los cursos.
@@ -13,7 +13,6 @@ class Curso:
 
         self.__titular = [titular]
 
-        self.departamento_curso = departamento
     
     @property
     def titular(self):
@@ -50,9 +49,5 @@ class Curso:
                 print("El estudiante no es es una instancia de la class Estudiante")
             
             self.estudiantes_curso.append(p_estudiante)
-
-    def mostrar_departamento_corresponde(self):
-         
-         return self.departamento_curso 
     
     
