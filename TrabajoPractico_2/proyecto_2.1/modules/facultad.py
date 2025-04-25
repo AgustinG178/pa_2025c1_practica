@@ -219,6 +219,10 @@ class Facultad:
 
                 print(f"¡Se ha creado el curso {curso_nuevo.nombre_curso} correctamente!")
 
+                print(f"Los cursos que se dictarán ahora en el departamento {dep_academico.nombre_departamento} son :")
+                for p_curso in dep_academico.mostrar_cursos():
+
+                    print(p_curso)
                 break
 
             elif num_profesor == "FIN" and not profesores:
@@ -240,7 +244,7 @@ class Facultad:
 
                             curso_nuevo = Curso(nombre_curso,profesores,estudiantes,profesores[0])
 
-                            profesores[0].cargos = curso_nuevo
+                            profesores[0].titular = curso_nuevo.nombre_curso
 
                             estudiantes.curso.extend(curso_nuevo.estudiantes_curso)
 
@@ -248,6 +252,11 @@ class Facultad:
 
                             self.agregar_curso(curso=curso_nuevo)
                             print(f"¡Se ha creado el curso {curso_nuevo.nombre_curso} correctamente!")
+
+                            print(f"Los cursos que se dictarán ahora en el departamento {dep_academico.nombre_departamento} son :")
+                            for p_curso in dep_academico.mostrar_cursos():
+
+                                print(p_curso)
                             break
 
                     else:
@@ -274,7 +283,7 @@ class Facultad:
             print(f"{indice}:{profesor.nombre}")
             
 
-        print("Ingrese los profesores que integren el departamento,escriba FIN para terminar la seleccion")
+        print("Ingrese los profesores que integren el departamento, el primero que ingrese será el director del departamento,escriba FIN para terminar la seleccion")
         while True:
 
             num_profesor = input("Numero Profesor: ").strip()
@@ -314,11 +323,16 @@ class Facultad:
 
                 self.departamentos_academicos.append(nuevo_departamento)
 
+                
                 for profesor in profesores_departamento:
                     
                     profesor.departamentos.append(nuevo_departamento)
                 
                 print(f"¡Se ha creado el departamento {nuevo_departamento.nombre_departamento} correctamente!")
+
+                print("Ahora, los departamentos académicos dentro de la facultad son: ")
+                for dep in self.listar_departamentos():
+                    print(dep)
                 break
                 
             try:
@@ -341,6 +355,9 @@ class Facultad:
 
                             print(f"¡Se ha creado el departamento {nuevo_departamento.nombre_departamento} correctamente!")
 
+                            print("Ahora, los departamentos académicos dentro de la facultad son: ")
+                            for dep in self.listar_departamentos():
+                                print(dep)
                             break
 
                         
