@@ -1,3 +1,4 @@
+
 class Persona:
     """ clase padre de Estudiante y Profesor """
     def __init__(self, nombre:str, dni:int):
@@ -35,7 +36,7 @@ class Profesor(Persona):
 
         super().__init__(nombre, dni)
 
-        self.director_departamento = []
+        self.director_departamento = ""
 
         self.titular_cursos = []
 
@@ -43,33 +44,23 @@ class Profesor(Persona):
 
         self.facultades = facultades
 
-        self.departamento = departamentos
+        self.departamentos = departamentos
 
-    @property
-    def cargos(self):
-        """
-        Se muestran los cargos directivos del profesor
-        """
-        return self.titular_cursos
-
-    @cargos.setter
-
-    
-    def cargos(self,cargo):
-        """
-        Se le asigna un cargo al profesor.
-        """
-
-        self.titular_cursos.append(cargo)
-        
 
     def mostrar_informacion(self) ->str:
 
         """
         Se muestra la información del profesor.
         """
-        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(curso.nombre_curso for curso in self.cursos)} / Director de:{",".join(self.titular_cursos)} / Departamentos: {",".join(self.departamento)}/ Facultades: {",".join(facultad.Nombre for facultad in self.facultades)}"
+        return f"Nombre: {self.nombre}/ DNI: {self.dni}/ Cursos: {",".join(curso.nombre_curso for curso in self.cursos)} / Director de:{",".join(self.titular_cursos)} / Departamentos: {",".join(self.departamentos)}/ Facultades: {",".join(facultad.Nombre for facultad in self.facultades)}"
 
+    def mostrar_cursos(self):
+
+        return[curso for curso in self.cursos]
+    
+    def mostrar_departamentos (self):
+
+        return[departamento for departamento in self.departamentos]
 
 if __name__ == "__main__":
     prof1 = Profesor("Lucas", 485,["Matematica","Quimica"],["Fisico Química"],["FIUNER","FIQ"])

@@ -1,5 +1,6 @@
+from modules.comunidad_academica import Estudiante,Profesor
 class Curso:
-    def __init__(self, nombre_curso:str, profesores_curso:list[object], estudiantes_curso:list[object],director:object):
+    def __init__(self, nombre_curso:str, profesores_curso:list[object], estudiantes_curso:list[object],titular:object,departamento = object):
         """
         La clase curso estará en asociación con estudaintes y profesores, los estudaintes asisten a los cursos, los
         profesores enseñan en los cursos.
@@ -10,7 +11,18 @@ class Curso:
 
         self.estudiantes_curso = estudiantes_curso
 
-        self.director = director    
+        self.__titular = [titular]
+
+        self.departamento_curso = departamento
+    
+    @property
+    def titular(self):
+         return self.__titular
+    @titular.setter
+    
+    def titular(self,p_profesor):
+         
+         self.__titular = p_profesor
 
     def mostrar_estudiantes_curso(self):
 
@@ -27,10 +39,20 @@ class Curso:
 
         return [p_profesor.nombre for p_profesor in self.profesores_curso]
 
-    def mostrar_informacion_curso(self):
-        """
-        Se mostrará la información basica del curso, como la cantidad de alumnos que lo componen y los profesores que dan clases en este
-        """
+    def agregar_estudiante(self,p_estudiante:object):
 
-        return f"En el curso se encuentran {len(self.estudiantes_curso)} estudiantes hasta el momento, y hay {len(self.profesores_curso)}"
+            """
+            Se añade un estudiante al curso que seleccione el usuario
+            """
+
+            if not isinstance(p_estudiante,Estudiante):
+                 
+                print("El estudiante no es es una instancia de la class Estudiante")
+            
+            self.estudiantes_curso.append(p_estudiante)
+
+    def mostrar_departamento_corresponde(self):
+         
+         return self.departamento_curso 
+    
     

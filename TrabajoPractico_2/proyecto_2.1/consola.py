@@ -27,9 +27,9 @@ for p_profesor in informacion_profesores:
 
     fac_ejemplo.contratar_profesor(profesor)
     
-curso_programacion = Curso("programacion",[profesor for profesor in fac_ejemplo.profesores],[estudiante for estudiante in fac_ejemplo.estudiantes],director=fac_ejemplo.profesores[3])
+curso_programacion = Curso("programacion",[profesor for profesor in fac_ejemplo.profesores],[estudiante for estudiante in fac_ejemplo.estudiantes],titular=fac_ejemplo.profesores[3])
 
-departamento = Departamento("Computación",cursos=[curso_programacion],profesores_departamento=[fac_ejemplo.profesores[0],fac_ejemplo.profesores[1]])
+departamento = Departamento("Computación",lista_cursos=[curso_programacion],lista_profesores=[fac_ejemplo.profesores[0],fac_ejemplo.profesores[1]],director=fac_ejemplo.profesores[0])
 
 fac_ejemplo.departamentos_academicos.append(departamento)
 
@@ -112,6 +112,8 @@ while True:
 
                         fac_ejemplo.contratar_profesor(profesor)
 
+                    
+
                         break
                     except (ValueError,IndexError):
 
@@ -123,6 +125,10 @@ while True:
         elif int(opcion_usuario) == 3:
 
             fac_ejemplo.crear_departamento()
+
+            print("Departamentos hasta el momento: ")
+            for depto_academico in fac_ejemplo.departamentos_academicos:
+                print(depto_academico.nombre_departamento)
 
         elif int(opcion_usuario) == 4:
 
