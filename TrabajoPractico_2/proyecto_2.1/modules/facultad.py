@@ -13,8 +13,6 @@ class Facultad:
 
         self.Direccion = Direccion
         
-        
-
         self.departamentos_academicos = departamentos_académicos
         
         self.estudiantes = [estudiante for dpto in self.departamentos_academicos for curso in dpto.cursos for estudiante in curso.estudiantes_curso]

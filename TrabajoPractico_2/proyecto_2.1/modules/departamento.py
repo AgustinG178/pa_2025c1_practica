@@ -23,13 +23,15 @@ class  Departamento:
         if not isinstance(p_curso,Curso):
 
             return "El curso que se desea añadir no es una instancia de la clase Curso"
+       
         self.cursos.append(p_curso)
+       
         print(f"Se ha añadido correctamente el curso {p_curso.nombre_curso} al departamento {self.nombre_departamento}")
+    
     def mostrar_cursos(self):
-
         return[curso.nombre_curso for curso in self.cursos]
+    
     def nombrar_director(self,p_profesor:object):
-
         if not isinstance(p_profesor,Profesor):
 
             return "El profesor no es una instancia de la clase Profesor"
@@ -37,11 +39,29 @@ class  Departamento:
         self.director[0] = p_profesor
         print(f"Se ha nombrado correctamente al profesor {p_profesor.nombre} como director del departamento")
 
-
-        
+if __name__ == "__main__":
+    # Ejemplo de uso de la clase Departamento
+    profesor1 = Profesor("Juan Pérez", [], [], [], [])
+    profesor2 = Profesor("Ana Gómez", [], [], [], [])
+    curso1 = Curso("Matemáticas", [profesor1], [], [])
+    curso2 = Curso("Física", [profesor2], [], [])
     
-
+    departamento = Departamento(
+        nombre="Ciencias Exactas",
+        lista_cursos=[curso1],
+        lista_profesores=[profesor1, profesor2],
+        director=profesor1
+    )
     
+    print(departamento.mostrar_cursos())
+    departamento.agregar_curso(curso2)
+    print(departamento.mostrar_cursos())
+    departamento.nombrar_director(profesor2)
 
 
-           
+
+
+
+
+
+
