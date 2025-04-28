@@ -8,14 +8,10 @@ class Cajon:
         self.alimentos = []
 
     def agregar_alimento(self, alimento):
-        if len(self.alimentos) < self.capacidad:
-            self.alimentos.append(alimento)
-        else:
-            raise Exception("El cajón está lleno.")
-
-    def peso_total(self):
-        return sum(alimento.peso for alimento in self.alimentos)
-
+        if len(self.alimentos) >= self.capacidad:
+            raise Exception("El cajón está lleno")
+        self.alimentos.append(alimento)
+        
     def __iter__(self):
         return iter(self.alimentos)
 

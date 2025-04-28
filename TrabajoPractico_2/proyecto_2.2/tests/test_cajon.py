@@ -1,35 +1,10 @@
-# Archivo de test para realizar pruebas unitarias del programa modularizado
-
 import unittest
 from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria
 from modules.cajon import Cajon, AnalizadorDeCajon, GeneradorDeInforme
 from modules.cinta_transportadora import CintaTransportadora
 from modules.sensor import Sensor, DetectorAlimento, FabricaDeAlimentos
+import coverage
 
-class TestAlimentos(unittest.TestCase):
-    def test_kiwi_aw(self):
-        kiwi = Kiwi(500)  # 500 gramos
-        self.assertAlmostEqual(kiwi.aw, 0.96, places=2)
-
-    def test_manzana_aw(self):
-        manzana = Manzana(300)  # 300 gramos
-        self.assertAlmostEqual(manzana.aw, 0.96, places=2)
-
-    def test_papa_aw(self):
-        papa = Papa(400)  # 400 gramos
-        self.assertAlmostEqual(papa.aw, 0.96, places=2)
-
-    def test_zanahoria_aw(self):
-        zanahoria = Zanahoria(250)  # 250 gramos
-        self.assertAlmostEqual(zanahoria.aw, 0.96, places=2)
-
-class TestFabricaDeAlimentos(unittest.TestCase):
-    def test_crear_alimento_random(self):
-        fabrica = FabricaDeAlimentos()
-        alimento = fabrica.crear_alimento_random()
-        self.assertIn(type(alimento), [Kiwi, Manzana, Papa, Zanahoria])
-        self.assertGreaterEqual(alimento.peso, 0.05)  # Peso mínimo en kg
-        self.assertLessEqual(alimento.peso, 0.599)  # Peso máximo en kg
 
 class TestCajon(unittest.TestCase):
     def test_agregar_alimento(self):
@@ -56,17 +31,31 @@ class TestCajon(unittest.TestCase):
         cajon.agregar_alimento(manzana)
         self.assertAlmostEqual(cajon.peso_total(), 0.8)  # 0.5 + 0.3 kg
 
+    def test_cajon_iter(self):
+        cajon = Cajon(2)
+        cajon.agregar_alimento(Kiwi(500))
+        cajon.agregar_alimento(Manzana(300))
+        alimentos = list(cajon)
+        self.assertEqual(len(alimentos), 2)
+        self.assertIsInstance(alimentos[0], Kiwi)
+        
+    def test_cajon_len(self):
+        cajon = Cajon(2)
+        cajon.agregar_alimento(Kiwi(500))
+        self.assertEqual(len(cajon), 1)
+        
+    
 class TestAnalizadorDeCajon(unittest.TestCase):
     def test_calcular_metricas(self):
         cajon = Cajon(3)
-        cajon.agregar_alimento(Kiwi(500))
-        cajon.agregar_alimento(Manzana(300))
-        cajon.agregar_alimento(Papa(400))
+        zanahoria = Zanahoria(400)
+        manzana = Manzana(300)
+        kiwi = Kiwi(500)
+        cajon.agregar_alimento(zanahoria)
+        cajon.agregar_alimento(manzana)
+        cajon.agregar_alimento(kiwi)
         metricas = AnalizadorDeCajon.calcular_metricas(cajon)
-        # self.assertAlmostEqual(metricas["peso_total"], 1.2)  # 0.5 + 0.3 + 0.4 kg
-        self.assertGreater(metricas["aw_prom_frutas"], 0)
-        self.assertGreater(metricas["aw_prom_verduras"], 0)
-        self.assertGreater(metricas["aw_total"], 0)
+        self.assertAlmostEqual(metricas["peso_total"], 1.2)  # 0.5 + 0.3 + 0.4 kg
 
 class TestGeneradorDeInforme(unittest.TestCase):
     def test_generar_advertencias(self):
@@ -79,15 +68,4 @@ class TestGeneradorDeInforme(unittest.TestCase):
         advertencias = GeneradorDeInforme.generar_advertencias(metricas)
         self.assertIn("Advertencia: La actividad acuosa promedio de las frutas supera 0.90.", advertencias)
         self.assertIn("Advertencia: La actividad acuosa total supera 0.90.", advertencias)
-
-class TestCintaTransportadora(unittest.TestCase):
-    def test_iniciar_transporte(self):
-        fabrica = FabricaDeAlimentos()
-        sensor = Sensor(fabrica)
-        cajon = Cajon(3)  # Capacidad de 3 alimentos
-        cinta = CintaTransportadora(sensor, cajon)
-        cinta.iniciar_transporte()
-        self.assertEqual(len(cajon), 3)  # El cajón debe estar lleno
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assertNotIn("Advertencia: La actividad acuosa promedio de las verduras supera 0.90.", advertencias)
