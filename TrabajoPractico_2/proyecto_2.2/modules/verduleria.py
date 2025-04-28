@@ -9,6 +9,12 @@ from abc import ABC, abstractmethod, abstractproperty
 
 #Elimine el diccionario para que cumpla con el principio de responsabilidad única y no mezcle la lógica de negocio con la lógica de presentación.
 
+"""
+#preguntarle a gio / jordán si los atributos de alimento es conveniente que que queden cono atributos o deberia ponerlos como @abstractproperty
+#si los atributos de alimento son abstractos, no se puede instanciar la clase Alimento, por lo que no es necesario el decorador de metodo abstracto en la clase Alimento
+"""
+
+
 class Alimento(ABC):
     """
     Clase abstracta que representa un alimento.
@@ -155,9 +161,6 @@ class Cajon:
     def peso_total(self):
         return sum(alimento.peso for alimento in self.alimentos)
 
-    def aw_promedio(self):
-        return sum(alimento.aw for alimento in self.alimentos) / len(self.alimentos)
-
     def __iter__(self):
         return iter(self.alimentos)
     
@@ -196,6 +199,17 @@ class GeneradorDeInforme:
         print(f"AW promedio de verduras: {metricas['aw_prom_verduras']}")
         print(f"AW total del cajón: {metricas['aw_total']}")
 
+    @staticmethod
+    def generar_advertencias(metricas):
+        advertencias = []
+        if metricas["aw_prom_frutas"] > 0.90:
+            advertencias.append("Advertencia: La actividad acuosa promedio de las frutas supera 0.90, esto las hace susceptibles a la proliferación de microorganismos perjudiciales para la salud.")
+        if metricas["aw_prom_verduras"] > 0.90:
+            advertencias.append("Advertencia: La actividad acuosa promedio de las verduras supera 0.90, esto las hace susceptibles a la proliferación de microorganismos perjudiciales para la salud.")
+        if metricas["aw_total"] > 0.90:
+            advertencias.append("Advertencia: La actividad acuosa total supera 0.90, considere revisar la calidad de los alimentos de forma manual.")
+        return advertencias
+
 if __name__ == "__main__":
     fabrica = FabricaDeAlimentos()
     sensor = Sensor(fabrica)
@@ -217,6 +231,10 @@ if __name__ == "__main__":
     metricas = AnalizadorDeCajon.calcular_metricas(cajon)
 
     GeneradorDeInforme.mostrar_metricas(metricas)
+    advertencias = GeneradorDeInforme.generar_advertencias(metricas)
+    for advertencia in advertencias:
+        print(advertencia)
+    
     print("Cinta transportadora detenida.")
 
     print("Contenido del cajón:")

@@ -8,31 +8,31 @@
 </head>
 <body>
     <div class="container">
-        <h1>Configuración de la Cinta Transportadora</h1>
-        <div class="form-section">
-            <form method="POST" action="/">
-                <label for="total_alimentos">Cantidad total de alimentos deseados:</label>
-                <input type="number" id="total_alimentos" name="total_alimentos" required min="1" max="1000">
-                <button type="submit">Iniciar</button>
-            </form>
-        </div>
+        <h1>Cinta Transportadora</h1>
+        <form method="POST" action="/">
+            <label for="total_alimentos">Cantidad total de alimentos:</label>
+            <input type="number" id="total_alimentos" name="total_alimentos" required>
+            <button type="submit">Iniciar Transporte</button>
+        </form>
 
         <div class="results-section">
             {% if metricas %}
-                <h2>Resultados</h2>
-                <p><strong>Peso total del cajón:</strong> {{ metricas.peso_total }} kg</p>
-                <p><strong>Actividad acuosa promedio de frutas:</strong> {{ metricas.aw_prom_frutas }}</p>
-                <p><strong>Actividad acuosa promedio de verduras:</strong> {{ metricas.aw_prom_verduras }}</p>
-                <p><strong>Actividad acuosa promedio total:</strong> {{ metricas.aw_total }}</p>
+                <h2>Métricas Calculadas</h2>
+                <ul>
+                    <li>Peso total del cajón: {{ metricas.peso_total }} kg</li>
+                    <li>AW promedio de frutas: {{ metricas.aw_prom_frutas }}</li>
+                    <li>AW promedio de verduras: {{ metricas.aw_prom_verduras }}</li>
+                    <li>AW total del cajón: {{ metricas.aw_total }}</li>
+                </ul>
+            {% endif %}
 
-                {% if advertencias %}
-                    <h3>Advertencias</h3>
-                    <ul>
-                        {% for advertencia in advertencias %}
-                            <li>{{ advertencia }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+            {% if advertencias %}
+                <h2>Advertencias</h2>
+                <ul>
+                    {% for advertencia in advertencias %}
+                        <li>{{ advertencia }}</li>
+                    {% endfor %}
+                </ul>
             {% endif %}
         </div>
     </div>
