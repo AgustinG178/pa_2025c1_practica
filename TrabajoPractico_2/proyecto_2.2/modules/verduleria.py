@@ -168,50 +168,8 @@ class Cajon:
         return len(self.alimentos)
 
 class CintaTransportadora:
-<<<<<<< HEAD
-    def __init__(self, alimentos):
-        """
-        Inicializa la cinta transportadora con alimentos.
-
-        Args:
-            sensor (Sensor): Instancia de la clase Sensor.
-        """
-        self.alimentos =[
-            {"alimento": "kiwi", "tipo": "fruta", "peso": random.randint(50, 599)},
-            {"alimento": "manzana", "tipo": "fruta", "peso": random.randint(100, 599)},
-            {"alimento": "papa", "tipo": "verdura", "peso": random.randint(200, 599)},
-            {"alimento": "zanahoria", "tipo": "verdura", "peso": random.randint(100, 599)},
-            {"alimento": "undefined", "tipo": None, "peso": 0}
-        ]
-
-    def definir_alimento(self):
-        """
-        Detecta un alimento utilizando el sensor.
-
-        Returns:
-            alimento: Instancia de la clase alimento detectada por el sensor.
-            None: Si no se detecta un alimento válido.
-        """
-        deteccion = random.choice(self.alimentos)
-        if deteccion["alimento"] == "undefined":
-            return None  # Alimento no válido
-        return alimento(deteccion["alimento"], deteccion["tipo"], deteccion["peso"])
-
-class Controlador:
-    def __init__(self, cinta, cajon, total_alimentos_deseados):
-        """
-        Inicializa el controlador.
-
-        Args:
-            cinta (CintaTransportadora): Instancia de la clase CintaTransportadora.
-            cajon (Cajon): Instancia de la clase Cajon.
-            total_alimentos_deseados (int): Cantidad total de alimentos deseados.
-        """
-        self.cinta = cinta
-=======
     def __init__(self, sensor, cajon):
         self.sensor = sensor
->>>>>>> 01031fc36c6c0b2717e16edbffc12fe4cab20dc1
         self.cajon = cajon
 
     def iniciar_transporte(self):
