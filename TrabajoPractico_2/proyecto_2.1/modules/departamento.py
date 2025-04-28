@@ -15,6 +15,10 @@ class  Departamento:
 
         self.director = [director]
         
+
+        for profesor in self.profesores_departamento:
+            profesor.departamentos.append(self)
+        
     def agregar_curso(self, p_curso:object):
         if not isinstance(p_curso,Curso):
 
@@ -23,7 +27,7 @@ class  Departamento:
         print(f"Se ha añadido correctamente el curso {p_curso.nombre_curso} al departamento {self.nombre_departamento}")
     def mostrar_cursos(self):
 
-        return[curso for curso in self.cursos]
+        return[curso.nombre_curso for curso in self.cursos]
     def nombrar_director(self,p_profesor:object):
 
         if not isinstance(p_profesor,Profesor):
