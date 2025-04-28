@@ -3,7 +3,7 @@ from modules.departamento import Departamento
 from modules.curso import Curso
 
 class Facultad:
-    def __init__(self, Nombre:str , Direccion:str):
+    def __init__(self, Nombre:str , Direccion:str, departamentos_académicos:list[object:Departamento]):
 
         """
         La clase facultad describirá el nombre, dirección y número de contacto, asi como la lista de estudiantes, profesores, departamentos y cursos que se brinden en la misma
@@ -13,13 +13,16 @@ class Facultad:
 
         self.Direccion = Direccion
         
-        self.estudiantes =[]
+        
 
-        self.profesores = []
+        self.departamentos_academicos = departamentos_académicos
+        
+        self.estudiantes = [estudiante for dpto in self.departamentos_academicos for curso in dpto.cursos for estudiante in curso.estudiantes_curso]
+        
+        self.profesores = [profesor for dpto in self.departamentos_academicos for profesor in dpto.profesores_departamento]
 
-        self.departamentos_academicos = []
+        self.cursos = [curso for dpto in self.departamentos_academicos for curso in dpto.cursos]
 
-        self.cursos = []
 
     def listar_estudiantes (self):
         """
@@ -71,6 +74,7 @@ class Facultad:
             raise TypeError("El profesor debe ser la instancia de una clase (objeto)")
 
         self.profesores.append(p_profesor)
+        p_profesor.facultades.append(self)
         print(f"¡El profesor {p_profesor.nombre} ha sido contratado correctamente!")
 
     def agregar_estudiante_a_curso(self):
@@ -102,14 +106,18 @@ class Facultad:
             num_curso = input("Numero curso: ")
             try:
                 curso = self.cursos[indice]
-                break
+                if estudiante_seleccionado not in curso.estudiantes_curso:
+                    curso.agregar_estudiante(estudiante_seleccionado) #se añade al curso el estudiante
+                    estudiante_seleccionado.cursos.append(curso)
+
+                    print(f"¡¡Se ha añadido correctamente el estudiante {estudiante_seleccionado.nombre} al curso {curso.nombre_curso}!!")
+                    break
+                else:
+                    print("El estudiante ya se encuentra en el curso")
+                    break
             except (ValueError,IndexError):
                 print("Ingrese un número valido: ")
-
-        curso.agregar_estudiante(estudiante_seleccionado) #se añade al curso el estudiante
-
-        print(f"¡¡Se ha añadido correctamente el estudiante {estudiante.nombre} al curso {curso.nombre_curso}!!")
-        
+     
     def agregar_curso(self,curso:object):
 
         if isinstance(curso,Curso):
@@ -264,7 +272,6 @@ class Facultad:
                 except (IndexError,ValueError):
                     print("El número ingresado no corresponde a ningún profesor o no es valido , por favor ingrese uno correctamente")
         
-     
     def crear_departamento (self):
             
         """
@@ -277,36 +284,7 @@ class Facultad:
 
 
         nombre_departamento = input("Ingrese el nombre del departamento académico: ")
-            
-        print("Los profesores disponibles para el departamento son:")
-        for indice,profesor in enumerate(self.profesores):
-            print(f"{indice}:{profesor.nombre}")
-            
-
-        print("Ingrese los profesores que integren el departamento, el primero que ingrese será el director del departamento,escriba FIN para terminar la seleccion")
-        while True:
-
-            num_profesor = input("Numero Profesor: ").strip()
-
-            
-            if num_profesor == "FIN":
-                break
-            try:
-                profesor = self.profesores[int(num_profesor)]
-                if  profesor not in profesores_departamento:
-
-                    profesores_departamento.append(self.profesores[int(num_profesor)])
-
-
-                    if len(profesores_departamento) == len(self.profesores):
-                        print("No hay más profesores para añadir, continue con la creación del departamento.")
-                        break
-
-                else:
-                    print("El profesor ya se encuentra añadido, por favor seleccione otro.")
-            except (IndexError,TypeError,ValueError):
-                print("El número ingresado no corresponde a ningún profesor o no es valido, por favor ingrese uno correctamente")
-                
+                    
 
         print("\nLos cursos ya existentes son: ")
         for indice,curso in enumerate(self.cursos):
@@ -317,54 +295,84 @@ class Facultad:
         while True:
             
             numero_curso = input("Número de curso (FIN para terminar): ")
-
-            if numero_curso == "FIN" and cursos != []:
-                nuevo_departamento = Departamento(nombre_departamento,cursos,profesores_departamento,director=profesores_departamento[0])
-
-                self.departamentos_academicos.append(nuevo_departamento)
-
-                
-                for profesor in profesores_departamento:
-                    
-                    profesor.departamentos.append(nuevo_departamento)
-                
-                print(f"¡Se ha creado el departamento {nuevo_departamento.nombre_departamento} correctamente!")
-
-                print("Ahora, los departamentos académicos dentro de la facultad son: ")
-                for dep in self.listar_departamentos():
-                    print(dep)
-                break
                 
             try:
-                    
-                    curso = self.cursos[int(numero_curso)]
-                    if curso not in cursos:
-                            
-                        cursos.append(curso)
-
-                        print(f"¡¡Se ha añadido el curso {self.cursos[int(numero_curso)].nombre_curso} al departamento!!")
-
-                        if len(cursos) == len(self.cursos):
-
-                            print("Ya añadió la cantidad máxima de cursos.")
-
-                            nuevo_departamento = Departamento(nombre_departamento,cursos,profesores_departamento,director=profesores_departamento[0])
-
-                            self.departamentos_academicos.append(nuevo_departamento)
-
-
-                            print(f"¡Se ha creado el departamento {nuevo_departamento.nombre_departamento} correctamente!")
-
-                            print("Ahora, los departamentos académicos dentro de la facultad son: ")
-                            for dep in self.listar_departamentos():
-                                print(dep)
-                            break
-
+                
+                curso = self.cursos[int(numero_curso)]
+                if curso not in cursos:
                         
-                    else:
-                        print("El curso ya se encuentra en el departamento, por favor ingrese otro.")
+                    cursos.append(curso)
+                    profesores_departamento.extend(curso.profesores_curso) #se añaden los profesores del curso al departamento
+
+                    if len(cursos) == len(self.cursos):
+
+                        print("Ya añadió la cantidad máxima de cursos.")
+                        break
+
+                else:
+                    print("El curso ya se encuentra en el departamento, por favor ingrese otro.")
+
+            
             except (ValueError,IndexError):
                 print("EL número ingresado no es válido o no corresponde a ningun curso")
+
+
+        print("Los profesores que por ahora integran el departamento son: ")
+
+        for profesor in profesores_departamento:
+            print(f"{profesor.nombre}")
+
+        print("\nLos profesores que no se encuentran en este departamento son: ")
+
+        for indice,profesor in enumerate(self.profesores):
+            if profesor not in profesores_departamento:
+                print(f"{indice}:{profesor.nombre}")
+
+        print("\nSi desea añadir algún profesor más al departamento, ingrese el número que le corresponde, sino ingrese FIN.")
+        while True:
+
+            num_profesor = input("Numero Profesor: ").strip()
+
+            if num_profesor == "FIN":
+                break
+            try:
+                profesor = self.profesores[int(num_profesor)]
+
+                if len(profesores_departamento) == len(self.profesores):
+                    print("No hay más profesores para añadir")
+                    break
+
+                if profesor not in profesores_departamento:
+                    profesores_departamento.append(self.profesores[int(num_profesor)])
+
+                else:
+                    print("El profesor ya se encuentra añadido, por favor seleccione otro.")
+            except (IndexError,TypeError,ValueError):
+                print("El número ingresado no corresponde a ningún profesor o no es valido, por favor ingrese uno correctamente")
+
+
+        print("Por último seleccione quien será el director del departamento")
+        
+        for indice,profesor in enumerate(profesores_departamento):
+            print(f"{indice}:{profesor.nombre}")
+
+        while True:
+            num_director = input("Número Director: ")
+            try:
+                
+                director = profesores_departamento[int(num_director)]
+                director.director_departamento = nombre_departamento
+
+                nuevo_departamento = Departamento(nombre=nombre_departamento, lista_cursos= [curso for curso in cursos], lista_profesores=[profesor for profesor in profesores_departamento],director=director)
+                
+                self.departamentos_academicos.append(nuevo_departamento)
+                
+                print(f"Se ha creado correctamente el departamento {nombre_departamento}.")
+
+                break
+            except(ValueError,IndexError):
+                print("Ingrese un número válido que corresponda a un profesor")
+
 
 
 if __name__ == "__main__":

@@ -13,7 +13,13 @@ class Curso:
 
         self.__titular = [titular]
 
-    
+        for profesor in profesores_curso:
+             profesor.cursos.append(self)
+
+        for estudiante in self.estudiantes_curso:
+             estudiante.cursos.append(self)
+
+             
     @property
     def titular(self):
          return self.__titular

@@ -9,34 +9,33 @@ RUTA_estudiantes = "TrabajoPractico_2/proyecto_2.1/data/Estudiantes.txt"
 
 RUTA_profesores =  "TrabajoPractico_2/proyecto_2.1/data/Profesores.txt"
 #Se define una facultad por defecto con algunos estudiantes y profesores, ademas de 1 curso y departamento
-fac_ejemplo = Facultad("FIUNER","OROVERDE")
 
 informacion_estudiantes = leer_archivo_txt(RUTA_estudiantes)
 
 informacion_profesores = leer_archivo_txt(RUTA_profesores)
 
+lista_estudiantes = []
+lista_profesores = []
+
 for estudiante in informacion_estudiantes:
 
     estudiante = Estudiante(nombre=estudiante[0],dni=estudiante[1])
 
-    fac_ejemplo.añadir_estudiantes(estudiante)
+    lista_estudiantes.append(estudiante)
 
-for p_profesor in informacion_profesores:
+for profesor in informacion_profesores:
 
-    profesor = Profesor(nombre=p_profesor[0],dni=p_profesor[1],cursos=[],departamentos=[],facultades=[fac_ejemplo])
+    profesor = Profesor(nombre = profesor[0],dni = profesor[1],cursos=[],departamentos=[],facultades=[])
 
-    fac_ejemplo.contratar_profesor(profesor)
-    
-curso_programacion = Curso("programacion",[profesor for profesor in fac_ejemplo.profesores],[estudiante for estudiante in fac_ejemplo.estudiantes],titular=fac_ejemplo.profesores[3])
+    lista_profesores.append(profesor)
 
-departamento = Departamento("Computación",lista_cursos=[curso_programacion],lista_profesores=[fac_ejemplo.profesores[0],fac_ejemplo.profesores[1]],director=fac_ejemplo.profesores[0])
+curso_programacion = Curso("programacion",[lista_profesores[2],lista_profesores[0]],estudiantes_curso= [lista_estudiantes[1],lista_estudiantes[2]],titular=lista_profesores[2])
 
-fac_ejemplo.departamentos_academicos.append(departamento)
+departamento = Departamento("Computación",lista_cursos=[curso_programacion],lista_profesores=lista_profesores,director=lista_profesores[0])
 
-fac_ejemplo.cursos.append(curso_programacion)
+fac_ejemplo = Facultad("FIUNER","OROVERDE",departamentos_académicos=[departamento])
 
 print("##########################################\n#  Sistema de Información Universitaria  #\n##########################################")
-
 
 while True:
     

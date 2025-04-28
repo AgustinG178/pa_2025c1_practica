@@ -129,7 +129,7 @@ class Cajon:
 class CintaTransportadora:
     def __init__(self, alimentos):
         """
-        Inicializa la cinta transportadora con un sensor.
+        Inicializa la cinta transportadora con alimentos.
 
         Args:
             sensor (Sensor): Instancia de la clase Sensor.
