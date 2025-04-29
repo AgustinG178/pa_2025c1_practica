@@ -7,7 +7,6 @@ import coverage
 import logging
 from unittest.mock import patch
 
-
 logger = logging.getLogger("modules.cinta_transportadora")
 
 class TestCintaTransportadora(unittest.TestCase):
