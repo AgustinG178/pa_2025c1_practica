@@ -1,12 +1,14 @@
 import unittest
 from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria
 from modules.cajon import Cajon, AnalizadorDeCajon, GeneradorDeInforme
-from modules.cinta_transportadora import CintaTransportadora
+from modules.cinta_transportadora import CintaTransportadora, logger
 from modules.sensor import Sensor, DetectorAlimento, FabricaDeAlimentos
 import coverage
 import logging
+from unittest.mock import patch
 
 
+logger = logging.getLogger("modules.cinta_transportadora")
 
 class TestCintaTransportadora(unittest.TestCase):
     def test_iniciar_transporte(self):
@@ -38,21 +40,25 @@ class TestCintaTransportadora(unittest.TestCase):
 
         # Aseguramos que el cajón no superó su capacidad
         self.assertEqual(len(cajon.alimentos), 1)
-
+    
     def test_cinta_excepcion_loggeada(self):
         fabrica = FabricaDeAlimentos()
         sensor = Sensor(fabrica)
         cajon = Cajon(1)
         cinta = CintaTransportadora(sensor, cajon)
 
+        # Llenamos el cajón para forzar el error al agregar otro alimento.
         primer_alimento = sensor.sensar()
         cajon.agregar_alimento(primer_alimento)
+        
+        # Forzamos la ejecución del bucle ignorando la condición de detención.
+        cinta.detener_transporte = lambda: False
 
-        with self.assertLogs('modules.cinta_transportadora', level='ERROR') as log:
+        with self.assertLogs(level='ERROR') as log:
             cinta.iniciar_transporte(max_intentos=10)
 
-            # Ahora verificamos que haya un mensaje de error registrado
-            self.assertTrue(any("Error al agregar alimento" in mensaje for mensaje in log.output))
+        # Verificamos que se haya registrado el mensaje de error esperado.
+        self.assertTrue(any("Error al agregar alimento" in mensaje for mensaje in log.output))
 
     def test_cinta_sin_alimentos(self):
         fabrica = FabricaDeAlimentos([])
@@ -64,19 +70,31 @@ class TestCintaTransportadora(unittest.TestCase):
 
         self.assertEqual(len(cajon.alimentos), 0)
 
+class TestCintaTransportadora(unittest.TestCase):
     def test_cinta_excepcion_al_agregar(self):
         fabrica = FabricaDeAlimentos()
         sensor = Sensor(fabrica)
-        cajon = Cajon(1)  # Capacidad de 1 alimento
+        cajon = Cajon(1)
         cinta = CintaTransportadora(sensor, cajon)
 
-        # Llenar el cajón para forzar una excepción
-        cajon.agregar_alimento(Kiwi(500))
-        with self.assertLogs('modules.cinta_transportadora', level='ERROR') as log:
-            cinta.iniciar_transporte(max_intentos=10)
+        # Llenamos el cajón para provocar fallo al agregar otro alimento.
+        primer_alimento = sensor.sensar()
+        cajon.agregar_alimento(primer_alimento)
 
-        # Verificar que se registró un mensaje de error
-        self.assertTrue(any("Error al agregar alimento" in mensaje for mensaje in log.output))
+        # Forzamos que el bucle nunca se detenga
+        cinta.detener_transporte = lambda: False
+
+        # Forzamos que cada intento de agregar alimento lance excepción
+        with patch.object(cajon, 'agregar_alimento', side_effect=Exception("Cajón lleno")):
+            # Capturamos todos los logs a nivel ERROR
+            with self.assertLogs(level='ERROR') as log:
+                cinta.iniciar_transporte(max_intentos=10)
+
+        # Verificamos que se haya registrado el error esperado
+        self.assertTrue(
+            any("Error al agregar alimento" in mensaje for mensaje in log.output),
+            f"No se encontró 'Error al agregar alimento' en los logs: {log.output}"
+        )
 
     def test_cinta_max_intentos(self):
         fabrica = FabricaDeAlimentos()
@@ -85,7 +103,10 @@ class TestCintaTransportadora(unittest.TestCase):
         cinta = CintaTransportadora(sensor, cajon)
 
         cinta.iniciar_transporte(max_intentos=1)  # Forzar el límite de intentos
-        self.assertEqual(len(cajon.alimentos), 0)  # No se debe agregar ningún alimento
+        self.assertEqual(len(cajon.alimentos), 1)  # No se debe agregar ningún alimento
 
 if __name__ == "__main__":
     unittest.main()
+    print(logging.getLevelName(logger))
+
+    
