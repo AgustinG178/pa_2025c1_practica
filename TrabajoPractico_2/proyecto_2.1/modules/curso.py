@@ -13,6 +13,8 @@ class Curso:
 
         self.__titular = [titular]
 
+        profesores_curso[0].titular_cursos.append(self)
+
         for profesor in profesores_curso:
              profesor.cursos.append(self)
 

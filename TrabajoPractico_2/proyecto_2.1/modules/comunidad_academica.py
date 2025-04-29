@@ -61,16 +61,3 @@ class Profesor(Persona):
     def mostrar_departamentos (self):
 
         return[departamento for departamento in self.departamentos]
-
-if __name__ == "__main__":
-    prof1 = Profesor("Lucas", 485,["Matematica","Quimica"],["Fisico Química"],["FIUNER","FIQ"])
-
-    print(f"Cargos iniciales: {prof1.cargos}")
-    prof1.cargos ="Matematica"
-    """
-    prof1.mostrar_cargos muestra el atributo privado cargos relacionado al profesor, prof1.mostrar_cargos = "matematica"
-    es un setter, define el cargo (en este caso lo añade a la lista de campos)
-    """
-    print(f"Cargos actuales: {prof1.cargos}")
-
-    print(prof1.mostrar_informacion())

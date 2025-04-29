@@ -126,6 +126,7 @@ while True:
             fac_ejemplo.crear_departamento()
 
             print("Departamentos hasta el momento: ")
+
             for depto_academico in fac_ejemplo.departamentos_academicos:
                 print(depto_academico.nombre_departamento)
 
@@ -137,6 +138,11 @@ while True:
 
             fac_ejemplo.agregar_estudiante_a_curso()
 
+        elif int(opcion_usuario) == 6:
+            break
+
     except ValueError:
     
         print("Ingrese un número válido de opción: ")
+
+
