@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from modules.cinta_transportadora import CintaTransportadora, Cajon, Controlador
+from modules.verduleria import CintaTransportadora, Cajon, FabricaDeAlimentos, Sensor, AnalizadorDeCajon, GeneradorDeInforme
 
 app = Flask(__name__)
 
@@ -10,28 +10,30 @@ def iniciar():
 
     if request.method == "POST":
         try:
+            # Obtener el número total de alimentos deseados desde el formulario
             total_alimentos_deseados = int(request.form["total_alimentos"])
         except (KeyError, ValueError):
             return "Error: Datos no válidos o no proporcionados.", 400
 
-        # La capacidad del cajón será igual a la cantidad total de alimentos deseados
+        # Configurar la capacidad del cajón
         capacidad = total_alimentos_deseados
 
-        cinta = CintaTransportadora(None)
+        # Crear los objetos necesarios
+        fabrica = FabricaDeAlimentos()
+        sensor = Sensor(fabrica)
         cajon = Cajon(capacidad)
-        controlador = Controlador(cinta, cajon, total_alimentos_deseados)
+        cinta = CintaTransportadora(sensor, cajon)
 
-        controlador.iniciar_transporte()
-        metricas = controlador.calcular_metricas()
+        # Iniciar el transporte de alimentos
+        cinta.iniciar_transporte()
 
-        # Generar advertencias si alguna métrica supera 0.90
-        if metricas["aw_prom_frutas"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa promedio de las frutas supera 0.90, esto la hace suceptible a la proliferación de microorganismos, perjudiciales para la salud")
-        if metricas["aw_prom_verduras"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa promedio de las verduras supera 0.90, esto la hace suceptible a la proliferación de microorganismos perjudiciales para la salud")
-        if metricas["aw_total"] > 0.90:
-            advertencias.append("Advertencia: La actividad acuosa total supera 0.90, considere revisar la calidad de los alimentos de forma manual")
+        # Calcular las métricas del cajón
+        metricas = AnalizadorDeCajon.calcular_metricas(cajon)
 
+        # Generar el informe con advertencias
+        advertencias = GeneradorDeInforme.generar_advertencias(metricas)
+
+    # Renderizar la plantilla HTML con las métricas y advertencias
     return render_template("inicio.html", metricas=metricas, advertencias=advertencias)
 
 if __name__ == "__main__":

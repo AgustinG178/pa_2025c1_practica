@@ -1,3 +1,4 @@
 flask
-math
+matplotlib
 coverage
+numpy

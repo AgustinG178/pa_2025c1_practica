@@ -5,9 +5,9 @@ from modules.departamento import Departamento
 from modules.archivos import leer_archivo_txt
 
 
-RUTA_estudiantes = "TrabajoPractico_2/proyecto_2.1/data/Estudiantes.txt"
+RUTA_estudiantes = "data/Estudiantes.txt"
 
-RUTA_profesores =  "TrabajoPractico_2/proyecto_2.1/data/Profesores.txt"
+RUTA_profesores =  "data/Profesores.txt"
 #Se define una facultad por defecto con algunos estudiantes y profesores, ademas de 1 curso y departamento
 
 informacion_estudiantes = leer_archivo_txt(RUTA_estudiantes)
