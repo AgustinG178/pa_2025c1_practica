@@ -29,7 +29,7 @@ class AnalizadorDeCajon:
         aw_total = sum(alimento.aw for alimento in cajon) / len(cajon)
 
         return {
-            "peso_total": round((sum(alimento.peso for alimento in cajon)) / 1000, 2),
+            "peso_total": round((sum(alimento.peso for alimento in cajon)), 2),
             "aw_prom_frutas": round(aw_prom_frutas, 2),
             "aw_prom_verduras": round(aw_prom_verduras, 2),
             "aw_total": round(aw_total, 2)
@@ -56,7 +56,7 @@ class GeneradorDeInforme:
         return advertencias
     
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
 
     cajon = Cajon(2)  # Capacidad de 2 alimentos
     cajon.agregar_alimento(Kiwi(500))

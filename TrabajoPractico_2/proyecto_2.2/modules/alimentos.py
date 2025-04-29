@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod, abstractproperty
 from math import exp
+
 class Alimento(ABC):
     """
     Clase abstracta que representa un alimento.
