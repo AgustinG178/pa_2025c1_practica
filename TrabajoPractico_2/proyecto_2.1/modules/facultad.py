@@ -13,6 +13,10 @@ class Facultad:
 
         self.Direccion = Direccion
         
+<<<<<<< HEAD
+
+=======
+>>>>>>> 01f84d96f7fd04f08646f9461d08904e47519d4d
         self.departamentos_academicos = departamentos_académicos
         
         self.estudiantes = [estudiante for dpto in self.departamentos_academicos for curso in dpto.cursos for estudiante in curso.estudiantes_curso]
@@ -143,7 +147,8 @@ class Facultad:
 
                 break
             else:
-                nombre_curso = input("Nombre no válido, ingréselo nuevamente: ")
+                print("Nombre no válido, ingréselo nuevamente")
+                
 
         print("Seleccione el departamento en el cual se encontrará el curso ")
         for indice,departamento in enumerate(self.departamentos_academicos):
@@ -211,13 +216,6 @@ class Facultad:
                 curso_nuevo = Curso(nombre_curso,profesores,estudiantes,profesores[0])
 
                 profesores[0].titular = curso_nuevo
-
-                for estudiante in estudiantes:
-
-                    estudiante.cursos.append(curso_nuevo)
-                for profesor in profesores:
-
-                    profesor.cursos.append(curso_nuevo)
 
                 self.agregar_curso(curso=curso_nuevo)
 
@@ -375,7 +373,7 @@ class Facultad:
 
 if __name__ == "__main__":
 
-    
+    """
     fac1 = Facultad("fiuner","oro verde")
     prof2 = Profesor("María", 789, [],[], [fac1])
     fac1.contratar_profesor(prof2)
@@ -397,3 +395,5 @@ if __name__ == "__main__":
     departamento = Departamento("Computación",cursos=[curso_programacion],profesores_departamento=[prof2,prof3,prof4])
     print(estudiante1.mostrar_informacion())
     print(prof2.mostrar_informacion())
+""" 
+    
