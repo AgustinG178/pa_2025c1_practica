@@ -29,6 +29,9 @@ retorne siempre el valor 0, en lugar de un resultado aleatorio.
 
 class TestDetectorAlimento(unittest.TestCase):
     def test_valores_iniciales(self):
+        """
+        Verificamos que los valores iniciales de DetectorAlimento sean correctos.
+        """
         detector = DetectorAlimento()
 
         alimentos = ["kiwi", "manzana", "papa", "zanahoria", "undefined"]
@@ -55,8 +58,6 @@ class TestDetectorAlimento(unittest.TestCase):
             places=2
         )
 
-class TestDetectorAlimento(unittest.TestCase):
-
     def test_detectar_alimento_diferente(self):
         """
         Forzamos un índice distinto (por ejemplo, 3) y que el peso devuelto sea el último de la lista,
@@ -66,8 +67,8 @@ class TestDetectorAlimento(unittest.TestCase):
         with patch('modules.sensor.DetectorAlimento.random.randint', return_value = index):
             with patch('modules.sensor.DetectorAlimento.random.choices', return_value=[self.detector.peso_alimentos[-1]]):
                 resultado = self.detector.detectar_alimento()
-        self.assertEqual(resultado["alimento"], self.detector.alimentos[index], f"Se esperaba que el alimento fuera {self.detector.alimentos[index]} pero se obtuvo {resultado['alimento']}.")
-        self.assertEqual(resultado["peso"], self.detector.peso_alimentos[-1], f"Se esperaba que el peso fuera {self.detector.peso_alimentos[-1]} pero se obtuvo {resultado['peso']}.")
+        self.assertEqual(resultado["alimento"], self.detector.alimentos[index])
+        self.assertEqual(resultado["peso"], self.detector.peso_alimentos[-1])
 
     def test_detectar_alimento_validacion(self):
         """
@@ -76,14 +77,15 @@ class TestDetectorAlimento(unittest.TestCase):
         """
         self.detector = DetectorAlimento()
         resultado = self.detector.detectar_alimento()
-        self.assertIsInstance(resultado, dict, "El resultado debe ser un diccionario.")
-        self.assertIn(resultado.get("alimento"), self.detector.alimentos,
-                      "El alimento retornado no pertenece a la lista esperada.")
-        self.assertIn(resultado.get("peso"), self.detector.peso_alimentos,
-                      "El peso retornado no es uno de los valores esperados.")
+        self.assertIsInstance(resultado, dict)
+        self.assertIn(resultado.get("alimento"), self.detector.alimentos)
+        self.assertIn(resultado.get("peso"), self.detector.peso_alimentos)
 
 class TestSensor(unittest.TestCase):
     def test_sensor_detectar_alimento(self):
+        """
+        Verificamos que el sensor detecte un alimento válido y que el peso esté dentro del rango esperado.
+        """
         fabrica = FabricaDeAlimentos(p_alimento_detectado="Manzana")
         sensor = Sensor(fabrica)
         alimento = sensor.sensar()
@@ -91,6 +93,9 @@ class TestSensor(unittest.TestCase):
         self.assertIn(type(alimento), [Kiwi, Manzana, Papa, Zanahoria])
 
     def test_sensor_sin_alimentos(self):
+        """
+        Verificamos que el sensor retorne None si no hay alimentos disponibles en la fábrica.
+        """
         fabrica = FabricaDeAlimentos()
         fabrica.posibles_alimentos = []  # Vaciar la lista de alimentos
         sensor = Sensor(fabrica)
@@ -98,6 +103,9 @@ class TestSensor(unittest.TestCase):
         self.assertIsNone(alimento)
 
     def test_sensor_multiple_deteccion(self):
+        """
+        Verificamos que el sensor pueda detectar múltiples alimentos
+        """
         fabrica = FabricaDeAlimentos()
         sensor = Sensor(fabrica)
         alimentos = [sensor.sensar() for _ in range(5)]
@@ -106,6 +114,9 @@ class TestSensor(unittest.TestCase):
             self.assertIn(type(alimento), [Kiwi, Manzana, Papa, Zanahoria])
 
     def test_sensor_alimento_peso_valido(self):
+        """
+        Verificamos que el peso del alimento esté dentro de los límites establecidos.
+        """
         fabrica = FabricaDeAlimentos()
         sensor = Sensor(fabrica)
         with patch("modules.sensor.sensar", return_value = 160 ):
@@ -116,6 +127,9 @@ class TestSensor(unittest.TestCase):
         self.assertLessEqual(alimento2.peso, 599)   # Peso máximo en gramos
 
 class TestFabricaDeAlimentos(unittest.TestCase):
+    """
+    Testea la clase FabricaDeAlimentos y su método.
+    """
     def test_crear_alimento_random(self):
         fabrica = FabricaDeAlimentos(p_alimento_detectado="Manzana")
         alimento = fabrica.crear_alimento_random()
