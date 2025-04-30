@@ -10,16 +10,16 @@ class Alimento(ABC):
         self.tipo = tipo
         self.peso = peso # en gramos
     
-    @abstractmethod
+    @abstractmethod 
     def calcular_aw(self):
-        pass
+        pass #pragma: no cover
     
     @abstractproperty
     def aw(self):
         """
         Propiedad abstracta que calcula la actividad acuosa (aw) del alimento.
         """
-        return self.calcular_aw()
+        return self.calcular_aw() #pragma: no cover
     
     def __str__(self):
         return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg"
@@ -95,7 +95,7 @@ class Zanahoria(Verdura):
     def __str__(self):
         return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg (aw: {self.aw})"
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     kiwi = Kiwi(500)  # 500 gramos
     manzana = Manzana(300)  # 300 gramos
     papa = Papa(400)  # 400 gramos

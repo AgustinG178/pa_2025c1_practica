@@ -46,7 +46,7 @@ class FabricaDeAlimentos:
         self.p_alimento_detectado = p_alimento_detectado
 
     def crear_alimento_random(self):
-        if not self.posibles_alimentos:  # Si la lista está vacía, devolver None
+        if not self.posibles_alimentos:  # Si la lista está vacía, devuelve None
             return None
         if self.p_alimento_detectado:
             for alimento in self.posibles_alimentos:
@@ -63,7 +63,7 @@ class Sensor:
     def sensar(self):
         return self.fabrica.crear_alimento_random()
     
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     fabrica = FabricaDeAlimentos()
     alimento = fabrica.crear_alimento_random()
     print(f"Alimento generado: {alimento}")
