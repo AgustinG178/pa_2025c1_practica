@@ -287,12 +287,18 @@ class Facultad:
         while True:
             
             numero_curso = input("Número de curso (FIN para terminar): ")
-                
+
+            if numero_curso.upper() == "FIN" and cursos:
+                break
+            elif numero_curso.upper() == "FIN" and cursos == []:
+                print("Debe agregar al menos un curso en el departamento, ingrese nuevamente el número.")
+                continue
             try:
                 
                 curso = self.cursos[int(numero_curso)]
+
                 if curso not in cursos:
-                        
+                    
                     cursos.append(curso)
                     profesores_departamento.extend(curso.profesores_curso) #se añaden los profesores del curso al departamento
 
