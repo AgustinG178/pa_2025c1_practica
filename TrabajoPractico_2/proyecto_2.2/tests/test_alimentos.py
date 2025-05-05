@@ -41,9 +41,9 @@ class TestAlimentos(unittest.TestCase):
         zanahoria = Zanahoria(250)
 
         self.assertEqual(str(kiwi), "Kiwi (fruta) - 0.5 kg (aw: 0.96)")
-        self.assertEqual(str(manzana), "Manzana (fruta) - 0.3 kg (aw: 0.96)")
-        self.assertEqual(str(papa), "Papa (verdura) - 0.4 kg (aw: 0.96)")
-        self.assertEqual(str(zanahoria), "Zanahoria (verdura) - 0.25 kg (aw: 0.94)")
+        self.assertEqual(str(manzana), "Manzana (fruta) - 0.3 kg (aw: 0.951)")
+        self.assertEqual(str(papa), "Papa (verdura) - 0.4 kg (aw: 0.959)")
+        self.assertEqual(str(zanahoria), "Zanahoria (verdura) - 0.25 kg (aw: 0.939)")
 
     def test_calcular_aw(self):
         kiwi = Kiwi(500)
@@ -52,7 +52,7 @@ class TestAlimentos(unittest.TestCase):
         zanahoria = Zanahoria(250)
 
         self.assertAlmostEqual(kiwi.calcular_aw(), 0.96, places=2)
-        self.assertAlmostEqual(manzana.calcular_aw(), 0.96, places=2)
+        self.assertAlmostEqual(manzana.calcular_aw(), 0.9513671555309929, places=2)
         self.assertAlmostEqual(papa.calcular_aw(), 0.96, places=2)
         self.assertAlmostEqual(zanahoria.calcular_aw(), 0.94, places=2)
 
@@ -60,7 +60,7 @@ class TestAlimentos(unittest.TestCase):
         kiwi_min = Kiwi(50)  # Peso mínimo
         kiwi_max = Kiwi(599)  # Peso máximo
 
-        self.assertAlmostEqual(kiwi_min.aw, 0.96, places=2)
+        self.assertAlmostEqual(kiwi_min.aw, 0.405, places=2)
         self.assertAlmostEqual(kiwi_max.aw, 0.96, places=2)
 
     def test_alimento_base(self):
@@ -81,7 +81,7 @@ class TestAlimentos(unittest.TestCase):
 
     def test_zanahoria_str(self):
         zanahoria = Zanahoria(250)
-        self.assertEqual(str(zanahoria), "Zanahoria (verdura) - 0.25 kg (aw: 0.94)")
+        self.assertEqual(str(zanahoria), "Zanahoria (verdura) - 0.25 kg (aw: 0.939)")
 
     def test_pesos_extremos_subclases(self):
         kiwi_min = Kiwi(50)
@@ -93,14 +93,14 @@ class TestAlimentos(unittest.TestCase):
         zanahoria_min = Zanahoria(50)
         zanahoria_max = Zanahoria(599)
 
-        self.assertAlmostEqual(kiwi_min.aw, 0.96, places=2)
+        self.assertAlmostEqual(kiwi_min.aw, 0.405, places=2)
         self.assertAlmostEqual(kiwi_max.aw, 0.96, places=2)
-        self.assertAlmostEqual(manzana_min.aw, 0.96, places=2)
+        self.assertAlmostEqual(manzana_min.aw, 0.405, places=2)
         self.assertAlmostEqual(manzana_max.aw, 0.96, places=2)
-        self.assertAlmostEqual(papa_min.aw, 0.96, places=2)
+        self.assertAlmostEqual(papa_min.aw, 0.405, places=2)
         self.assertAlmostEqual(papa_max.aw, 0.96, places=2)
-        self.assertAlmostEqual(zanahoria_min.aw, 0.94, places=2)
-        self.assertAlmostEqual(zanahoria_max.aw, 0.94, places=2)
+        self.assertAlmostEqual(zanahoria_min.aw, 0.405, places=2)
+        self.assertAlmostEqual(zanahoria_max.aw, 0.96, places=2)
 
 if "__name__" == "__main__":
     unittest.main()

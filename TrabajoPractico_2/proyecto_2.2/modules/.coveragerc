@@ -1,0 +1,32 @@
+; Coverage configuration file for coverage.py.
+
+<coveragercfile>
+
+[run]
+    branch = True
+    source = modules
+[report]
+omit =
+
+    */config.py/*
+    */tests/*  
+    */__init__.py/*
+    */__pycache__/*
+    */venv/*  
+    */.venv/*  
+    */.git/*  
+    */.vscode/*  
+    */.pytest_cache/* 
+    */test_alimentos/*  
+    */test_cajon/*  
+    */test_sensor/*  
+    */test_cintatransportadora/*
+    */tests\__init__.py/*                  
+    */tests\test_alimentos.py/*                
+    */tests\test_cajon.py/*                    
+    */tests\test_cintatransportadora.py/*      
+    */tests\test_sensor.py             
+    
+[html]
+    directory = coverage_html_report
+    

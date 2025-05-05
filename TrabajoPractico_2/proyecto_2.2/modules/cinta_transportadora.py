@@ -8,8 +8,7 @@ El módulo `logging` permite rastrear eventos en el código, como errores, adver
 y es útil para depuración y monitoreo de aplicaciones.
 """
 
-logger = logging.getLogger(__name__)
-
+logger = logging.getLogger("modules.cinta_transportadora") # Crea un logger para este módulo
 
 class CintaTransportadora:
     def __init__(self, sensor, cajon):
