@@ -16,7 +16,6 @@ niveles (DEBUG, INFO, WARNING, ERROR, CRITICAL) y es útil para detectar fallos,
 y generar informes detallados sin interrumpir el flujo del programa.
 """
 
-
 logger = logging.getLogger("modules.cinta_transportadora")
 
 class TestCintaTransportadora(unittest.TestCase):

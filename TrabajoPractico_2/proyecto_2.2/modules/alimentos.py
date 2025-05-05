@@ -24,13 +24,13 @@ class Alimento(ABC):
     def __str__(self):
         return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg"
 
-class Fruta(Alimento):
+class Fruta(Alimento, ABC):
     """
     Clase hija que representa una fruta.
     """
     pass
 
-class Verdura(Alimento):
+class Verdura(Alimento, ABC):
     """
     Clase hija que representa una verdura.
     """
