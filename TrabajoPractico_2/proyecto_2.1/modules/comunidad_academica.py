@@ -1,5 +1,6 @@
+import abc
 
-class Persona:
+class Persona(abc.ABC):
     """ clase padre de Estudiante y Profesor """
     def __init__(self, nombre:str, dni:int):
 
@@ -45,7 +46,6 @@ class Profesor(Persona):
         self.facultades = facultades
 
         self.departamentos = departamentos
-
 
     def mostrar_informacion(self) ->str:
 

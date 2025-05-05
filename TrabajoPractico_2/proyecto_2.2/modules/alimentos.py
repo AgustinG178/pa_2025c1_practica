@@ -97,11 +97,15 @@ class Zanahoria(Verdura):
 
 if __name__ == "__main__": #pragma: no cover
     kiwi = Kiwi(500)  # 500 gramos
+    kiwi2 = Kiwi(300)
+    kiwi3 = Kiwi(100)
     manzana = Manzana(300)  # 300 gramos
     papa = Papa(400)  # 400 gramos
     zanahoria = Zanahoria(250)  # 250 gramos
 
     print(kiwi)
+    print(kiwi2)
+    print(kiwi3)    
     print(manzana)
     print(papa)
     print(zanahoria)

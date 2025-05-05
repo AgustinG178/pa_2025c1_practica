@@ -1,6 +1,7 @@
 from modules.comunidad_academica import Profesor, Estudiante
 from modules.departamento import Departamento
 from modules.curso import Curso
+import sys
 
 class Facultad:
     def __init__(self, Nombre:str , Direccion:str, departamentos_académicos:list[object:Departamento]):
@@ -95,7 +96,7 @@ class Facultad:
                 print("Ingrese nuevamente el número del estudiante, verifique que sea correcto")
 
 
-        print("Los cursos que se brindan en la facultad son:")
+        print("Los cursos que se brindan en la facultad son(si quiere cancelar ingrese 'FIN'):")
 
         for indice,curso in enumerate(self.cursos):
             print(f"{indice}: {curso.nombre_curso}")
@@ -103,16 +104,22 @@ class Facultad:
         while True:
             num_curso = input("Numero curso: ")
             try:
-                curso = self.cursos[indice]
-                if estudiante_seleccionado not in curso.estudiantes_curso:
-                    curso.agregar_estudiante(estudiante_seleccionado) #se añade al curso el estudiante
-                    estudiante_seleccionado.cursos.append(curso)
-
-                    print(f"¡¡Se ha añadido correctamente el estudiante {estudiante_seleccionado.nombre} al curso {curso.nombre_curso}!!")
-                    break
+                if num_curso == "FIN":
+                
+                    sys.exit("Se ha cancelado la creación del curso. Porfavor reinicie el programa.")
+                
                 else:
-                    print("El estudiante ya se encuentra en el curso")
-                    break
+                 
+                    curso = self.cursos[indice]
+                    if estudiante_seleccionado not in curso.estudiantes_curso:
+                        curso.agregar_estudiante(estudiante_seleccionado) #se añade al curso el estudiante
+                        estudiante_seleccionado.cursos.append(curso)
+
+                        print(f"¡¡Se ha añadido correctamente el estudiante {estudiante_seleccionado.nombre} al curso {curso.nombre_curso}!!")
+                        break
+                    else:
+                        print("El estudiante ya se encuentra en el curso")
+                        break
             except (ValueError,IndexError):
                 print("Ingrese un número valido: ")
      
@@ -146,17 +153,23 @@ class Facultad:
                 print("Nombre no válido, ingréselo nuevamente")
                 
 
-        print("Seleccione el departamento en el cual se encontrará el curso ")
+        print("Seleccione el departamento en el cual se encontrará el curso(Si quiere cancelar introduzca 'FIN'): ")
         for indice,departamento in enumerate(self.departamentos_academicos):
             print(f"{indice}:{departamento.nombre_departamento}")
-
+                
         while True:
             num_departamento = input("Ingrese el número del departamento: ")
 
+
             try:
-                int(num_departamento)
-                dep_academico = self.departamentos_academicos[int(num_departamento)]
-                break
+                if num_departamento == "FIN":
+                
+                    sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")        
+                else: 
+                    
+                    int(num_departamento)
+                    dep_academico = self.departamentos_academicos[int(num_departamento)]
+                    break
 
             except (ValueError,IndexError):
                 print("Ingrese un número válido o que corresponda al departamente seleccionado")
@@ -275,9 +288,12 @@ class Facultad:
         cursos = []
 
 
-        nombre_departamento = input("Ingrese el nombre del departamento académico: ")
-                    
-
+        nombre_departamento = input("Ingrese el nombre del departamento académico(En caso de cancelar seleccione 'FIN') : " )
+            
+        if nombre_departamento == "FIN":
+                
+            sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")
+                
         print("\nLos cursos ya existentes son: ")
         for indice,curso in enumerate(self.cursos):
             print(f"{indice}:{curso.nombre_curso}")
@@ -289,7 +305,10 @@ class Facultad:
             numero_curso = input("Número de curso (FIN para terminar): ")
                 
             try:
+                if numero_curso == "FIN":
                 
+                    sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")
+            
                 curso = self.cursos[int(numero_curso)]
                 if curso not in cursos:
                         

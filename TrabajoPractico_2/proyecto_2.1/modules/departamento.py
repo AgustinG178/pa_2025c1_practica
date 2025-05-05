@@ -1,5 +1,6 @@
 from modules.curso import Curso
 from modules.comunidad_academica import Profesor
+
 class  Departamento:
     def __init__(self,nombre:str,lista_cursos:list[object], lista_profesores:list[object], director:object):
         """

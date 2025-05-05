@@ -20,11 +20,12 @@ class Curso:
 
         for estudiante in self.estudiantes_curso:
              estudiante.cursos.append(self)
-
-             
+         
     @property
+    
     def titular(self):
          return self.__titular
+
     @titular.setter
     
     def titular(self,p_profesor):

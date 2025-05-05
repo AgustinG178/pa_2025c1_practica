@@ -3,11 +3,12 @@ from modules.facultad import Facultad
 from modules.curso import Curso
 from modules.departamento import Departamento
 from modules.archivos import leer_archivo_txt
+import sys
 
 
-RUTA_estudiantes = "TrabajoPractico_2/proyecto_2.1/data/Estudiantes.txt"
+RUTA_estudiantes = "data/Estudiantes.txt"
 
-RUTA_profesores =  "TrabajoPractico_2/proyecto_2.1/data/Profesores.txt"
+RUTA_profesores =  "data/Profesores.txt"
 #Se define una facultad por defecto con algunos estudiantes y profesores, ademas de 1 curso y departamento
 
 informacion_estudiantes = leer_archivo_txt(RUTA_estudiantes)
@@ -58,10 +59,13 @@ while True:
         if int(opcion_usuario) == 1:
             while True:
                 
-                nombre_estudiante = input("Indique el nombre del alumno: ")
+                nombre_estudiante = input("Indique el nombre del alumno(en caso de querer cancelar seleccione 'FIN'): ")
+
+                if nombre_estudiante == "FIN":
+                    
+                    sys.exit("Se ha cancelado la inscripción del estudiante. Por favor reinicie el programa.")
 
                 dni = input("Indique el DNI: ")
-
 
                 try:
                     int(dni)
@@ -80,7 +84,11 @@ while True:
 
             while True:
 
-                nombre_profesor = input("Indique el nombre del profesor: ")
+                nombre_profesor = input("Indique el nombre del profesor(si quiere cancelar la accion introduzca 'FIN'): ")
+
+                if nombre_profesor == "FIN":
+                
+                    sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")
 
                 dni_profesor = input ("Indique el DNI del profesor: ")
 
@@ -90,7 +98,6 @@ while True:
                     print(f"{indice}:{departamento.nombre_departamento}")
 
                 num_departamento = input("Seleccione el departamento académico al cual se agregará el profesor: ")
-
                 
                 try:
                     int(dni_profesor)
@@ -102,16 +109,18 @@ while True:
                     
                         print(f"{indice}:{curso.nombre_curso}")
 
-                    curso_seleccionado = input("Ingrese el número del curso en el cual el profesor dará clases: ")
-
+                    curso_seleccionado = input("Ingrese el número del curso en el cual el profesor dará clases(para cancelar introduzca 'FIN'): ")
+                    
+                    if curso_seleccionado == "FIN":
+                
+                        sys.exit("Se ha cancelado la agregacion del profesor al sistema. Porfavor reinicie el programa.")
+                
                     try:
                         int(curso_seleccionado)
 
                         profesor = Profesor(nombre=nombre_profesor , dni=dni_profesor , cursos = [curso_seleccionado], departamentos= [fac_ejemplo.departamentos_academicos[int(num_departamento)]],facultades=[fac_ejemplo])
 
                         fac_ejemplo.contratar_profesor(profesor)
-
-                    
 
                         break
                     except (ValueError,IndexError):
