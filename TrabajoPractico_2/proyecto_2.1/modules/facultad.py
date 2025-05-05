@@ -82,7 +82,6 @@ class Facultad:
         Se añade un estudiante al curso que seleccione el usuario
         """
 
-
         print("La lista de estudiantes hasta el momento es")
         for indice,estudiante in enumerate(self.estudiantes):
             print(f"{indice}: {estudiante.nombre}")
