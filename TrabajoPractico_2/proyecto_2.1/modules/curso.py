@@ -11,7 +11,7 @@ class Curso:
 
         self.estudiantes_curso = estudiantes_curso
 
-        self.__titular = [titular]
+        self.titular = [titular]
 
         profesores_curso[0].titular_cursos.append(self)
 

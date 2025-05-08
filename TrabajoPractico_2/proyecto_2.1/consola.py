@@ -6,9 +6,9 @@ from modules.archivos import leer_archivo_txt
 import sys
 
 
-RUTA_estudiantes = "data/Estudiantes.txt"
+RUTA_estudiantes = "TrabajoPractico_2/proyecto_2.1/data/Estudiantes.txt"
 
-RUTA_profesores =  "data/Profesores.txt"
+RUTA_profesores =  "TrabajoPractico_2/proyecto_2.1/data/Profesores.txt"
 #Se define una facultad por defecto con algunos estudiantes y profesores, ademas de 1 curso y departamento
 
 informacion_estudiantes = leer_archivo_txt(RUTA_estudiantes)
@@ -132,20 +132,319 @@ while True:
 
         elif int(opcion_usuario) == 3:
 
-            fac_ejemplo.crear_departamento()
+                        
+            """
+            Se crea un departamento académico con todos los elementos que contiene, 
+            la creación es interactiva con el usuario que lo crea.
+            """
 
-            print("Departamentos hasta el momento: ")
+            profesores_departamento = []
+            cursos = []
 
-            for depto_academico in fac_ejemplo.departamentos_academicos:
-                print(depto_academico.nombre_departamento)
+
+            nombre_departamento = input("Ingrese el nombre del departamento académico(En caso de cancelar seleccione 'FIN') : " )
+                
+            if nombre_departamento == "FIN":
+                    
+                sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")
+                    
+            print("\nLos cursos ya existentes son: ")
+            for indice,curso in enumerate(fac_ejemplo.cursos):
+                print(f"{indice}:{curso.nombre_curso}")
+
+            print("\n Seleccione los cursos que se encontrarán en el departamento, si ya finalizo ingresen FIN: ")
+
+            while True:
+                
+                numero_curso = input("Número de curso (FIN para terminar): ")
+
+                if numero_curso.upper() == "FIN" and cursos:
+                    break
+                elif numero_curso.upper() == "FIN" and cursos == []:
+                    print("Debe agregar al menos un curso en el departamento, ingrese nuevamente el número.")
+                    continue
+                try:
+                    if numero_curso == "FIN":
+                    
+                        sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")
+                
+                    curso = fac_ejemplo.cursos[int(numero_curso)]
+
+                    if curso not in cursos:
+                        
+                        cursos.append(curso)
+                        profesores_departamento.extend(curso.profesores_curso) #se añaden los profesores del curso al departamento
+
+                        if len(cursos) == len(fac_ejemplo.cursos):
+
+                            print("Ya añadió la cantidad máxima de cursos.")
+                            break
+
+                    else:
+                        print("El curso ya se encuentra en el departamento, por favor ingrese otro.")
+
+                
+                except (ValueError,IndexError):
+                    print("EL número ingresado no es válido o no corresponde a ningun curso")
+
+
+            print("Los profesores que por ahora integran el departamento son: ")
+
+            for profesor in profesores_departamento:
+                print(f"{profesor.nombre}")
+
+            print("\nLos profesores que no se encuentran en este departamento son: ")
+
+            for indice,profesor in enumerate(fac_ejemplo.profesores):
+                if profesor not in profesores_departamento:
+                    print(f"{indice}:{profesor.nombre}")
+
+            print("\nSi desea añadir algún profesor más al departamento, ingrese el número que le corresponde, sino ingrese FIN.")
+            while True:
+
+                num_profesor = input("Numero Profesor: ").strip()
+
+                if num_profesor == "FIN":
+                    break
+                try:
+                    profesor = fac_ejemplo.profesores[int(num_profesor)]
+
+                    if len(profesores_departamento) == len(fac_ejemplo.profesores):
+                        print("No hay más profesores para añadir")
+                        break
+
+                    if profesor not in profesores_departamento:
+                        profesores_departamento.append(fac_ejemplo.profesores[int(num_profesor)])
+
+                    else:
+                        print("El profesor ya se encuentra añadido, por favor seleccione otro.")
+                except (IndexError,TypeError,ValueError):
+                    print("El número ingresado no corresponde a ningún profesor o no es valido, por favor ingrese uno correctamente")
+
+
+            print("Por último seleccione quien será el director del departamento")
+            
+            for indice,profesor in enumerate(profesores_departamento):
+                print(f"{indice}:{profesor.nombre}")
+
+            while True:
+                num_director = input("Número Director: ")
+                try:
+                    
+                    director = profesores_departamento[int(num_director)]
+                    director.director_departamento = nombre_departamento
+
+                    nuevo_departamento = Departamento(nombre=nombre_departamento, lista_cursos= [curso for curso in cursos], lista_profesores=[profesor for profesor in profesores_departamento],director=director)
+                    
+                    fac_ejemplo.agregar_departamento(nuevo_departamento)
+                    
+                    print(f"Se ha creado correctamente el departamento {nombre_departamento}.")
+                    print("Departamentos hasta el momento: ")
+
+                    for depto_academico in fac_ejemplo.departamentos_academicos:
+                        print(depto_academico.nombre_departamento)
+
+                    break
+                except(ValueError,IndexError):
+                    print("Ingrese un número válido que corresponda a un profesor")
+
+
+                
 
         elif int(opcion_usuario) == 4:
 
-            fac_ejemplo.crear_curso()
+            estudiantes = []
+            profesores = []
 
+            while True:
+
+                nombre_curso = input("Introduzca el nombre del curso (No vacio): ")
+
+                if nombre_curso != "":
+
+                    break
+                else:
+                    print("Nombre no válido, ingréselo nuevamente")
+                    
+
+            print("Seleccione el departamento en el cual se encontrará el curso(Si quiere cancelar introduzca 'FIN'): ")
+            for indice,departamento in enumerate(fac_ejemplo.departamentos_academicos):
+                print(f"{indice}:{departamento.nombre_departamento}")
+                    
+            while True:
+                num_departamento = input("Ingrese el número del departamento: ")
+
+
+                try:
+                    if num_departamento == "FIN":
+                    
+                        sys.exit("Se ha cancelado la creación del departamento académico. Porfavor reinicie el programa.")        
+                    else: 
+                        
+                        int(num_departamento)
+                        dep_academico = fac_ejemplo.departamentos_academicos[int(num_departamento)]
+                        break
+
+                except (ValueError,IndexError):
+                    print("Ingrese un número válido o que corresponda al departamente seleccionado")
+            print("La lista de estudiantes hasta el momento es:")
+
+            for indice,estudiante in enumerate(fac_ejemplo.estudiantes):
+                print(f"{indice}: {estudiante.nombre}")
+
+            print("Ingrese los estudiantes que integren el curso, debe haber al menos un estudiante, escriba FIN para terminar la seleccion")
+
+            while True:
+
+                num_estudiante = input("Numero estudiante (FIN para terminar): ")
+
+                if num_estudiante == "FIN" and estudiantes:
+                    break
+                
+                elif num_estudiante == "FIN" and not estudiantes:
+
+                    print("No se añadió ningún estudiante al curso, por favor agregue al menos uno.")
+                    continue
+
+                try:
+                    indice = int(num_estudiante)
+                    if fac_ejemplo.estudiantes[indice] not in estudiantes:
+
+                        estudiantes.append(fac_ejemplo.estudiantes[indice])
+
+                        if len(estudiantes) == len(fac_ejemplo.estudiantes):
+                            print("Ya se añadieron todos los estudiantes de la facultad al curso, continue con la creación.")
+                            break
+                    else:
+                        print("El estudiante ya se encuentra en el curso, seleccione otro")
+
+                except (ValueError,IndexError):
+                        print("El número ingresado no corresponde a ningún estudiante o no es válido, ingrese otro.")
+
+
+            print("La lista de profesores hasta el momento es:")
+
+            for indice,profesor in enumerate(fac_ejemplo.profesores):
+                print(f"{indice}:{profesor.nombre}")
+
+            print("Ingrese el número del profesor a seleccionar, el primero que ingrese será el que estará a cargo del curso.")
+                
+            while True:
+
+                num_profesor = input("Número profesor(FIN para terminar): ").strip()
+                
+                if num_profesor == "FIN" and profesores:
+
+
+                    curso_nuevo = Curso(nombre_curso,profesores,estudiantes,profesores[0])
+
+                    profesores[0].titular = curso_nuevo
+
+                    #Se actualizan los cursos de estudiantes y profesores
+                    map(lambda x: x.cursos.append(curso_nuevo),estudiantes)
+
+                    map(lambda x: x.cursos.append(curso_nuevo),profesores)
+
+
+                    # Se añaden los profesores del curso al departamento
+                    dep_academico.profesores_departamento.extend(curso_nuevo.profesores_curso)
+
+                    fac_ejemplo.agregar_curso(curso=curso_nuevo)
+
+                    dep_academico.agregar_curso(curso_nuevo)
+
+                    print(f"¡Se ha creado el curso {curso_nuevo.nombre_curso} correctamente!")
+
+                    print(f"Los cursos que se dictarán ahora en el departamento {dep_academico.nombre_departamento} son :")
+                    for p_curso in dep_academico.mostrar_cursos():
+
+                        print(p_curso)
+                    break
+
+                elif num_profesor == "FIN" and not profesores:
+                    print("No se añadió ningún profesor al curso, agregue al menos uno.")
+                    continue
+
+                else:
+
+                    try:
+
+                        profesor = fac_ejemplo.profesores[int(num_profesor)]
+
+                        if  profesor not in profesores:
+                            
+                            profesores.append(fac_ejemplo.profesores[int(num_profesor)])
+
+                            if len(profesores) == len(fac_ejemplo.profesores):
+                                print("No hay más profesores para añadir.")
+
+                                curso_nuevo = Curso(nombre_curso,profesores,estudiantes,profesores[0])
+
+                                profesores[0].titular = curso_nuevo.nombre_curso
+
+                                map(lambda x: x.cursos.append(curso_nuevo),estudiantes)
+
+                                map(lambda x: x.cursos.append(curso_nuevo),profesores)
+
+                                dep_academico.cursos.append(curso_nuevo)
+                                dep_academico.profesores_departamento.extend(curso_nuevo.profesores_curso)
+
+                                fac_ejemplo.agregar_curso(curso=curso_nuevo)
+                                print(f"¡Se ha creado el curso {curso_nuevo.nombre_curso} correctamente!")
+
+                                print(f"Los cursos que se dictarán ahora en el departamento {dep_academico.nombre_departamento} son :")
+                                for p_curso in dep_academico.mostrar_cursos():
+
+                                    print(p_curso)
+                                break
+
+                        else:
+                            print("El profesor ya se encuentra añadido, por favor seleccione otro.")
+                    except (IndexError,ValueError):
+                        print("El número ingresado no corresponde a ningún profesor o no es valido , por favor ingrese uno correctamente")
+            
         elif int(opcion_usuario) == 5:
 
-            fac_ejemplo.agregar_estudiante_a_curso()
+            print("La lista de estudiantes hasta el momento es")
+            for indice,estudiante in enumerate(fac_ejemplo.estudiantes):
+                print(f"{indice}: {estudiante.nombre}")
+
+            while True:
+                indice_estudiante = input("Numero estudiante: ")
+                try:
+                    estudiante_seleccionado = fac_ejemplo.estudiantes[int(indice_estudiante)]
+                    break
+                except(ValueError,IndexError):
+                    print("Ingrese nuevamente el número del estudiante, verifique que sea correcto")
+
+
+            print("Los cursos que se brindan en la facultad son(si quiere cancelar ingrese 'FIN'):")
+
+            for indice,curso in enumerate(fac_ejemplo.cursos):
+                print(f"{indice}: {curso.nombre_curso}")
+
+            while True:
+                num_curso = input("Numero curso: ")
+                try:
+                    if num_curso == "FIN":
+                    
+                        sys.exit("Se ha cancelado la selección del curso. Porfavor reinicie el programa.")
+                    
+                    else:
+                    
+                        curso = fac_ejemplo.cursos[indice]
+                        if estudiante_seleccionado not in curso.estudiantes_curso:
+                            curso.agregar_estudiante(estudiante_seleccionado) #se añade al curso el estudiante
+
+                            fac_ejemplo.agregar_estudiante_a_curso(curso,estudiante_seleccionado)
+                            print("Se ha añadido correctamente el estudiante al curso.")
+                            break
+                        else:
+                            print("El estudiante ya se encuentra en el curso")
+                            break
+                except (ValueError,IndexError):
+                    print("Ingrese un número valido: ")
+        
 
         elif int(opcion_usuario) == 6:
             break
