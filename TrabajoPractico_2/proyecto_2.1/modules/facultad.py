@@ -10,41 +10,59 @@ class Facultad:
         La clase facultad describirá el nombre, dirección y número de contacto, asi como la lista de estudiantes, profesores, departamentos y cursos que se brinden en la misma
 
         """
-        self.Nombre = Nombre
+        self.__Nombre = Nombre
 
-        self.Direccion = Direccion
+        self.__Direccion = Direccion
         
-        self.departamentos_academicos = departamentos_académicos
+        self.__departamentosacademicos = departamentos_académicos
         
-        self.estudiantes = [estudiante for dpto in self.departamentos_academicos for curso in dpto.cursos for estudiante in curso.estudiantes_curso]
+        self.__estudiantes = [estudiante for dpto in self.__departamentosacademicos for curso in dpto.mostrar_cursos for estudiante in curso.estudiantes]
         
-        self.profesores = [profesor for dpto in self.departamentos_academicos for profesor in dpto.profesores_departamento]
+        self.__profesores = [profesor for dpto in self.__departamentosacademicos for profesor in dpto.listar_profesores]
 
-        self.cursos = [curso for dpto in self.departamentos_academicos for curso in dpto.cursos]
+        self.__cursos = [curso for dpto in self.__departamentosacademicos for curso in dpto.mostrar_cursos]
 
-
-    def listar_estudiantes (self):
-        """
-        Se muestran todos los estudiantes inscriptos en la facultad hasta el momento.
-        """
-
-        return [p_estudiante.nombre for p_estudiante in self.estudiantes]
-    
-    def listar_profesores (self):
-
-        """
-        Se muestran todos los profesores contratados por la facultad hasta el momento.
-        """
-
-        return [profesor.nombre for profesor in self.profesores]
-
+    @property
+    def nombre(self):
+        return self.__Nombre
+    @property
     def listar_departamentos(self):
             
             """
         Se muestran todos los departamentos académicos que existen en la facultad hasta el momento.
             """
 
-            return [departamento.nombre_departamento for departamento in self.departamentos_academicos]
+            return [departamento for departamento in self.__departamentosacademicos]
+    @property
+    def listar_cursos(self):
+        """
+        Se muestran todos los cursos que existen en la facultad hasta el momento.
+        """
+
+        return [curso for curso in self.__cursos]
+    
+    @listar_cursos.setter
+    def listar_cursos(self,p_curso:Curso):
+        self.__cursos.append(p_curso)
+        
+        return f"Se ha añadido correctamente el curso: {p_curso.nombre_curso} a la facultad"
+    @property
+    def listar_estudiantes (self):
+        """
+        Se muestran todos los estudiantes inscriptos en la facultad hasta el momento.
+        """
+
+        return [p_estudiante for p_estudiante in self.__estudiantes]
+    @property
+    def listar_profesores (self):
+
+        """
+        Se muestran todos los profesores contratados por la facultad hasta el momento.
+        """
+
+        return [profesor for profesor in self.__profesores]
+
+   
 
     def añadir_estudiantes(self, *estudiantes:object):
 
@@ -59,9 +77,9 @@ class Facultad:
                 print(f"El estudiante {p_estudiante} no es una instancia de la clase Estudiante, no será agregado a la facultad")
 
             else:
-                self.estudiantes.append(p_estudiante)
+                self.__estudiantes.append(p_estudiante)
                 p_estudiante.facultades.append(self)
-                print(f"Se a añadido el estudiante {p_estudiante.nombre} a la facultad correctamente.")
+                print(f"Se a añadido el estudiante {p_estudiante.get_nombre} a la facultad correctamente.")
 
     def contratar_profesor(self, p_profesor:object):
         """
@@ -72,7 +90,7 @@ class Facultad:
 
             raise TypeError("El profesor debe ser la instancia de una clase (objeto)")
 
-        self.profesores.append(p_profesor)
+        self.__estudiantes.append(p_profesor)
         p_profesor.facultades.append(self)
         print(f"¡El profesor {p_profesor.nombre} ha sido contratado correctamente!")
 
@@ -84,15 +102,15 @@ class Facultad:
 
         if isinstance(p_curso,Curso) and isinstance(p_estudiante,Estudiante):
 
-            p_estudiante.cursos.append(p_curso)
-            return f"Se ha añadido correctamente el estudiante {p_estudiante} al curso {p_curso}"
+            p_estudiante.cursos = p_curso
+            return f"Se ha añadido correctamente el estudiante {p_estudiante.get_nombre} al curso {p_curso.nombre_curso}"
         raise TypeError("El curso y el estudiante han de ser ambos objetos de su correspondiente clase.")
     def agregar_curso(self,curso:object):
 
         if isinstance(curso,Curso):
 
-            self.cursos.append(curso)
-            return f"Se ha añadido correctamente el curso: {curso.nombre_curso} a la facultad"
+            self.listar_cursos.append(curso)
+            
         
         else:
             raise TypeError("El curso debe ser un objeto")
@@ -103,9 +121,8 @@ class Facultad:
         if not isinstance(p_departamento,Departamento):
             raise TypeError(f"El parámetro {p_departamento} no es una instancia de la clase Departamento")
         
-        self.departamentos_academicos.append(p_departamento)
+        self.__departamentosacademicos.append(p_departamento)
         return f"Se ha añadido correctamente el departamento {p_departamento.nombre_departamento} a la facultad."
-
 
 
 if __name__ == "__main__":
