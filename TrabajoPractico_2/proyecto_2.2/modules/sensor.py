@@ -42,8 +42,15 @@ class FabricaDeAlimentos:
     
     """
     def __init__(self, p_alimento_detectado=None):
-        self.posibles_alimentos = [Kiwi, Manzana, Papa, Zanahoria]
-        self.p_alimento_detectado = p_alimento_detectado
+        self.__posibles_alimentos = [Kiwi, Manzana, Papa, Zanahoria]
+        self.__p_alimento_detectado = p_alimento_detectado
+
+    @property
+    def posibles_alimentos(self):
+        return self.__posibles_alimentos
+    
+    def posibles_alimentos(self, posibles_alimentos):
+        self.__posibles_alimentos = posibles_alimentos
 
     def crear_alimento_random(self):
         if not self.posibles_alimentos:  # Si la lista está vacía, devuelve None
@@ -58,7 +65,11 @@ class FabricaDeAlimentos:
 
 class Sensor:
     def __init__(self, fabrica):
-        self.fabrica = fabrica
+        self.__fabrica = fabrica
+
+    @property
+    def fabrica(self):
+        return self.__fabrica
 
     def sensar(self):
         return self.fabrica.crear_alimento_random()

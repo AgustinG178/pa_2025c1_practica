@@ -6,9 +6,9 @@ class Alimento(ABC):
     Clase abstracta que representa un alimento.
     """
     def __init__(self, nombre, tipo, peso):
-        self.nombre = nombre
-        self.tipo = tipo
-        self.peso = peso # en gramos
+        self.__nombre = nombre
+        self.__tipo = tipo
+        self.__peso = peso # en gramos
     
     @abstractmethod 
     def calcular_aw(self):
@@ -23,6 +23,18 @@ class Alimento(ABC):
     
     def __str__(self):
         return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg"
+
+    @abstractproperty
+    def nombre(self):
+        return self.__nombre
+    
+    @abstractproperty
+    def tipo(self): 
+        return self.__tipo
+    
+    @abstractproperty
+    def peso(self):
+        return self.__peso
 
 class Fruta(Alimento, ABC):
     """

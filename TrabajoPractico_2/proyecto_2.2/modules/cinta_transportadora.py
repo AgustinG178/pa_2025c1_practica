@@ -12,8 +12,16 @@ logger = logging.getLogger("modules.cinta_transportadora") # Crea un logger para
 
 class CintaTransportadora:
     def __init__(self, sensor, cajon):
-        self.sensor = sensor
-        self.cajon = cajon
+        self.__sensor = sensor
+        self.__cajon = cajon
+
+    @property
+    def sensor(self):
+        return self.__sensor
+    
+    @property
+    def cajon(self):
+        return self.__cajon
 
     def iniciar_transporte(self, max_intentos=1000):
         intentos = 0

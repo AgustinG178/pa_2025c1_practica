@@ -137,6 +137,5 @@ class TestFabricaDeAlimentos(unittest.TestCase):
         self.assertGreaterEqual(alimento.peso, 0.05)  # Peso mínimo en kg
         self.assertLessEqual(alimento.peso, 0.599)  # Peso máximo en kg
 
-
 if __name__ == "__main__":
     unittest.main()
