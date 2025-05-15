@@ -1,5 +1,4 @@
-from modules.curso import Curso
-from modules.comunidad_academica import Profesor
+
 
 class  Departamento:
     def __init__(self,nombre:str,lista_cursos:list[object], lista_profesores:list[object], director:object):
@@ -8,40 +7,65 @@ class  Departamento:
         La clase recibe como parámetro el nombre del departamento, el director que le corresponde,
         los profesores que dan clases y los cursos que se dictan en este.
         """
-        self.nombre_departamento = nombre
+        self.__nombre_departamento = nombre
 
-        self.cursos = lista_cursos
+        self.__cursos = lista_cursos
 
-        self.profesores_departamento = lista_profesores 
+        self.__profesores_departamento = lista_profesores 
 
-        self.director = [director]
+        self.__director = [director]
+
         
-
-        for profesor in self.profesores_departamento:
-            profesor.departamentos.append(self)
-        
-    def agregar_curso(self, p_curso:object):
-        if not isinstance(p_curso,Curso):
-
-            return "El curso que se desea añadir no es una instancia de la clase Curso"
-       
-        self.cursos.append(p_curso)
-       
-        print(f"Se ha añadido correctamente el curso {p_curso.nombre_curso} al departamento {self.nombre_departamento}")
+    @property
+    def nombre_departamento(self):
+        return self.__nombre_departamento
     
+   
+    @property
+    
+    def listar_cursos(self):
+        
+        """
+        Se muestran todos los cursos que existen en el departamento hasta el momento.
+        """
+        return [curso for curso in self.__cursos]
+    @listar_cursos.setter
+    
+    def listar_cursos(self,p_curso):
+        from modules.curso import Curso
+        if isinstance(p_curso,Curso):
+            self.__cursos.append(p_curso)
+    @property
+    def listar_profesores (self):
+        from modules.comunidad_academica import Profesor
+        """
+        Se muestran todos los profesores que dan clases en el departamento hasta el momento.
+        """
+        return [profesor for profesor in self.__profesores_departamento]
+    
+    @listar_profesores.setter
+
+    def listar_profesores (self,p_profesor):
+        if p_profesor not in self.__profesores_departamento:
+         
+         self.__profesores_departamento.append(p_profesor)
+    @property
+    def director(self):
+        """
+        Se muestra el director del departamento
+        """
+        return self.__director[0]
+    
+    @director.setter
+    def director(self,director_p):
+        self.__director[0] == director_p
+
+    @property
     def mostrar_cursos(self):
-        return[curso.nombre_curso for curso in self.cursos]
-    
-    def nombrar_director(self,p_profesor:object):
-        if not isinstance(p_profesor,Profesor):
-
-            return "El profesor no es una instancia de la clase Profesor"
-        
-        self.director[0] = p_profesor
-        print(f"Se ha nombrado correctamente al profesor {p_profesor.nombre} como director del departamento")
+        return[curso for curso in self.__cursos]
 
 if __name__ == "__main__":
-    # Ejemplo de uso de la clase Departamento
+    """# Ejemplo de uso de la clase Departamento
     profesor1 = Profesor("Juan Pérez", [], [], [], [])
     profesor2 = Profesor("Ana Gómez", [], [], [], [])
     curso1 = Curso("Matemáticas", [profesor1], [], [])
@@ -57,7 +81,7 @@ if __name__ == "__main__":
     print(departamento.mostrar_cursos())
     departamento.agregar_curso(curso2)
     print(departamento.mostrar_cursos())
-    departamento.nombrar_director(profesor2)
+    departamento.nombrar_director(profesor2)"""
 
 
 
