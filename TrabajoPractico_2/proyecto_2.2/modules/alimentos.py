@@ -6,13 +6,19 @@ class Alimento(ABC):
     Clase abstracta que representa un alimento.
     """
     def __init__(self, nombre, tipo, peso):
-        self.__nombre = nombre
-        self.__tipo = tipo
-        self.__peso = peso # en gramos
+        self._nombre = nombre
+        self._peso = peso # en gramos
     
     @abstractmethod 
     def calcular_aw(self):
         pass #pragma: no cover
+    
+    @abstractproperty
+    def peso(self):
+        """
+        Propiedad abstracta que devuelve el peso del alimento.
+        """
+        return self._peso
     
     @abstractproperty
     def aw(self):
@@ -22,27 +28,15 @@ class Alimento(ABC):
         return self.calcular_aw() #pragma: no cover
     
     def __str__(self):
-        return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg"
+        return f"{self._nombre.capitalize()} - {self._peso} kg"
 
-    @abstractproperty
-    def nombre(self):
-        return self.__nombre
-    
-    @abstractproperty
-    def tipo(self): 
-        return self.__tipo
-    
-    @abstractproperty
-    def peso(self):
-        return self.__peso
-
-class Fruta(Alimento, ABC):
+class Fruta(Alimento):
     """
     Clase hija que representa una fruta.
     """
     pass
 
-class Verdura(Alimento, ABC):
+class Verdura(Alimento):
     """
     Clase hija que representa una verdura.
     """
@@ -53,29 +47,36 @@ class Kiwi(Fruta):
         super().__init__("kiwi", "fruta", peso / 1000)
 
     def calcular_aw(self):
-        return 0.96 * (1 - exp(-18 * self.peso)) / (1 + exp(-18 * self.peso))
+        return 0.96 * (1 - exp(-18 * self._peso)) / (1 + exp(-18 * self._peso))
 
     @property
     def aw(self):
         return round(self.calcular_aw(), 3)
     
     def __str__(self):
-        return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg (aw: {self.aw})"
-
-
+        return f"{self._nombre.capitalize()} - {self._peso} kg (aw: {self.aw})"
+    
+    @property
+    def peso(self):
+        return self._peso
+  
 class Manzana(Fruta):
     def __init__(self, peso):
         super().__init__("manzana", "fruta", peso / 1000)
 
     def calcular_aw(self):
-        return 0.96 * (1 - exp(-18 * self.peso)) / (1 + exp(-18 * self.peso))
+        return 0.96 * (1 - exp(-18 * self._peso)) / (1 + exp(-18 * self._peso))
 
     @property
     def aw(self):
         return round(self.calcular_aw(), 3)
     
+    @property
+    def peso(self):
+        return self._peso
+    
     def __str__(self):
-        return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg (aw: {self.aw})"
+        return f"{self._nombre.capitalize()} - {self._peso} kg (aw: {self.aw})"
 
 
 class Papa(Verdura):
@@ -83,14 +84,18 @@ class Papa(Verdura):
         super().__init__("papa", "verdura", peso / 1000)
 
     def calcular_aw(self):
-        return 0.96 * (1 - exp(-18 * self.peso)) / (1 + exp(-18 * self.peso))
+        return 0.96 * (1 - exp(-18 * self._peso)) / (1 + exp(-18 * self._peso))
 
     @property
     def aw(self):
         return round(self.calcular_aw(), 3)
     
+    @property
+    def peso(self):
+        return self._peso
+    
     def __str__(self):
-        return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg (aw: {self.aw})"
+        return f"{self._nombre.capitalize()} - {self._peso} kg (aw: {self.aw})"
 
 
 class Zanahoria(Verdura):
@@ -98,14 +103,18 @@ class Zanahoria(Verdura):
         super().__init__("zanahoria", "verdura", peso / 1000)
 
     def calcular_aw(self):
-        return 0.96 * (1 - exp(-18 * self.peso)) / (1 + exp(-18 * self.peso))
+        return 0.96 * (1 - exp(-18 * self._peso)) / (1 + exp(-18 * self._peso))
 
     @property
     def aw(self):
         return round(self.calcular_aw(), 3)
     
+    @property
+    def peso(self):
+        return self._peso
+    
     def __str__(self):
-        return f"{self.nombre.capitalize()} ({self.tipo}) - {self.peso} kg (aw: {self.aw})"
+        return f"{self._nombre.capitalize()} - {self._peso} kg (aw: {self.aw})"
 
 if __name__ == "__main__": #pragma: no cover
     kiwi = Kiwi(500)  # 500 gramos

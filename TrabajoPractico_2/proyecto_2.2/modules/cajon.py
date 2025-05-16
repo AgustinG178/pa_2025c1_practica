@@ -1,4 +1,4 @@
-from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria
+from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria, Alimento, Fruta, Verdura
 from math import exp
 
 
@@ -7,8 +7,8 @@ class Cajon:
         self.__capacidad = capacidad
         self.__alimentos = []
         
-    def agregar_alimento(self, alimento):
-        if len(self.__alimentos) >= self.capacidad:
+    def agregar_alimento(self, alimento:Alimento):
+        if len(self.__alimentos) >= self.__capacidad:
             raise Exception("El cajón está lleno")
         self.__alimentos.append(alimento)
         
@@ -23,7 +23,7 @@ class Cajon:
         return len(self.__alimentos)
 
     def __str__(self):
-        return f"Cajón con capacidad para {self.capacidad} alimentos y contiene {len(self.__alimentos)} alimentos."
+        return f"Cajón con capacidad para {self.__capacidad} alimentos y contiene {len(self.__alimentos)} alimentos."
 
     @property
     def capacidad(self):
@@ -38,7 +38,7 @@ class Cajon:
     
 class AnalizadorDeCajon:
     @staticmethod
-    def calcular_metricas(cajon):
+    def calcular_metricas(cajon:Cajon):
         try:
             if cajon.capacidad == 0:
                     aw_prom_frutas = 0
@@ -50,8 +50,8 @@ class AnalizadorDeCajon:
                     aw_total = 0
             else:
                 
-                frutas = [alimento for alimento in cajon if alimento.tipo == "fruta"]
-                verduras = [alimento for alimento in cajon if alimento.tipo == "verdura"]
+                frutas = [alimento for alimento in cajon if isinstance(alimento, Fruta)]
+                verduras = [alimento for alimento in cajon if isinstance(alimento, Verdura)]
 
                 aw_prom_frutas = sum(alimento.aw for alimento in frutas) / len(frutas) if frutas else 0
             
