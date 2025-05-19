@@ -1,30 +1,44 @@
-from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria
+from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria, Alimento, Fruta, Verdura
 from math import exp
 
 
 class Cajon:
     def __init__(self, capacidad):
-        self.capacidad = capacidad
+        self.__capacidad = capacidad
         self.__alimentos = []
         
-    def agregar_alimento(self, alimento):
-        if len(self.__alimentos) >= self.capacidad:
+    def agregar_alimento(self, alimento:Alimento):
+        if len(self.__alimentos) >= self.__capacidad:
             raise Exception("El cajón está lleno")
         self.__alimentos.append(alimento)
         
+    #def __iter__(self):
+    #    return iter(self.__alimentos)
+    
     def __iter__(self):
-        return iter(self.__alimentos)
+        for alimento in self.__alimentos:
+            yield alimento
 
     def __len__(self):
         return len(self.__alimentos)
+
+    def __str__(self):
+        return f"Cajón con capacidad para {self.__capacidad} alimentos y contiene {len(self.__alimentos)} alimentos."
+
+    @property
+    def capacidad(self):
+        return self.__capacidad
 
     @property
     def alimentos(self):
         return self.__alimentos
     
+    def __getitem__(self, index):
+        return self.__alimentos[index]
+    
 class AnalizadorDeCajon:
     @staticmethod
-    def calcular_metricas(cajon):
+    def calcular_metricas(cajon:Cajon):
         try:
             if cajon.capacidad == 0:
                     aw_prom_frutas = 0
@@ -36,8 +50,8 @@ class AnalizadorDeCajon:
                     aw_total = 0
             else:
                 
-                frutas = [alimento for alimento in cajon if alimento.tipo == "fruta"]
-                verduras = [alimento for alimento in cajon if alimento.tipo == "verdura"]
+                frutas = [alimento for alimento in cajon if isinstance(alimento, Fruta)]
+                verduras = [alimento for alimento in cajon if isinstance(alimento, Verdura)]
 
                 aw_prom_frutas = sum(alimento.aw for alimento in frutas) / len(frutas) if frutas else 0
             
