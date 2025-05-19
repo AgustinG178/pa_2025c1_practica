@@ -1,17 +1,45 @@
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker
-from modules import Usuario, Reclamo  # Asegúrate de tener estos modelos definidos
+from sqlalchemy import create_engine, MetaData,  Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship
+from datetime import datetime
+from modules import usuarios, reclamo 
+from sqlalchemy.ext.declarative import declarative_base
+from modules.modelos import Base, Usuario, Reclamo
+
+"""Se encarga de la conexión, las sesiones y las operaciones CRUD (crear, leer, actualizar, borrar) usando los modelos. Es el "puente" entre la logica del programa y la base de datos."""
+
+"""El método query de SQLAlchemy se utiliza para realizar consultas a la base de datos y obtener objetos de tus modelos (tablas) de manera sencilla y orientada a objetos."""
+
+Base = declarative_base()
+
+class Usuario(Base):
+    __tablename__ = 'usuarios'
+    id = Column(Integer, primary_key=True)
+    nombre = Column(String)
+    apellido = Column(String)
+    email = Column(String, unique=True)
+    nombre_de_usuario = Column(String, unique=True)
+    contraseña = Column(String)
+
+    reclamos_creados = relationship("Reclamo", back_populates="usuario")
+
+class Reclamo(Base):
+    __tablename__ = 'reclamos'
+    id = Column(Integer, primary_key=True)
+    estado = Column(String)
+    fecha_hora = Column(DateTime, default=datetime.utcnow)
+    contenido = Column(String)
+    departamento = Column(String)
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+
+    usuario = relationship("Usuario", back_populates="reclamos_creados")
 
 class BaseDatos:
     def __init__(self, url_bd):
         """
-        Inicializa la conexión a la base de datos.
-        Args:
-            url_bd (str): URL de conexión a la base de datos.
+        Inicializa la conexión a la base de datos y crea las tablas si no existen.
         """
         self.engine = create_engine(url_bd)
-        self.metadata = MetaData()
-        self.metadata.reflect(bind=self.engine)
+        Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.session = None
 
@@ -24,8 +52,6 @@ class BaseDatos:
     def guardar_usuario(self, usuario):
         """
         Guarda un objeto Usuario en la base de datos.
-        Args:
-            usuario (Usuario): Instancia del modelo Usuario a guardar.
         """
         self.session.add(usuario)
         self.session.commit()
@@ -33,8 +59,6 @@ class BaseDatos:
     def guardar_reclamo(self, reclamo):
         """
         Guarda un objeto Reclamo en la base de datos.
-        Args:
-            reclamo (Reclamo): Instancia del modelo Reclamo a guardar.
         """
         self.session.add(reclamo)
         self.session.commit()
@@ -42,8 +66,6 @@ class BaseDatos:
     def actualizar_reclamo(self, reclamo):
         """
         Actualiza un objeto Reclamo existente en la base de datos.
-        Args:
-            reclamo (Reclamo): Instancia del modelo Reclamo a actualizar.
         """
         self.session.merge(reclamo)
         self.session.commit()
@@ -51,10 +73,6 @@ class BaseDatos:
     def obtener_reclamos(self, **filtros):
         """
         Obtiene una lista de reclamos aplicando filtros opcionales.
-        Args:
-            **filtros: Filtros opcionales como argumentos clave-valor.
-        Returns:
-            list: Lista de objetos Reclamo que cumplen con los filtros.
         """
         query = self.session.query(Reclamo)
         for attr, value in filtros.items():
