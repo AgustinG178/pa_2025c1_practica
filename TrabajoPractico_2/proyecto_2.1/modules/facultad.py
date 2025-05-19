@@ -123,31 +123,3 @@ class Facultad:
         
         self.__departamentosacademicos.append(p_departamento)
         return f"Se ha añadido correctamente el departamento {p_departamento.nombre_departamento} a la facultad."
-
-
-if __name__ == "__main__":
-
-    """
-    fac1 = Facultad("fiuner","oro verde")
-    prof2 = Profesor("María", 789, [],[], [fac1])
-    fac1.contratar_profesor(prof2)
-    prof3 = Profesor("Carlos", 321, [],[],[fac1])
-    fac1.contratar_profesor(prof3)
-    prof4 = Profesor("Ana", 655, [],[], [fac1])
-    fac1.contratar_profesor(prof4)
-
-    estudiante1 = Estudiante(nombre="María", dni="10111213")
-    estudiante2 = Estudiante(nombre="Juan", dni="14151617")
-    estudiante3 = Estudiante(nombre="Sofía", dni="18192021")
-
-    fac1.añadir_estudiantes(estudiante1,estudiante2,estudiante3)
-    curso_programacion = Curso("programacion",[prof2,prof3,prof4],[estudiante1,estudiante2,estudiante3],director=prof2)
-    fac1.agregar_curso(curso_programacion)
-    
-    fac1.crear_departamento()
-    fac1.crear_curso()
-    departamento = Departamento("Computación",cursos=[curso_programacion],profesores_departamento=[prof2,prof3,prof4])
-    print(estudiante1.mostrar_informacion())
-    print(prof2.mostrar_informacion())
-""" 
-    

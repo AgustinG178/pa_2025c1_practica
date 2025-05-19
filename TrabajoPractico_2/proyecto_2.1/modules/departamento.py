@@ -59,32 +59,12 @@ class  Departamento:
     @director.setter
     def director(self,director_p):
         self.__director[0] == director_p
+    
+    @property
 
     @property
     def mostrar_cursos(self):
         return[curso for curso in self.__cursos]
-
-if __name__ == "__main__":
-    """# Ejemplo de uso de la clase Departamento
-    profesor1 = Profesor("Juan Pérez", [], [], [], [])
-    profesor2 = Profesor("Ana Gómez", [], [], [], [])
-    curso1 = Curso("Matemáticas", [profesor1], [], [])
-    curso2 = Curso("Física", [profesor2], [], [])
-    
-    departamento = Departamento(
-        nombre="Ciencias Exactas",
-        lista_cursos=[curso1],
-        lista_profesores=[profesor1, profesor2],
-        director=profesor1
-    )
-    
-    print(departamento.mostrar_cursos())
-    departamento.agregar_curso(curso2)
-    print(departamento.mostrar_cursos())
-    departamento.nombrar_director(profesor2)"""
-
-
-
 
 
 

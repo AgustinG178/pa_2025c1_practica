@@ -196,7 +196,7 @@ while True:
             print("\nLos profesores que no se encuentran en este departamento son: ")
 
             for indice,profesor in enumerate(fac_ejemplo.listar_profesores):
-                if profesor not in profesores_departamento:
+                if profesor not in profesores_departamento and len(profesor.curso) == 1:
                     print(f"{indice}:{profesor.nombre}")
 
             print("\nSi desea añadir algún profesor más al departamento, ingrese el número que le corresponde, sino ingrese FIN.")
