@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from modules.BaseDeDatos import BaseDatos
-from modules import reclamo
+from modules import reclamos
 
 class Usuario(ABC):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
@@ -104,7 +104,7 @@ class SecretarioTecnico(Usuario):
         return base_datos.obtener_reclamos()
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,
@@ -149,7 +149,7 @@ class JefeDepartamento(Usuario):
         return base_datos.obtener_reclamos(departamento=self.departamento)
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,

@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplicación Flask</title>
+    <title>Sistema de Reclamos - FIUNER</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Bienvenido a mi Aplicación Flask</h1>
-    <p>Esta es la página de inicio.</p>
+    <h1>Sistema de Reclamos - FIUNER</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>
+            <li><a href="{{ url_for('iniciar_sesion') }}">Iniciar Sesión</a></li>
+            <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
+            <li><a href="{{ url_for('reclamos') }}">Mis Reclamos</a></li>
+
+        </ul>
+    </nav>
+    <hr>
+    <p>Bienvenido al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.</p>
 </body>
 </html>
