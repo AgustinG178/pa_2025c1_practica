@@ -67,7 +67,7 @@ class UsuarioFinal(Usuario):
         return base_datos.obtener_reclamos(usuario_id=self.nombre_de_usuario)
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,

@@ -10,9 +10,8 @@ from modules.BaseDeDatos import BaseDatos
 from modules.factoria import crear_repositorio
 
 admin_list = [1]
-repo_libro, repo_usuario = crear_repositorio()
-gestor_libros = GestorDeUsuarios(repo_libro)
-gestor_usuarios = GestorDeUsuarios(repo_usuario)
+repo_usuarios, repo_ = crear_repositorio()
+gestor_usuarios = GestorDeUsuarios(repo_usuarios)
 gestor_login = GestorDeLogin(gestor_usuarios, login_manager, admin_list)
 
 # Página de inicio
@@ -24,10 +23,20 @@ def index():
 def registrarse():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
         email = request.form.get('email')
+        nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
+        rol = request.form.get('rol')
         try:
-            gestor_usuarios.registrar_nuevo_usuario(nombre, email, password)
+            gestor_usuarios.registrar_nuevo_usuario(
+                nombre=nombre,
+                apellido=apellido,
+                email=email,
+                nombre_de_usuario=nombre_de_usuario,
+                password=password,
+                rol=rol
+            )
             flash('Usuario registrado exitosamente. Ahora puede iniciar sesión.', 'success')
             return redirect(url_for('iniciar_sesion'))
         except ValueError as e:
@@ -35,8 +44,18 @@ def registrarse():
             return render_template('registrarse.html')
     return render_template('registrarse.html')
 
-@app.route('/iniciar_sesion')
+@app.route('/iniciar_sesion', methods=['GET', 'POST'])
 def iniciar_sesion():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        usuario = gestor_usuarios.autenticar_usuario(email, password)
+        if usuario:
+            flash(f'Bienvenido, {usuario.nombre_de_usuario}!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Credenciales incorrectas. Intente nuevamente.', 'danger')
+            return render_template('login.html')
     return render_template('login.html')
     
 @app.route('/mis_reclamos')

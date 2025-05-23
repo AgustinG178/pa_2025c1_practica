@@ -7,11 +7,11 @@ class GestorDeUsuarios:
     def __init__(self, repo: RepositorioAbstracto):
         self.__repo = repo  
 
-    def registrar_nuevo_usuario(self, nombre, email, password):
+    def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol):
         if self.__repo.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
         pass_encriptada = generate_password_hash(password= password, method= 'pbkdf2:sha256', salt_length=8)
-        usuario = Usuario(None, nombre, email, pass_encriptada)
+        usuario = Usuario(None, nombre, apellido, email, nombre_de_usuario, password, rol)
         self.__repo.guardar_registro(usuario)
 
     def autenticar_usuario(self, email, password):
