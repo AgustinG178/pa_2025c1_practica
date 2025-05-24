@@ -1,8 +1,8 @@
-# Ejemplo de aplicación principal en Flask
 from flask import render_template, flash, request, redirect, url_for
 from flask import Flask
+from flask_login import login_user, login_required, current_user
 from modules.config import app, login_manager   
-from modules.usuarios import Usuario
+from modules.usuarios import Usuario, UsuarioFinal, JefeDepartamento, SecretarioTecnico, FlaskLoginUser
 from modules.registrar import GestorDeUsuarios
 from modules.login import GestorDeLogin
 from modules.repositorio import RepositorioAbstracto, RepositorioUsuariosSQLAlchemy
@@ -14,7 +14,6 @@ repo_usuarios, repo_ = crear_repositorio()
 gestor_usuarios = GestorDeUsuarios(repo_usuarios)
 gestor_login = GestorDeLogin(gestor_usuarios, login_manager, admin_list)
 
-# Página de inicio
 @app.route('/')
 def index():
     return render_template('inicio.html')
@@ -37,11 +36,12 @@ def registrarse():
                 password=password,
                 rol=rol
             )
-            flash('Usuario registrado exitosamente. Ahora puede iniciar sesión.', 'success')
+            flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
             return redirect(url_for('iniciar_sesion'))
         except ValueError as e:
             flash(str(e), 'danger')
             return render_template('registrarse.html')
+    # Para GET, mostrar el formulario de registro
     return render_template('registrarse.html')
 
 @app.route('/iniciar_sesion', methods=['GET', 'POST'])
@@ -49,22 +49,29 @@ def iniciar_sesion():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        usuario = gestor_usuarios.autenticar_usuario(email, password)
-        if usuario:
-            flash(f'Bienvenido, {usuario.nombre_de_usuario}!', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Credenciales incorrectas. Intente nuevamente.', 'danger')
-            return render_template('login.html')
-    return render_template('login.html')
+        try:
+            usuario = gestor_usuarios.autenticar_usuario(email, password)
+            from modules.login import FlaskLoginUser
+            login_user(FlaskLoginUser(usuario))
+            return redirect(url_for('inicio_usuario'))
+        except ValueError as e:
+            flash(str(e), 'danger')
+            return render_template('inicio_sesion.html')
+    # Para GET, mostrar el formulario de login
+    return render_template('inicio_sesion.html')
+
+@app.route('/inicio_usuario')
+@login_required
+def inicio_usuario():
+    return render_template('usuario_inicio.html', usuario=current_user)    
     
 @app.route('/mis_reclamos')
 def reclamos():
-    return render_template('reclamos.html')
+     return render_template('reclamos.html')
 
 @app.route('/crear_reclamos')
 def crear_reclamos():
-    return render_template('usuarios.html')
+     return render_template('usuarios.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

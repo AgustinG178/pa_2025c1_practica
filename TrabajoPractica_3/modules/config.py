@@ -28,3 +28,5 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 # Bootstrap
 Bootstrap(app)
+
+login_manager.login_view = 'iniciar_sesion'
