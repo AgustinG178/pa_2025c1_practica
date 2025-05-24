@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from modules.BaseDeDatos import BaseDatos
-from modules import reclamo
+from modules import reclamos
 
 class Usuario(ABC):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
@@ -52,7 +52,7 @@ class Usuario(ABC):
         pass
 
 class UsuarioFinal(Usuario):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol = "UsuarioFinal" ,**kwargs):
         super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
 
     def registrar(self, base_datos: BaseDatos):
@@ -67,7 +67,7 @@ class UsuarioFinal(Usuario):
         return base_datos.obtener_reclamos(usuario_id=self.nombre_de_usuario)
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,
@@ -86,7 +86,7 @@ class UsuarioFinal(Usuario):
         return False
 
 class SecretarioTecnico(Usuario):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña,rol = "SecretarioTecnico",  **kwargs):
         super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
 
     def registrar(self, base_datos: BaseDatos):
@@ -104,7 +104,7 @@ class SecretarioTecnico(Usuario):
         return base_datos.obtener_reclamos()
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,
@@ -131,7 +131,7 @@ class SecretarioTecnico(Usuario):
         return False
 
 class JefeDepartamento(Usuario):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol = "JefeDepartamento", **kwargs):
         super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
 
     def registrar(self, base_datos: BaseDatos):
@@ -149,7 +149,7 @@ class JefeDepartamento(Usuario):
         return base_datos.obtener_reclamos(departamento=self.departamento)
 
     def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamo(
+        nuevo_reclamo = reclamos(
             estado="pendiente",
             contenido=contenido,
             departamento=departamento,
@@ -175,5 +175,29 @@ class JefeDepartamento(Usuario):
         # Aquí iría la lógica para ver estadísticas/analítica
         pass
 
+class FlaskLoginUser:
+    def __init__(self, usuario_dict):
+        self.id = usuario_dict.get('id')
+        self.nombre = usuario_dict.get('nombre')
+        self.apellido = usuario_dict.get('apellido')
+        self.email = usuario_dict.get('email')
+        self.nombre_de_usuario = usuario_dict.get('nombre_de_usuario')
+        self.rol = usuario_dict.get('rol')
+        self.contraseña = usuario_dict.get('contraseña')
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 

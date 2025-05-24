@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData,  Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
-from modules import usuarios, reclamo 
+from modules import usuarios, reclamos 
 from sqlalchemy.ext.declarative import declarative_base
 from modules.modelos import Base, Usuario, Reclamo
 
