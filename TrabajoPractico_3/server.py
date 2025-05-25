@@ -1,3 +1,5 @@
+import flask
+print(dir(flask))
 from flask import render_template, flash, request, redirect, url_for
 from flask import Flask
 from flask_login import login_user, login_required, current_user
