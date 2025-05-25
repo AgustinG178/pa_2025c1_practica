@@ -7,6 +7,10 @@ class GestorDeUsuarios:
     def __init__(self, repo: RepositorioAbstracto):
         self.__repo = repo  
 
+    """
+    Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, auntenticar y cargar usuarios.
+    """
+
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol):
         if self.__repo.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")

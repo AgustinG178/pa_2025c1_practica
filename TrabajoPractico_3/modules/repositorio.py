@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from modules.modelos import Usuario, Reclamo
-
+from modules.config import crear_engine
 
 class RepositorioAbstracto(ABC):
     @abstractmethod
@@ -25,7 +25,7 @@ class RepositorioAbstracto(ABC):
 
 def crear_repositorio():
     session = crear_engine()
-    repo_libro =  RepositorioLibrosSQLAlchemy(session())
+    repo_libro =  RepositorioReclamosSQLAlchemy(session())
     repo_usuario = RepositorioUsuariosSQLAlchemy(session())
     return repo_libro, repo_usuario
 

@@ -156,6 +156,7 @@ class JefeDepartamento(Usuario):
             usuario_id=self.nombre_de_usuario
         )
         base_datos.guardar_reclamo(nuevo_reclamo)
+
         return nuevo_reclamo
 
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
@@ -167,9 +168,16 @@ class JefeDepartamento(Usuario):
                 return True
         return False
 
-    def manejar_reclamos(self, base_datos: BaseDatos):
-        # Lógica para manejar reclamos de su departamento
-        return base_datos.obtener_reclamos(departamento=self.departamento)
+    def manejar_reclamo(self,id_reclamo:int, base_datos: BaseDatos):
+
+        # Lógica para manejar un reclamo de su departamento, por el momento asumimos que se utilza solo para cambiar el estado a "resuelto"
+
+        reclamo = base_datos.obtener_reclamo_por_id(id_reclamo = id_reclamo)
+
+        reclamo.estado = "resuelto"
+
+        base_datos.actualizar_reclamo(reclamo)
+
 
     def ver_analitica(self, base_datos: BaseDatos):
         # Aquí iría la lógica para ver estadísticas/analítica
@@ -183,7 +191,7 @@ class FlaskLoginUser:
         self.email = usuario_dict.get('email')
         self.nombre_de_usuario = usuario_dict.get('nombre_de_usuario')
         self.rol = usuario_dict.get('rol')
-        self.contraseña = usuario_dict.get('contraseña')
+        self._contraseña = usuario_dict.get('contraseña')
 
     @property
     def is_authenticated(self):

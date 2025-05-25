@@ -1,5 +1,3 @@
-import flask
-print(dir(flask))
 from flask import render_template, flash, request, redirect, url_for
 from flask import Flask
 from flask_login import login_user, login_required, current_user
@@ -12,7 +10,7 @@ from modules.BaseDeDatos import BaseDatos
 from modules.factoria import crear_repositorio
 
 admin_list = [1]
-repo_usuarios, repo_ = crear_repositorio()
+repo_reclamos, repo_usuarios = crear_repositorio()
 gestor_usuarios = GestorDeUsuarios(repo_usuarios)
 gestor_login = GestorDeLogin(gestor_usuarios, login_manager, admin_list)
 

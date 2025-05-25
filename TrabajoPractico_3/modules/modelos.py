@@ -5,6 +5,7 @@ from datetime import datetime
 
 """define la estructura de las tablas y las relaciones"""
 
+#No deberíamos tener que poner todo en privado, o al menos la contraseña? Mas allá de que sean modelos?
 Base = declarative_base()
 
 class Usuario(Base):

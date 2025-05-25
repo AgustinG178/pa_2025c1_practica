@@ -30,7 +30,7 @@ class Reclamo(Base):
     contenido = Column(String)
     departamento = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-
+    claustro = Column(String)
     usuario = relationship("Usuario", back_populates="reclamos_creados")
 
 class BaseDatos:
@@ -78,3 +78,9 @@ class BaseDatos:
         for attr, value in filtros.items():
             query = query.filter(getattr(Reclamo, attr) == value)
         return query.all()
+    
+    def obtener_reclamo_por_id(self,reclamo_id):
+        """
+        Obtiene un reclamo por su ID.
+        """
+        return self.session.query(Reclamo).filter_by(id=reclamo_id)
