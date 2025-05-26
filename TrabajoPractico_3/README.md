@@ -36,9 +36,13 @@ El código está dividido en módulos para separar la lógica de usuarios, recla
 
 3. **Instalar las dependencias**:
 
-   1) ./venv/Scrpt/Activate
+   En la terminal escriba los siguientes comandos en orden:
 
-   2) pip install -r requirements.txt
+      1) ./venv/Scrpt/Activate
+
+            (para saber que se activo el entorno se visualizara al principio de la ruta de direccion un mensaje en verde que diga .venv)
+
+      2) pip install -r requirements.txt
 
    # El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.
 
