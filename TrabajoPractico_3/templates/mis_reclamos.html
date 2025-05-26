@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis reclamos</title>
+
+
+</head>
+<body>
+    <h1>Mis reclamos</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Fecha de creación</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reclamo in reclamos %}
+            <tr>
+                <td>{{ reclamo.id }}</td>
+                <td>{{ reclamo.descripcion }}</td>
+                <td>{{ reclamo.estado }}</td>
+                <td>{{ reclamo.fecha_creacion }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+</body>
+</html>
