@@ -56,7 +56,7 @@ El código está dividido en módulos para separar la lógica de usuarios, recla
 La aplicación permite a los usuarios registrarse e iniciar sesión para acceder a las funcionalidades según su rol. Una vez autenticados, pueden crear y visualizar reclamos, y los roles administrativos pueden gestionarlos.
 
 - **Ruta principal** (`/`): Muestra la página de inicio y acceso al sistema.
-- **(`login`)**: Permite a los usuarios iniciar sesión.
+- **(`/login`)**: Permite a los usuarios iniciar sesión.
 - **(`/register`)**: Permite a los nuevos usuarios registrarse.
 - **(`/reclamos`)**: Muestra el listado de reclamos del usuario autenticado.
 - **(`/reclamo/nuevo`)**: Permite crear un nuevo reclamo.
