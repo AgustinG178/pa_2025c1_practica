@@ -1,0 +1,11 @@
+flask
+flask_login
+flask_session
+flask_bootstrap
+sqlalchemy
+sqlalchemy.orm
+sqlalchemy.ext.declarative
+datetime
+functools
+werkzeug.security
+abc

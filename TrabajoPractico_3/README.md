@@ -1,37 +1,47 @@
-# 🐍Nombre del proyecto (darle un nombre significativo) 
+# Sistema de Reclamos FIUNER
 
-Breve descripción del proyecto:
+Esta es una aplicación web construida con el framework [Flask](https://flask.palletsprojects.com/). Permite a los usuarios de la Facultad de Ingeniería de la UNER registrar, gestionar y hacer seguimiento de reclamos relacionados con distintos departamentos. El sistema ofrece funcionalidades de registro, inicio de sesión, creación y visualización de reclamos, así como diferentes roles de usuario (Usuario Final, Secretario Técnico, Jefe de Departamento) para una gestión adecuada de los reclamos.
 
-Ejemplo: “Esta es una aplicación web construida con el framework [Flask](https://flask.palletsprojects.com/). Permite [describir funcionalidades principales].
-
----
 ## 🏗Arquitectura General
 
-Explica brevemente cómo está organizado el código (funciones y/o clases)
+El proyecto está organizado siguiendo el patrón Modelo-Vista-Controlador (MVC):
 
-El diagrama de relaciones entre clases está disponible en la carpeta [docs](./docs) del proyecto.
+- **Modelos:** Definen las clases principales del sistema, como Usuario, Reclamo y sus roles (Usuario Final, Secretario Técnico, Jefe de Departamento). Los modelos gestionan la lógica de negocio y la interacción con la base de datos mediante SQLAlchemy.
+- **Vistas:** Son las rutas y plantillas de Flask que gestionan la interacción con el usuario, mostrando formularios, listados de reclamos y paneles según el rol.
+- **Controladores:** Son las funciones que reciben las solicitudes del usuario, procesan la lógica necesaria y devuelven una respuesta adecuada.
 
----
+El código está dividido en módulos para separar la lógica de usuarios, reclamos y autenticación. Cada rol de usuario tiene permisos y vistas específicas para sus tareas. El diagrama de relaciones entre clases se encuentra en la carpeta [docs].
+
 ## 📑Dependencias
 
-1. **Python 3.x**
-2. **Flask** (`pip install flask`)
-3. **SQLalchemy** (`pip install sqlalchemy`)
-4. listar dependencias principales
-5. Dependencias listadas en requierements.txt
+1. ***Python 3.13.2***
+2. ***Flask***
+3. ***SQLalchemy***
+4. ***flask***
+5. ***flask_login***
+6. ***flask_session***
+7. ***flask_bootstrap***
+8. ***sqlalchemy***
+9. ***sqlalchemy.orm***
+10. ***sqlalchemy.ext.declarative***
+11. ***datetime***
+12. ***functools***
+13. ***werkzeug.security***
+14. ***abc***
 
----
 ## 🚀Cómo Ejecutar el Proyecto
 1. **Clonar o descargar** el repositorio.
 
-2. **Crear y activar** un entorno virtual.
+2. **Crear** un entorno virtual.
 
 3. **Instalar las dependencias**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.
----
+
+   1) ./venv/Scrpt/Activate
+
+   2) pip install -r requirements.txt
+
+   # El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.
+
 
 ## 💻Uso de la aplicación
 
@@ -41,15 +51,9 @@ Explica la funcionalidad de tu aplicación:
 
 **Ejemplo**:
 - **Ruta principal** (`/`): muestra la página de inicio.
-- **Ruta de usuario** (`/user/<id>`): muestra información del usuario.
-
----
+- **Ruta de usuario** (`/user/<id>`): muestra información del usuario.!
 
 ## 🙎‍♀️🙎‍♂️Autores
 
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
-
----
-
-> **Consejo**: Mantén el README **actualizado** conforme evoluciona el proyecto, y elimina (o añade) secciones según necesites. Esta plantilla es sólo un punto de partida general.
+- Grioni Agustín
+- Ramirez Nicolas
