@@ -2,7 +2,12 @@
 
 Registro de los módulos necesarios para que la aplicación pueda ser ejecutada. Las dependencias necesarias se encuentran en el archivo `requirements.txt`
 
-Para mas detalles sobre la creación de entornos virtuales y generación del archivo `requirements.txt`, ver la guía de [Uso de entornos virtuales](https://github.com/FIUNER-LICA/pa-codigos-trabajos-practicos/wiki/2.-Uso-de-entornos-virtuales)
+para descargar las dependencias
+
+1) Abra la terminal con "CTRL + Ñ"
+2) Active el entorno virtual con "./venv/Scirpt/Activate"
+3) ingrese el comando "pip install -r requirements.txt"
+4) espere y se instalaran las dependencias
 
 
 
