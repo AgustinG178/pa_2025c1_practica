@@ -53,13 +53,17 @@ El código está dividido en módulos para separar la lógica de usuarios, recla
 
 ## 💻Uso de la aplicación
 
-Explica la funcionalidad de tu aplicación:  
-- Cómo se navega por las rutas o URLs.
-- Si requiere autenticación, describe el flujo de login o registro.
+La aplicación permite a los usuarios registrarse e iniciar sesión para acceder a las funcionalidades según su rol. Una vez autenticados, pueden crear y visualizar reclamos, y los roles administrativos pueden gestionarlos.
 
-**Ejemplo**:
-- **Ruta principal** (`/`): muestra la página de inicio.
-- **Ruta de usuario** (`/user/<id>`): muestra información del usuario.!
+- **Ruta principal** (`/`): Muestra la página de inicio y acceso al sistema.
+- **/login**: Permite a los usuarios iniciar sesión.
+- **/register**: Permite a los nuevos usuarios registrarse.
+- **/reclamos**: Muestra el listado de reclamos del usuario autenticado.
+- **/reclamo/nuevo**: Permite crear un nuevo reclamo.
+- **/dashboard**: Panel de control para Jefe de Departamento y Secretario Técnico, donde pueden gestionar reclamos.
+- **/logout**: Cierra la sesión del usuario.
+
+Para acceder a la mayoría de las rutas es necesario estar autenticado. El flujo típico es: registro → inicio de sesión → acceso a funcionalidades según el rol.
 
 ## 🙎‍♀️🙎‍♂️Autores
 
