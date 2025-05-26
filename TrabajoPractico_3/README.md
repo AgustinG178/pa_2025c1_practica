@@ -57,11 +57,11 @@ La aplicación permite a los usuarios registrarse e iniciar sesión para acceder
 
 - **Ruta principal** (`/`): Muestra la página de inicio y acceso al sistema.
 - **(`login`)**: Permite a los usuarios iniciar sesión.
-- **/register**: Permite a los nuevos usuarios registrarse.
-- **/reclamos**: Muestra el listado de reclamos del usuario autenticado.
-- **/reclamo/nuevo**: Permite crear un nuevo reclamo.
-- **/dashboard**: Panel de control para Jefe de Departamento y Secretario Técnico, donde pueden gestionar reclamos.
-- **/logout**: Cierra la sesión del usuario.
+- **(`/register`)**: Permite a los nuevos usuarios registrarse.
+- **(`/reclamos`)**: Muestra el listado de reclamos del usuario autenticado.
+- **(`/reclamo/nuevo`)**: Permite crear un nuevo reclamo.
+- **(`/dashboard`)**: Panel de control para Jefe de Departamento y Secretario Técnico, donde pueden gestionar reclamos.
+- **(`/logout`)**: Cierra la sesión del usuario.
 
 Para acceder a la mayoría de las rutas es necesario estar autenticado. El flujo típico es: registro → inicio de sesión → acceso a funcionalidades según el rol.
 
