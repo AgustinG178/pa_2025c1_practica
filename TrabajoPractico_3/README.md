@@ -44,7 +44,11 @@ El código está dividido en módulos para separar la lógica de usuarios, recla
 
       2) pip install -r requirements.txt
 
-   # El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.
+         **El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.**
+
+4. Dirigirse al archivo [Server](server.py) y ejecutarlo
+
+      Aparecera un mensaje en la terminal, con el CTRL apretado hacer click en el link que diga **127.0.0.1:5000**
 
 
 ## 💻Uso de la aplicación
