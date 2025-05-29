@@ -137,7 +137,7 @@ class GeneradorDeInforme:
         print(f"AW promedio de manzana: {metricas['aw_prom_manzana']}")
         print(f"AW promedio de verduras: {metricas['aw_prom_verduras']}")
         print(f"AW promedio de papa: {metricas['aw_prom_papa']}")    
-        print(f"AW promedio de verduras: {metricas['aw_prom_verduras']}")
+        print(f"AW promedio de zanahoria: {metricas['aw_prom_zanahoria']}")  # <-- Corrige aquí
         print(f"AW total del cajón: {metricas['aw_total']}")
 
     @staticmethod

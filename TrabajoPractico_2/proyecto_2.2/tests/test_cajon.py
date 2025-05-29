@@ -13,8 +13,7 @@ El módulo `io` proporciona las herramientas necesarias para manejar flujos de e
 En particular, permite trabajar con objetos que simulan archivos en memoria, como `io.StringIO` o `io.BytesIO`, 
 los cuales son útiles para capturar y manipular datos de entrada/salida sin necesidad de acceder al sistema de archivos.
 
-Este módulo es especialmente útil en pruebas unitarias cuando se desea capturar la salida de `print()` o simular
-archivos para testear funciones que dependen de lectura/escritura.
+Este módulo es especialmente útil en pruebas unitarias cuando se desea capturar la salida de `print()` o simular archivos para testear funciones que dependen de lectura/escritura.
 """
 
 class TestCajon(unittest.TestCase):
@@ -79,13 +78,18 @@ class TestGeneradorDeInforme(unittest.TestCase):
             "peso_total": 1.2,
             "aw_prom_frutas": 0.95,
             "aw_prom_verduras": 0.98,
+            "aw_prom_kiwi": 0.91,
+            "aw_prom_manzana": 0.85,
+            "aw_prom_papa": 0.80,
+            "aw_prom_zanahoria": 0.80,
             "aw_total": 0.92
         }
         advertencias = GeneradorDeInforme.generar_advertencias(metricas)
         self.assertIn("Advertencia: La actividad acuosa promedio de las frutas supera 0.90.", advertencias)
         self.assertIn("Advertencia: La actividad acuosa total supera 0.90.", advertencias)
         self.assertIn("Advertencia: La actividad acuosa promedio de las verduras supera 0.90.", advertencias)  
-        
+        self.assertIn("Advertencia: La actividad acuosa promedio del kiwi supera 0.90.", advertencias)
+
     def test_mostrar_metricas(self):
         """
         Verifica que las métricas se muestren correctamente en la salida estándar.
@@ -94,6 +98,10 @@ class TestGeneradorDeInforme(unittest.TestCase):
             "peso_total": 1.2,
             "aw_prom_frutas": 0.95,
             "aw_prom_verduras": 0.85,
+            "aw_prom_kiwi": 0.80,
+            "aw_prom_manzana": 0.75,
+            "aw_prom_papa": 0.70,
+            "aw_prom_zanahoria": 0.65,
             "aw_total": 0.92
         }
 
@@ -113,6 +121,10 @@ class TestGeneradorDeInforme(unittest.TestCase):
         self.assertIn("AW promedio de frutas: 0.95", salida)
         self.assertIn("AW promedio de verduras: 0.85", salida)
         self.assertIn("AW total del cajón: 0.92", salida)
+        self.assertIn("AW promedio de kiwi: 0.8", salida)
+        self.assertIn("AW promedio de manzana: 0.75", salida)
+        self.assertIn("AW promedio de papa: 0.7", salida)
+        self.assertIn("AW promedio de zanahoria: 0.65", salida)
         
 if __name__ == "__main__":
     unittest.main()
