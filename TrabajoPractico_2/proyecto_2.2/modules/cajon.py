@@ -1,44 +1,82 @@
 from modules.alimentos import Kiwi, Manzana, Papa, Zanahoria, Alimento, Fruta, Verdura
 from math import exp
 
-
 class Cajon:
+    """
+    Clase que representa un cajón para almacenar alimentos con una capacidad máxima.
+    Permite agregar alimentos y acceder a ellos como una colección.
+    """
     def __init__(self, capacidad):
+        """
+        Inicializa un cajón con una capacidad dada.
+        Args:
+            capacidad (int): Número máximo de alimentos que puede contener el cajón.
+        """
         self.__capacidad = capacidad
         self.__alimentos = []
         
     def agregar_alimento(self, alimento:Alimento):
+        """
+        Agrega un alimento al cajón si hay espacio disponible.
+        Args:
+            alimento (Alimento): El alimento a agregar.
+        """
         if len(self.__alimentos) >= self.__capacidad:
             raise Exception("El cajón está lleno")
         self.__alimentos.append(alimento)
-        
-    #def __iter__(self):
-    #    return iter(self.__alimentos)
     
     def __iter__(self):
+        """
+        Permite iterar sobre los alimentos del cajón.
+        """
         for alimento in self.__alimentos:
             yield alimento
 
     def __len__(self):
+        """
+        Devuelve la cantidad de alimentos en el cajón.
+        """
         return len(self.__alimentos)
 
     def __str__(self):
+        """
+        Devuelve una representación en cadena del cajón.
+        """
         return f"Cajón con capacidad para {self.__capacidad} alimentos y contiene {len(self.__alimentos)} alimentos."
 
     @property
     def capacidad(self):
+        """
+        Capacidad máxima del cajón.
+        """
         return self.__capacidad
 
     @property
     def alimentos(self):
+        """
+        Lista de alimentos en el cajón.
+        """
         return self.__alimentos
     
     def __getitem__(self, index):
+        """
+        Permite acceder a los alimentos por índice.
+        Args:
+            index (int): Índice del alimento.
+        """
         return self.__alimentos[index]
     
 class AnalizadorDeCajon:
+    """
+    Clase utilitaria para calcular métricas sobre los alimentos de un cajón.
+    """
     @staticmethod
     def calcular_metricas(cajon:Cajon):
+        """
+        Calcula métricas estadísticas sobre los alimentos del cajón.
+        Args:
+            cajon (Cajon): El cajón a analizar.
+        """
         try:
             if cajon.capacidad == 0:
                     aw_prom_frutas = 0
@@ -82,8 +120,16 @@ class AnalizadorDeCajon:
         }
         
 class GeneradorDeInforme:
+    """
+    Clase utilitaria para mostrar métricas y advertencias sobre los alimentos del cajón.
+    """
     @staticmethod
     def mostrar_metricas(metricas):
+        """
+        Imprime las métricas calculadas del cajón.
+        Args:
+            metricas (dict): Diccionario con métricas.
+        """
         print("Métricas calculadas:")
         print(f"Peso total del cajón: {metricas['peso_total']} kg")
         print(f"AW promedio de frutas: {metricas['aw_prom_frutas']}")
@@ -96,6 +142,11 @@ class GeneradorDeInforme:
 
     @staticmethod
     def generar_advertencias(metricas):
+        """
+        Genera advertencias si alguna métrica supera los valores recomendados.
+        Args:
+            metricas (dict): Diccionario con métricas.
+        """
         advertencias = []
         if metricas["aw_prom_frutas"] > 0.90:
             advertencias.append("Advertencia: La actividad acuosa promedio de las frutas supera 0.90.")
@@ -115,7 +166,9 @@ class GeneradorDeInforme:
     
 
 if __name__ == "__main__": #pragma: no cover
-
+    """
+    Ejemplo de uso del módulo: crea un cajón, agrega alimentos, calcula métricas y muestra resultados.
+    """
     cajon = Cajon(2)  # Capacidad de 2 alimentos
     cajon.agregar_alimento(Kiwi(500))
     cajon.agregar_alimento(Manzana(300))
