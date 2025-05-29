@@ -31,7 +31,8 @@ class Estudiante(Persona):
         """
         Se muestra la información del estudiante.
         """
-        return f"Nombre: {self.__nombre}/ DNI: {self.__dni}/ Cursos: {",".join(curso.nombre_curso for curso in self.__cursos)}/ Facultades: {",".join(facultad.Nombre for facultad in self.__facultades)}"
+        return f"Nombre: {self.__nombre}/ DNI: {self.__dni}/ Cursos: {', '.join(curso.nombre_curso for curso in self.__cursos)}/ Facultades: {', '.join(facultad.nombre for facultad in self.__facultades)}"
+
     
     
    
@@ -93,7 +94,7 @@ class Profesor(Persona):
         """
         Se muestra la información del profesor.
         """
-        return f"Nombre: {self.__nombre}/ DNI: {self.__dni}/ Curso: {self.__curso.nombre_curso} / Titular de:{self.__titular_curso} / Departamentos: {",".join(self.__departamentos)}/ Facultades: {",".join(facultad.Nombre for facultad in self.__facultades)}"
+        return f"Nombre: {self.__nombre}/ DNI: {self.__dni}/ Curso: {self.__curso.nombre_curso} / Titular de: {self.__titular_curso} / Departamentos: {', '.join(self.__departamentos)}/ Facultades: {', '.join(facultad.nombre for facultad in self.__facultades)}"
     
     @property
     def mostrar_curso(self):
