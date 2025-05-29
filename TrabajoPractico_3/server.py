@@ -67,11 +67,17 @@ def inicio_usuario():
     
 @app.route('/mis_reclamos')
 def reclamos():
-     return render_template('reclamos.html')
+         
+     return render_template('mis_reclamos.html', usuario=current_user,reclamos = repo_reclamos.obtener_reclamos(current_user))
 
 @app.route('/crear_reclamos')
 def crear_reclamos():
      return render_template('usuarios.html')
+
+@app.route("/reclamos_uner",methods=["GET", "POST"])
+def listar_reclamos():
+    
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

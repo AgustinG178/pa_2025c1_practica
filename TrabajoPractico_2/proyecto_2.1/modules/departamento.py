@@ -60,7 +60,6 @@ class  Departamento:
     def director(self,director_p):
         self.__director[0] == director_p
     
-    @property
 
     @property
     def mostrar_cursos(self):

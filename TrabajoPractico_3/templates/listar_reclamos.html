@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>RECLAMOS UNER</title>
 </head>
 <body>
-    
+    <h1>Lista de Reclamos</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</tr>
+                <th>Descripción</tr>
+                <th>Estado</tr>
+                <th>Fecha de craeción</tr>
+            </tr>
+        </thead>
+        <tbody>
+            {%for reclamo in reclamos%}
+            <tr>
+                <td>{{%reclamo.id%}}</td>
+                <td>{{%reclamo.descripcion}}</td>
+                <td>{{%reclamo.estado%}}</td>
+                <td>{{%reclamo.fecha_creacion}}</td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    <p><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></p>
 </body>
 </html>

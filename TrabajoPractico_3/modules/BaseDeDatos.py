@@ -63,11 +63,13 @@ class BaseDatos:
         self.session.add(reclamo)
         self.session.commit()
 
-    def actualizar_reclamo(self, reclamo):
+    def actualizar_reclamo(self, reclamo_actualizado:Reclamo):
+        
         """
         Actualiza un objeto Reclamo existente en la base de datos.
         """
-        self.session.merge(reclamo)
+
+        self.session.merge(reclamo_actualizado)
         self.session.commit()
 
     def obtener_reclamos(self, **filtros):
