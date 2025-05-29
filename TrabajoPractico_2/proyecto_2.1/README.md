@@ -1,55 +1,44 @@
-# 🐍Nombre del proyecto (darle un nombre significativo) 
 
-Breve descripción del proyecto:
+# 📚 Sistema de Información Universitaria
 
-Ejemplo: “Esta es una aplicación web construida con el framework [Flask](https://flask.palletsprojects.com/). Permite [describir funcionalidades principales].
-
----
-## 🏗Arquitectura General
-
-Explica brevemente cómo está organizado el código (funciones y/o clases)
-
-El diagrama de relaciones entre clases está disponible en la carpeta [docs](./docs) del proyecto.
+Este proyecto es una aplicación de consola desarrollada en Python para la gestión de la comunidad académica de una facultad. Permite administrar estudiantes, profesores, cursos, departamentos y facultades, simulando un sistema universitario básico.
 
 ---
-## 📑Dependencias
 
-1. **Python 3.x**
-2. **Flask** (`pip install flask`)
-3. **SQLalchemy** (`pip install sqlalchemy`)
-4. listar dependencias principales
-5. Dependencias listadas en requierements.txt
+## 🏗️ Arquitectura General
+
+El sistema está organizado en módulos y clases que representan los distintos actores y entidades de una universidad:
+
+- **Estudiante** y **Profesor**: Heredan de la clase abstracta `Persona`.
+- **Curso**: Relaciona estudiantes y profesores.
+- **Departamento**: Agrupa cursos y profesores, y tiene un director.
+- **Facultad**: Contiene departamentos, cursos, estudiantes y profesores.
+- **Módulo de archivos**: Permite leer datos iniciales desde archivos `.txt`.
+
+La interacción principal se realiza a través del archivo [`consola.py`](consola.py), que ofrece un menú interactivo para gestionar la información.
 
 ---
-## 🚀Cómo Ejecutar el Proyecto
-1. **Clonar o descargar** el repositorio.
 
-2. **Crear y activar** un entorno virtual.
+## 📂 Estructura de Carpetas
 
-3. **Instalar las dependencias**:
+
+---
+## ⚙️ Dependencias
+
+- **Python 3.11+**
+---
+## 🚀 Cómo Ejecutar el Proyecto
+
+1. **Clona o descarga** el repositorio.
+2. Asegúrate de tener Python 3.11 o superior.
+3. Ejecuta el programa principal desde la terminal:
+
    ```bash
-   pip install -r requirements.txt
+   python consola.py
    ```
-   El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.
----
 
-## 💻Uso de la aplicación
+   ## Autores
 
-Explica la funcionalidad de tu aplicación:  
-- Cómo se navega por las rutas o URLs.
-- Si requiere autenticación, describe el flujo de login o registro.
+Grioni, Agustín
 
-**Ejemplo**:
-- **Ruta principal** (`/`): muestra la página de inicio.
-- **Ruta de usuario** (`/user/<id>`): muestra información del usuario.
-
----
-
-## 🙎‍♀️🙎‍♂️Autores
-
-- Apellido y Nombre del primer integrante
-- Apellido y Nombre del primer integrante
-
----
-
-> **Consejo**: Mantén el README **actualizado** conforme evoluciona el proyecto, y elimina (o añade) secciones según necesites. Esta plantilla es sólo un punto de partida general.
+Ramirez, Nicolas
