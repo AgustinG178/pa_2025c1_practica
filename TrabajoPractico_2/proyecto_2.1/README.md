@@ -1,4 +1,3 @@
-
 # 📚 Sistema de Información Universitaria
 
 Este proyecto es una aplicación de consola desarrollada en Python para la gestión de la comunidad académica de una facultad. Permite administrar estudiantes, profesores, cursos, departamentos y facultades, simulando un sistema universitario básico.
@@ -19,14 +18,12 @@ La interacción principal se realiza a través del archivo [`consola.py`](consol
 
 ---
 
-## 📂 Estructura de Carpetas
-
-
----
 ## ⚙️ Dependencias
 
 - **Python 3.11+**
+
 ---
+
 ## 🚀 Cómo Ejecutar el Proyecto
 
 1. **Clona o descarga** el repositorio.
