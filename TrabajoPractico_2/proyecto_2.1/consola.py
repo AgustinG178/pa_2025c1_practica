@@ -5,7 +5,6 @@ from modules.departamento import Departamento
 from modules.archivos import leer_archivo_txt
 import sys
 
-
 RUTA_estudiantes = "data/Estudiantes.txt"
 
 RUTA_profesores =  "data/Profesores.txt"
