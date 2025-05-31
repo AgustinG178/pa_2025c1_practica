@@ -1,18 +1,20 @@
-from flask_login import UserMixin
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import UserMixin, login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
 from modules.registrar import GestorDeUsuarios
+
 class FlaskLoginUser(UserMixin):
     def __init__(self, dicc_usuario):
         self.id = dicc_usuario["id"]
         self.nombre = dicc_usuario["nombre"]
         self.email = dicc_usuario["email"]
         self.__password = dicc_usuario["password"]
-    
 
-class GestorDeLogin:
-    def __init__(self, gestor_usuarios:GestorDeUsuarios, login_manager:FlaskLoginUser, admin_list):
+    def verificar_password(self, password):
+        return self.__password == password  # Mejora: usar hash seguro en producción
+
+class GestorLogin:
+    def __init__(self, gestor_usuarios: GestorDeUsuarios, login_manager, admin_list):
         self.__gestor_usuarios = gestor_usuarios
         login_manager.user_loader(self.__cargar_usuario_actual)
         self.__admin_list = admin_list
@@ -24,19 +26,26 @@ class GestorDeLogin:
     @property
     def id_usuario_actual(self):
         return current_user.id
-    
+
     @property
     def usuario_autenticado(self):
         return current_user.is_authenticated
 
     def __cargar_usuario_actual(self, id_usuario):
         dicc_usuario = self.__gestor_usuarios.cargar_usuario(id_usuario)
-        return FlaskLoginUser(dicc_usuario)
-    
-    def login_usuario(self, dicc_usuario):
-        user = FlaskLoginUser(dicc_usuario)
-        login_user(user)
-        print(f"Usuario {current_user.nombre} ha iniciado sesión")
+        if dicc_usuario:
+            return FlaskLoginUser(dicc_usuario)
+        return None
+
+    def login_usuario(self, nombre_de_usuario, password):
+        dicc_usuario = self.__gestor_usuarios.buscar_usuario_por_nombre(nombre_de_usuario)
+        if dicc_usuario and dicc_usuario["password"] == password:  # Mejora: usar hash seguro
+            user = FlaskLoginUser(dicc_usuario)
+            login_user(user)
+            print(f"Usuario {current_user.nombre} ha iniciado sesión")
+            return True
+        print("Credenciales incorrectas")
+        return False
 
     def logout_usuario(self):
         logout_user()
@@ -50,12 +59,9 @@ class GestorDeLogin:
                 return abort(403)
             return f(*args, **kwargs)
         return decorated_function
-    
+
     def se_requiere_login(self, func):
         return login_required(func)
-    
+
     def es_admin(self):
-        if current_user.is_authenticated and current_user.id in self.__admin_list:
-            return True
-        else:
-            return False
+        return current_user.is_authenticated and current_user.id in self.__admin_list
