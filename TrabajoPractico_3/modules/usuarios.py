@@ -170,7 +170,7 @@ class JefeDepartamento(Usuario):
 
     def manejar_reclamo(self,id_reclamo:int, base_datos: BaseDatos):
 
-        # Lógica para manejar un reclamo de su departamento, por el momento asumimos que se utilza solo para cambiar el estado a "resuelto"
+        """Lógica para manejar un reclamo de su departamento, por el momento asumimos que se utilza solo para cambiar el estado a "resuelto"""
 
         reclamo = base_datos.obtener_reclamo_por_id(id_reclamo = id_reclamo)
 

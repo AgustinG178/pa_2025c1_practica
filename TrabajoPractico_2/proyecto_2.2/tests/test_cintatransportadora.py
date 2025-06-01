@@ -84,7 +84,8 @@ class TestCintaTransportadora(unittest.TestCase):
         """
         Comprueba que si no hay alimentos en la fábrica, el cajón permanezca vacío.
         """
-        fabrica = FabricaDeAlimentos([])
+        fabrica = FabricaDeAlimentos()
+        fabrica.posibles_alimentos = []  # Vacía la lista de alimentos disponibles
         sensor = Sensor(fabrica)
         cajon = Cajon(5)
         cinta = CintaTransportadora(sensor, cajon)
@@ -137,4 +138,3 @@ if __name__ == "__main__":
     unittest.main()
     print(logging.getLevelName(logger))
 
-    

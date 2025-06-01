@@ -102,6 +102,8 @@ class TestAlimentos(unittest.TestCase):
         self.assertAlmostEqual(zanahoria_min.aw, 0.405, places=2)
         self.assertAlmostEqual(zanahoria_max.aw, 0.96, places=2)
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     unittest.main()
     coverage.process_startup()
+    
+#python -m tests.test_alimentos
