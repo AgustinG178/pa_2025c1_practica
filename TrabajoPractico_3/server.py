@@ -72,12 +72,10 @@ def reclamos():
 
 @app.route('/crear_reclamos')
 def crear_reclamos():
-     return render_template('usuarios.html')
+     return render_template('crear_reclamo.html')
 
-@app.route("/reclamos_uner",methods=["GET", "POST"])
-def listar_reclamos():
+#
     
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

@@ -2,11 +2,24 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Bienvenido</title>
 </head>
 <body>
-    <h1>Bienvenido, {{ usuario.nombre_de_usuario }}</h1>
-    <p>Tu email: {{ usuario.email }}</p>
-    <p>Tu rol: {{ usuario.rol }}</p>
+        <h1 class = "center">Bienvenido, {{ usuario.nombre_de_usuario }}</h1>
+
+        <p class = "top_left">Tu email: {{ usuario.email }}</p>
+        <p class = "top_left">Tu claustro: {{ usuario.rol }}</p>
+
+
+        <nav>
+            <ul>
+                <li><a href = "{{ url_for('crear_reclamo')}}">CREAR RECLAMO</a></li>
+                <li><a href = "{{ url_for('mis_reclamos')}}">MIS RECLAMOS</a></li>
+                <li><a href = "{{ url_for('listar_reclamos')}}">LISTAR RECLAMOS</a></li>
+            </ul>
+        </nav>
+        
 </body>
+    
 </html>

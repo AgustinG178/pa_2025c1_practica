@@ -5,7 +5,7 @@ Registro de los módulos necesarios para que la aplicación pueda ser ejecutada.
 para descargar las dependencias
 
 1) Abra la terminal con "CTRL + Ñ"
-2) Active el entorno virtual con "./venv/Scirpt/Activate"
+2) Active el entorno virtual con "./venv/Scirpts/Activate"
 3) ingrese el comando "pip install -r requirements.txt"
 4) espere y se instalaran las dependencias
 

@@ -177,7 +177,8 @@ class JefeDepartamento(Usuario):
         reclamo.estado = "resuelto"
 
         base_datos.actualizar_reclamo(reclamo)
-
+        
+        base_datos.session.commit()
 
     def ver_analitica(self, base_datos: BaseDatos):
         # Aquí iría la lógica para ver estadísticas/analítica

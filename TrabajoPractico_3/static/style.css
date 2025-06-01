@@ -120,3 +120,18 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #00509e;
 }
+
+/*Estilo para crear reclamos usuarios*/
+
+.title_center {text-align: center;
+               color:#f2eeee;
+               border:#040404
+               
+}
+
+.top_left {
+    text-align: left;
+    margin-top: 5%;
+    color: #f2eeee;
+
+}
