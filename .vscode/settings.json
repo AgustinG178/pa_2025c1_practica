@@ -5,5 +5,8 @@
         "markdown": false,
         "scminput": false,
         "python": false
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./TrabajoPractico_3/modules"
+    ]
 }

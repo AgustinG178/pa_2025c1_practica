@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from modules.BaseDeDatos import BaseDatos
 from modules import reclamos
-
-class Usuario(ABC):
+from modules.modelos import Usuario
+class UsuarioDominio(ABC):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
         self.__nombre = nombre
         self.__apellido = apellido
@@ -44,16 +44,22 @@ class Usuario(ABC):
         pass
 
     @abstractmethod
-    def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        pass
-
-    @abstractmethod
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         pass
-
-class UsuarioFinal(Usuario):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol = "UsuarioFinal" ,**kwargs):
-        super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
+    
+    @abstractmethod
+    def map_to_modelo_bd(self):
+        pass
+class UsuarioFinal(UsuarioDominio):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol="UsuarioFinal", claustro="estudiante", jefe_de=None):
+        super().__init__(nombre=nombre,
+                         apellido=apellido,
+                         email=email,
+                         nombre_de_usuario=nombre_de_usuario,
+                         contraseña=contraseña,
+                         claustro=claustro,
+                         rol=rol,
+                         jefe_de=jefe_de)
 
     def registrar(self, base_datos: BaseDatos):
         base_datos.guardar_usuario(self)
@@ -66,15 +72,6 @@ class UsuarioFinal(Usuario):
         # Devuelve los reclamos creados por este usuario
         return base_datos.obtener_reclamos(usuario_id=self.nombre_de_usuario)
 
-    def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamos(
-            estado="pendiente",
-            contenido=contenido,
-            departamento=departamento,
-            usuario_id=self.nombre_de_usuario
-        )
-        base_datos.guardar_reclamo(nuevo_reclamo)
-        return nuevo_reclamo
 
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         reclamo = base_datos.session.query(reclamo).get(reclamo_id)
@@ -84,8 +81,19 @@ class UsuarioFinal(Usuario):
                 base_datos.actualizar_reclamo(reclamo)
                 return True
         return False
-
-class SecretarioTecnico(Usuario):
+    def map_to_modelo_bd(self):
+        """Convierte el usuario de negocio en un modelo de base de datos."""
+        return Usuario(
+            nombre=self.nombre,
+            apellido=self.apellido,
+            email=self.email,
+            nombre_de_usuario=self.nombre_de_usuario,
+            contraseña=self.contraseña,
+            claustro=getattr(self, "claustro", None),
+            rol=getattr(self, "rol", None),
+            jefe_de=getattr(self, "jefe_de", None)
+        )
+class SecretarioTecnico(UsuarioDominio):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña,rol = "SecretarioTecnico",  **kwargs):
         super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
 
@@ -102,16 +110,6 @@ class SecretarioTecnico(Usuario):
     def ver_reclamos(self, base_datos: BaseDatos):
         # Puede ver todos los reclamos
         return base_datos.obtener_reclamos()
-
-    def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamos(
-            estado="pendiente",
-            contenido=contenido,
-            departamento=departamento,
-            usuario_id=self.nombre_de_usuario
-        )
-        base_datos.guardar_reclamo(nuevo_reclamo)
-        return nuevo_reclamo
 
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         reclamo = base_datos.session.query(reclamo).get(reclamo_id)
@@ -130,7 +128,8 @@ class SecretarioTecnico(Usuario):
             return True
         return False
 
-class JefeDepartamento(Usuario):
+
+class JefeDepartamento(UsuarioDominio):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol = "JefeDepartamento", **kwargs):
         super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
 
@@ -148,17 +147,6 @@ class JefeDepartamento(Usuario):
         # Puede ver reclamos de su departamento
         return base_datos.obtener_reclamos(departamento=self.departamento)
 
-    def crear_reclamos(self, base_datos: BaseDatos, contenido, departamento):
-        nuevo_reclamo = reclamos(
-            estado="pendiente",
-            contenido=contenido,
-            departamento=departamento,
-            usuario_id=self.nombre_de_usuario
-        )
-        base_datos.guardar_reclamo(nuevo_reclamo)
-
-        return nuevo_reclamo
-
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         reclamo = base_datos.session.query(reclamo).get(reclamo_id)
         if reclamo:
@@ -168,6 +156,19 @@ class JefeDepartamento(Usuario):
                 return True
         return False
 
+    def map_to_modelo_bd(self):
+        """Convierte el usuario de negocio en un modelo de base de datos."""
+        return Usuario(
+            nombre=self.nombre,
+            apellido=self.apellido,
+            email=self.email,
+            nombre_de_usuario=self.nombre_de_usuario,
+            contraseña=self.contraseña,
+            claustro=getattr(self, "claustro", None),
+            rol=getattr(self, "rol", None),
+            jefe_de=getattr(self, "jefe_de", None)
+        )
+    
     def manejar_reclamo(self,id_reclamo:int, base_datos: BaseDatos):
 
         """Lógica para manejar un reclamo de su departamento, por el momento asumimos que se utilza solo para cambiar el estado a "resuelto"""

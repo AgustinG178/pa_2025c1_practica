@@ -12,14 +12,15 @@ class Departamento(Base):
     __tablename__ = 'departamento'
     id = Column(Integer, primary_key = True)
     nombre = Column(String)
-    jefe = Column(String,ForeignKey("usuario.id"))
+    jefe = Column(String,ForeignKey("usuarios.id"))
+    
+    reclamos_departamento = relationship("Reclamo", back_populates="departamento_obj")
 
-    reclamos_departamento = relationship("Reclamo", back_populates="Departamento")
-    jefe_departamento = relationship("Usuario",back_populates="Departamento")
+    jefe_departamento = relationship("Usuario",back_populates="departamento_asociado")
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True,autoincrement=True)
     nombre = Column(String)
     apellido = Column(String)
     email = Column(String, unique=True)
@@ -31,7 +32,7 @@ class Usuario(Base):
 
 
     reclamos_creados = relationship("Reclamo", back_populates="usuario")
-    departamento_asociado = relationship("Departamento",back_populates="usuario")
+    departamento_asociado = relationship("Departamento",back_populates="jefe_departamento")
 
 class Reclamo(Base):
     __tablename__ = 'reclamos'
@@ -39,8 +40,8 @@ class Reclamo(Base):
     estado = Column(String)
     fecha_hora = Column(DateTime, default=datetime.utcnow)
     contenido = Column(String)
-    usuario_id = Column(Integer, ForeignKey('usuario.id'))
-    departamento = Column(String, ForeignKey('departamento.nombre'))
+    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
+    departamento_id = Column(String, ForeignKey('departamento.id'))
 
 
     usuario = relationship("Usuario", back_populates="reclamos_creados")
