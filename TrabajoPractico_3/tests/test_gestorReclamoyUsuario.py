@@ -2,7 +2,7 @@
 import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,session
-
+from modules.gestor_reclamos import GestorReclamo
 class TestGestorReclamo(unittest.TestCase):
 
     def setUp(self):

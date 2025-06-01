@@ -50,27 +50,112 @@ class GestorReclamo:
 
     def crear_reclamo(self, usuario:Usuario, descripcion:str, departamento:Departamento):
 
+        """
+        Se crea un reclamo a partir de un Usuario, descripcion y Departamento
+        """
         if isinstance(usuario,Usuario) and isinstance(departamento,Departamento) and descripcion != "":
+            
+            p_reclamo = Reclamo(usuario_id= usuario.id,contenido=descripcion,departamento_id=departamento.id)
 
-            p_reclamo = Reclamo(usuario_id= usuario.id,)
+            self.repositorio_reclamo.guardar_registro(p_reclamo)
+
+        else:
+            return "Verificar que los datos ingresados sean correctos"
+        
+    def buscar_reclamos_por_usuario(self, usuario:Usuario):
+        """
+        Se buscan y devuelven todos los reclamos asociados a un usuario
+        """
+        if isinstance(usuario,Usuario):
+            reclamos_base = self.repositorio_reclamo.obtener_todos_los_registros()
+            reclamos_usuario = []
+
+            for reclamo in reclamos_base:
+                if reclamo.usuario_id == usuario.id:
+                    reclamos_usuario.append(reclamo)
+
+            return reclamos_usuario
+        
+        raise TypeError("El usuario no es una instancia de la clase Usuario")
+    
+    def actualizar_estado_reclamo(self, usuario:Usuario ,reclamo_id:int):
+        
+        """
+        Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
+        """
+        
+        if usuario.rol in ["Secretario Tecnico","Jefe de Departamento"]:
+            try:
+                    
+                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro = "id",valor = reclamo_id)
+
+                reclamo_a_modificar.estado = "resuelto"
+
+                self.repositorio_reclamo.modificar_registro(reclamo_modificado=reclamo_a_modificar)
+
+                return "¡¡Reclamo resuelto correctamente!!"
+            except AttributeError:
+                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+             
+        raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
+
+    def eliminar_reclamo(self,usuario:Usuario, reclamo_id:int):
+        """
+        Se elimina un reclamo (accediendo a este con su id) asociado a un usuario, realizando sus  pertinentes verificaciones.
+        """
+        if usuario.rol in ["Secretario Tecnico","Jefe de Departamento"]:
+
+            try:
+                
+                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id=reclamo_id)
+
+                return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
+            
+            except AttributeError:
+                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+            
+        raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
 
 
-    def buscar_reclamos_por_usuario(self, usuario):
-        # Lógica para buscar reclamos de un usuario
-        pass
+    def asignar_departamento(self,usuario:Usuario, reclamo_id:int, departamento_nuevo:Departamento):
+        """
+        Se cambia el departamento al cual está asociado un reclamo.
+        """
+        if usuario.rol == "Secretario Tecnico":
 
-    def actualizar_estado_reclamo(self, reclamo_id, nuevo_estado):
-        # Lógica para actualizar estado
-        pass
+            try:
 
-    def eliminar_reclamo(self, reclamo_id):
-        # Lógica para eliminar reclamo
-        pass
+                reclamo = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id",valor=reclamo_id)
 
-    def asignar_departamento(self, reclamo_id, departamento):
-        # Lógica para asignar departamento
-        pass
+                reclamo.departamento_id == departamento_nuevo.id
 
-    def agregar_adherente(self, reclamo_id, usuario):
-        # Lógica para adherir usuario a reclamo
-        pass
+                self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo)
+
+                return f"El reclamo fue asignado al departamento {departamento_nuevo.nombre} correctamente!"
+            except AttributeError:
+                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+            
+        raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
+                
+
+    def agregar_adherente(self, reclamo_id, usuario:Usuario):
+        """
+        Se agrega un adherente a un reclamo
+        """
+
+        if isinstance(usuario,Usuario):
+
+            try:
+
+                reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id",valor=reclamo_id)
+
+                reclamo_a_adherir.usuarios.append(usuario)
+
+                return "El usuario se ha adherido correctamente al reclamo."
+            except AttributeError:
+
+                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+            
+        raise TypeError("El usuario no es una instancia de la clase reclamo.")
+
+#Asumo que el estado solo es "pendiente" o "resuelto"

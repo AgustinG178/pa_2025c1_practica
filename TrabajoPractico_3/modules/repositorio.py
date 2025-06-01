@@ -24,6 +24,7 @@ class RepositorioAbstracto(ABC):
         raise NotImplementedError
 
 
+
 def crear_repositorio():
     session = crear_engine()
     repo_reclamos =  RepositorioReclamosSQLAlchemy(session())
@@ -65,7 +66,7 @@ class RepositorioUsuariosSQLAlchemy(RepositorioAbstracto):
         if usuario:
             self.__session.delete(usuario)
             self.__session.commit()
-
+    
 class RepositorioReclamosSQLAlchemy(RepositorioAbstracto):
     def __init__(self, session):
         self.__session = session
@@ -101,3 +102,9 @@ class RepositorioReclamosSQLAlchemy(RepositorioAbstracto):
         if reclamo:
             self.__session.delete(reclamo)
             self.__session.commit()
+
+    def actualizar_reclamo(self,reclamo:Reclamo):
+
+        self.__session.merge(reclamo)
+
+        self.__session.commit()
