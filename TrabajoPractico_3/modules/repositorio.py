@@ -87,7 +87,7 @@ class RepositorioReclamosSQLAlchemy(RepositorioAbstracto):
         if reclamo_db:
             reclamo_db.estado = reclamo_modificado.estado
             reclamo_db.contenido = reclamo_modificado.contenido
-            reclamo_db.departamento = reclamo_modificado.departamento
+            reclamo_db.departamento_id = reclamo_modificado.departamento_id
             reclamo_db.usuario_id = reclamo_modificado.usuario_id
             self.__session.commit()
 

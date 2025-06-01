@@ -11,27 +11,7 @@ from modules.modelos import Base, Usuario, Reclamo
 
 Base = declarative_base()
 
-class Usuario(Base):
-    __tablename__ = 'usuarios'
-    id = Column(Integer, primary_key=True)
-    nombre = Column(String)
-    apellido = Column(String)
-    email = Column(String, unique=True)
-    nombre_de_usuario = Column(String, unique=True)
-    contraseña = Column(String)
-
-    reclamos_creados = relationship("Reclamo", back_populates="usuario")
-
-class Reclamo(Base):
-    __tablename__ = 'reclamos'
-    id = Column(Integer, primary_key=True)
-    estado = Column(String)
-    fecha_hora = Column(DateTime, default=datetime.utcnow)
-    contenido = Column(String)
-    departamento = Column(String)
-    usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    claustro = Column(String)
-    usuario = relationship("Usuario", back_populates="reclamos_creados")
+#Lo mismo con esto, en la parte de modelos hace lo mismo
 
 class BaseDatos:
     def __init__(self, url_bd):

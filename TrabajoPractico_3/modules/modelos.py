@@ -37,7 +37,7 @@ class Usuario(Base):
 class Reclamo(Base):
     __tablename__ = 'reclamos'
     id = Column(Integer, primary_key=True,autoincrement=True)
-    estado = Column(String)
+    estado = Column(String,default="pendiente") 
     fecha_hora = Column(DateTime, default=datetime.now(UTC))
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))

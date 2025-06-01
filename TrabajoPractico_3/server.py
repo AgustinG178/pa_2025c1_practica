@@ -2,10 +2,10 @@ from flask import render_template, flash, request, redirect, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 from modules.config import app, login_manager   
 from modules.usuarios import FlaskLoginUser
-from modules.registrar import GestorDeUsuarios
+from gestor_usuario import GestorDeUsuarios
 from modules.login import GestorLogin
 from modules.factoria import crear_repositorio
-from modules.reclamos import GestorReclamo  
+from modules.gestor_reclamos import GestorReclamo  
 
 admin_list = [1]
 repo_reclamos, repo_usuarios = crear_repositorio()

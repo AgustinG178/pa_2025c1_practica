@@ -25,6 +25,9 @@ class TestRepositorios(unittest.TestCase):
         self.repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
     def tearDown(self):
 
+        """
+        Luego de cada test, se cierra la base de datos
+        """
         self.session.close()
 
         self.engine.dispose()
@@ -58,7 +61,7 @@ class TestRepositorios(unittest.TestCase):
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-        p_reclamo = Reclamo(estado="pendiente", contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
 
         self.repo_reclamos.guardar_registro(reclamo=p_reclamo)
 
@@ -79,7 +82,7 @@ class TestRepositorios(unittest.TestCase):
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-        p_reclamo = Reclamo(estado="pendiente", contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
         
         
 
@@ -100,13 +103,16 @@ class TestRepositorios(unittest.TestCase):
 
     def test_obtener_registro_por_filtro(self):
 
+        """
+        Se prueba el funcionamiento del método para obtener un usuario o reclamo mediante un filtro  (id,nombre,etc)
+        """
         p_usuario = UsuarioFinal(nombre="Juan", email="juan@gmai.com", contraseña="juan123", apellido="pereira", nombre_de_usuario="juanpe124",claustro="estudiante",rol=None)
 
         usuario_tabla = p_usuario.map_to_modelo_bd()
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-        p_reclamo = Reclamo(estado="pendiente", contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
         
         self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
 
@@ -138,7 +144,7 @@ class TestRepositorios(unittest.TestCase):
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-        p_reclamo = Reclamo(estado="pendiente", contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
         
         self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
 
@@ -161,6 +167,50 @@ class TestRepositorios(unittest.TestCase):
 
         self.assertNotIn(usuario_tabla,lista_usuarios)
         
+    def test_modificar_registro(self):
+
+        """
+        Se prueba el método modificar_registro tanto para el repositorio usuario como para repositorio reclamos
+        """
+
+        p_usuario = UsuarioFinal(nombre="Juan", email="juan@gmai.com", contraseña="juan123", apellido="pereira", nombre_de_usuario="juanpe124",claustro="estudiante",rol=None)
+
+        usuario_tabla = p_usuario.map_to_modelo_bd()
+
+        dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
+
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        
+        self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
+
+        self.repo_reclamos.guardar_registro(reclamo=p_reclamo)
+
+        usuario_modificado = UsuarioFinal(nombre="Juan", email="juan@hotmail.com", contraseña="juan123", apellido="pereira", nombre_de_usuario="juanpe124",claustro="estudiante",rol=None)
+
+        usuario_modificado_tabla = usuario_modificado.map_to_modelo_bd()
+
+        usuario_modificado_tabla.id = usuario_tabla.id #Debemos asegurarnos que el usuario modificado posee el mismo id que el usuario inicial, caso contrario
+
+        self.repo_usuarios.modificar_registro(usuario_modificado=usuario_modificado_tabla)
+
+        #usuario_repo teoricamente es la entidad con el email modificado, de así serlo el test debería ser positivo
+        usuario_repo = self.session.query(Usuario).filter_by(nombre="Juan").first()
+
+
+        self.assertEqual(usuario_repo.email,usuario_modificado_tabla.email)
+        
+        #Realizamos la misma lógica pero para reclamos
+
+        reclamo_modificado = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+
+        reclamo_modificado.id,reclamo_modificado.estado = p_reclamo.id, "resuelto"
+
+        self.repo_reclamos.modificar_registro(reclamo_modificado=reclamo_modificado)
+
+        reclamo_bd = self.session.query(Reclamo).filter_by(usuario_id=usuario_tabla.id).first()
+
+
+        self.assertEqual(reclamo_bd.estado,reclamo_modificado.estado)
 
 if __name__ == "__main__":
     unittest.main()

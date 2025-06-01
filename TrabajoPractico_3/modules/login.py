@@ -1,7 +1,7 @@
 from flask_login import UserMixin, login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
-from modules.registrar import GestorDeUsuarios
+from gestor_usuario import GestorDeUsuarios
 
 class FlaskLoginUser(UserMixin):
     def __init__(self, dicc_usuario):
