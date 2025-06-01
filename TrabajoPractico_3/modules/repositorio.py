@@ -20,15 +20,15 @@ class RepositorioAbstracto(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def eliminar_registro(self, id):
+    def eliminar_registro_por_id(self, id):
         raise NotImplementedError
 
 
 def crear_repositorio():
     session = crear_engine()
-    repo_libro =  RepositorioReclamosSQLAlchemy(session())
+    repo_reclamos =  RepositorioReclamosSQLAlchemy(session())
     repo_usuario = RepositorioUsuariosSQLAlchemy(session())
-    return repo_libro, repo_usuario
+    return repo_reclamos, repo_usuario
 
 class RepositorioUsuariosSQLAlchemy(RepositorioAbstracto):
     def __init__(self, session):
@@ -60,7 +60,7 @@ class RepositorioUsuariosSQLAlchemy(RepositorioAbstracto):
         usuario = self.__session.query(Usuario).filter_by(**{filtro: valor}).first()
         return usuario if usuario else None
     
-    def eliminar_registro(self, id):
+    def eliminar_registro_por_id(self, id):
         usuario = self.__session.query(Usuario).filter_by(id=id).first()
         if usuario:
             self.__session.delete(usuario)
@@ -96,7 +96,7 @@ class RepositorioReclamosSQLAlchemy(RepositorioAbstracto):
         return reclamo if reclamo else None
     
     
-    def eliminar_registro(self, id):
+    def eliminar_registro_por_id(self, id):
         reclamo = self.__session.query(Reclamo).filter_by(id=id).first()
         if reclamo:
             self.__session.delete(reclamo)

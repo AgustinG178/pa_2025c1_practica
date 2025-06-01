@@ -119,6 +119,19 @@ class SecretarioTecnico(UsuarioDominio):
                 base_datos.actualizar_reclamo(reclamo)
                 return True
         return False
+    
+    def map_to_modelo_bd(self):
+        """Convierte el usuario de negocio en un modelo de base de datos."""
+        return Usuario(
+            nombre=self.nombre,
+            apellido=self.apellido,
+            email=self.email,
+            nombre_de_usuario=self.nombre_de_usuario,
+            contraseña=self.contraseña,
+            claustro=getattr(self, "claustro", None),
+            rol=getattr(self, "rol", None),
+            jefe_de=getattr(self, "jefe_de", None)
+        )
 
     def derivar_reclamo(self, base_datos: BaseDatos, reclamo_id, nuevo_departamento):
         reclamo = base_datos.session.query(reclamo).get(reclamo_id)

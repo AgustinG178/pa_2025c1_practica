@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime,UTC
 
 """define la estructura de las tablas y las relaciones"""
 
@@ -10,9 +10,9 @@ Base = declarative_base()
 
 class Departamento(Base):
     __tablename__ = 'departamento'
-    id = Column(Integer, primary_key = True)
+    id = Column(Integer, primary_key = True,autoincrement=True)
     nombre = Column(String)
-    jefe = Column(String,ForeignKey("usuarios.id"))
+    jefe = Column(Integer,ForeignKey("usuarios.id"))
     
     reclamos_departamento = relationship("Reclamo", back_populates="departamento_obj")
 
@@ -36,9 +36,9 @@ class Usuario(Base):
 
 class Reclamo(Base):
     __tablename__ = 'reclamos'
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True,autoincrement=True)
     estado = Column(String)
-    fecha_hora = Column(DateTime, default=datetime.utcnow)
+    fecha_hora = Column(DateTime, default=datetime.now(UTC))
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
     departamento_id = Column(String, ForeignKey('departamento.id'))
