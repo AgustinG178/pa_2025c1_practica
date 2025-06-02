@@ -229,10 +229,9 @@ class TestRepositorios(unittest.TestCase):
         p_reclamo.estado = "resuelto"
 
         p_reclamo_actualizado = self.session.query(Reclamo).filter_by(id=p_reclamo.id).first()
+        
 
-
-        self.assertEqual(p_reclamo_actualizado.id,"resuelto")
-
+        self.assertEqual(p)
 
 if __name__ == "__main__":
     unittest.main()
