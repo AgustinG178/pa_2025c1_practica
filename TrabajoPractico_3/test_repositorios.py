@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,session
 from modules.usuarios import UsuarioFinal
 from modules.modelos import Base,Usuario,Reclamo,Departamento
-from modules.repositorio import RepositorioUsuariosSQLAlchemy,RepositorioReclamosSQLAlchemy
+from modu.repositorio import RepositorioUsuariosSQLAlchemy,RepositorioReclamosSQLAlchemy
 
 class TestRepositorios(unittest.TestCase):
 
@@ -229,7 +229,6 @@ class TestRepositorios(unittest.TestCase):
         p_reclamo.estado = "resuelto"
 
         p_reclamo_actualizado = self.session.query(Reclamo).filter_by(id=p_reclamo.id).first()
-
 
         self.assertEqual(p_reclamo_actualizado.id,"resuelto")
 
