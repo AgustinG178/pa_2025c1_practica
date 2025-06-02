@@ -212,5 +212,24 @@ class TestRepositorios(unittest.TestCase):
 
         self.assertEqual(reclamo_bd.estado,reclamo_modificado.estado)
 
+    def test_actualizar_reclamo(self):
+
+        p_usuario = UsuarioFinal(nombre="Juan", email="juan@gmai.com", contraseña="juan123", apellido="pereira", nombre_de_usuario="juanpe124",claustro="estudiante",rol=None)
+
+        usuario_tabla = p_usuario.map_to_modelo_bd()
+
+        dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
+
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        
+        self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
+
+        self.repo_reclamos.guardar_registro(reclamo=p_reclamo)
+
+        p_reclamo.estado = "resuelto"
+
+        p_reclamo_actualizado = self.session.query(Reclamo).filter_by()
+        self.assertEqual()
+
 if __name__ == "__main__":
     unittest.main()
