@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from modules.BaseDeDatos import BaseDatos
-from modules import reclamos
 from modules.modelos import Usuario
 class UsuarioDominio(ABC):
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):

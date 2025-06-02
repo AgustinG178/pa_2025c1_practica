@@ -3,6 +3,8 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,session
 from modules.gestor_reclamos import GestorReclamo
+from modules.gestor_usuario import GestorDeUsuarios
+from modules.modelos import Base
 class TestGestorReclamo(unittest.TestCase):
 
     def setUp(self):
@@ -16,10 +18,7 @@ class TestGestorReclamo(unittest.TestCase):
         self.Session = sessionmaker(bind=self.engine)
 
         self.session = self.Session()
-
-        self.repo_usuarios = RepositorioUsuariosSQLAlchemy(self.session)
-
-        self.repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
+        
     def tearDown(self):
 
         """

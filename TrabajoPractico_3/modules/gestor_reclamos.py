@@ -91,7 +91,7 @@ class GestorReclamo:
 
                 reclamo_a_modificar.estado = "resuelto"
 
-                self.repositorio_reclamo.modificar_registro(reclamo_modificado=reclamo_a_modificar)
+                self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
 
                 return "¡¡Reclamo resuelto correctamente!!"
             except AttributeError:
