@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,session
 from modules.usuarios import UsuarioFinal
 from modules.modelos import Base,Usuario,Reclamo,Departamento
-from modules.repositorio import RepositorioUsuariosSQLAlchemy,RepositorioReclamosSQLAlchemy
+from modu.repositorio import RepositorioUsuariosSQLAlchemy,RepositorioReclamosSQLAlchemy
 
 class TestRepositorios(unittest.TestCase):
 
@@ -220,13 +220,18 @@ class TestRepositorios(unittest.TestCase):
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)    
+        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
+        
+        self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
+
+        self.repo_reclamos.guardar_registro(reclamo=p_reclamo)
 
         p_reclamo.estado = "resuelto"
 
-        self.repo_reclamos.actualizar_reclamo(p_reclamo)
+        p_reclamo_actualizado = self.session.query(Reclamo).filter_by(id=p_reclamo.id).first()
 
-        self.assertEqual(p_reclamo.estado,"resuelto")
+        self.assertEqual(p_reclamo_actualizado.id,"resuelto")
+
 
 if __name__ == "__main__":
     unittest.main()
