@@ -42,8 +42,6 @@ class RepositorioAbstracto(ABC):
             
         raise NotImplementedError
 
-
-
 def crear_repositorio():
     session = crear_engine()
     repo_reclamos =  RepositorioReclamosSQLAlchemy(session())

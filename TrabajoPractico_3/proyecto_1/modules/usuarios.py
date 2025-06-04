@@ -1,13 +1,14 @@
-from abc import ABC, abstractmethod
 from modules.BaseDeDatos import BaseDatos
-from modules.modelos import Usuario
-class UsuarioDominio(ABC):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs):
+from modules.modelos import Usuario as UsuarioBD
+class Usuario():
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, claustro,rol, **kwargs):
         self.__nombre = nombre
         self.__apellido = apellido
         self.__email = email
         self.__nombre_de_usuario = nombre_de_usuario
         self.__contraseña = contraseña
+        self.__claustro = claustro
+        self.__rol = 0
         self.__kwargs = kwargs
 
     @property
@@ -30,173 +31,44 @@ class UsuarioDominio(ABC):
     def contraseña(self):
         return self.__contraseña
 
-    @abstractmethod
     def registrar(self, base_datos: BaseDatos):
         pass
 
-    @abstractmethod
     def iniciar_sesion(self, base_datos: BaseDatos):
-        pass
-
-    @abstractmethod
-    def ver_reclamos(self, base_datos: BaseDatos):
-        pass
-
-    @abstractmethod
-    def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         pass
     
-    @abstractmethod
-    def map_to_modelo_bd(self):
-        pass
-class UsuarioFinal(UsuarioDominio):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol="UsuarioFinal", claustro="estudiante", jefe_de=None):
-        super().__init__(nombre=nombre,
-                         apellido=apellido,
-                         email=email,
-                         nombre_de_usuario=nombre_de_usuario,
-                         contraseña=contraseña,
-                         claustro=claustro,
-                         rol=rol,
-                         jefe_de=jefe_de)
-
-    def registrar(self, base_datos: BaseDatos):
-        base_datos.guardar_usuario(self)
-
-    def iniciar_sesion(self, base_datos: BaseDatos):
-        usuarios = base_datos.session.query(UsuarioFinal).filter_by(_Usuario__nombre_de_usuario=self.nombre_de_usuario,_Usuario__contraseña=self.contraseña).all()
-        return len(usuarios) > 0
-
     def ver_reclamos(self, base_datos: BaseDatos):
-        # Devuelve los reclamos creados por este usuario
-        return base_datos.obtener_reclamos(usuario_id=self.nombre_de_usuario)
-
+        pass
 
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
-        reclamo = base_datos.session.query(reclamo).get(reclamo_id)
-        if reclamo:
-            if self not in reclamo.adherentes:
-                reclamo.adherentes.append(self)
-                base_datos.actualizar_reclamo(reclamo)
-                return True
-        return False
+        pass
+  
     def map_to_modelo_bd(self):
-        """Convierte el usuario de negocio en un modelo de base de datos."""
-        return Usuario(
+        return UsuarioBD(
             nombre=self.nombre,
             apellido=self.apellido,
             email=self.email,
             nombre_de_usuario=self.nombre_de_usuario,
             contraseña=self.contraseña,
-            claustro=getattr(self, "claustro", None),
-            rol=getattr(self, "rol", None),
-            jefe_de=getattr(self, "jefe_de", None)
-        )
-class SecretarioTecnico(UsuarioDominio):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña,rol = "SecretarioTecnico",  **kwargs):
-        super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
-
-    def registrar(self, base_datos: BaseDatos):
-        base_datos.guardar_usuario(self)
-
-    def iniciar_sesion(self, base_datos: BaseDatos):
-        usuarios = base_datos.session.query(SecretarioTecnico).filter_by(
-            _Usuario__nombre_de_usuario=self.nombre_de_usuario,
-            _Usuario__contraseña=self.contraseña
-        ).all()
-        return len(usuarios) > 0
-
-    def ver_reclamos(self, base_datos: BaseDatos):
-        # Puede ver todos los reclamos
-        return base_datos.obtener_reclamos()
-
-    def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
-        reclamo = base_datos.session.query(reclamo).get(reclamo_id)
-        if reclamo:
-            if self not in reclamo.adherentes:
-                reclamo.adherentes.append(self)
-                base_datos.actualizar_reclamo(reclamo)
-                return True
-        return False
-    
-    def map_to_modelo_bd(self):
-        """Convierte el usuario de negocio en un modelo de base de datos."""
-        return Usuario(
-            nombre=self.nombre,
-            apellido=self.apellido,
-            email=self.email,
-            nombre_de_usuario=self.nombre_de_usuario,
-            contraseña=self.contraseña,
-            claustro=getattr(self, "claustro", None),
-            rol=getattr(self, "rol", None),
-            jefe_de=getattr(self, "jefe_de", None)
-        )
-
-    def derivar_reclamo(self, base_datos: BaseDatos, reclamo_id, nuevo_departamento):
-        reclamo = base_datos.session.query(reclamo).get(reclamo_id)
-        if reclamo:
-            reclamo.departamento = nuevo_departamento
-            base_datos.actualizar_reclamo(reclamo)
-            return True
-        return False
-
-
-class JefeDepartamento(UsuarioDominio):
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol = "JefeDepartamento", **kwargs):
-        super().__init__(nombre, apellido, email, nombre_de_usuario, contraseña, **kwargs)
-
-    def registrar(self, base_datos: BaseDatos):
-        base_datos.guardar_usuario(self)
-
-    def iniciar_sesion(self, base_datos: BaseDatos):
-        usuarios = base_datos.session.query(JefeDepartamento).filter_by(
-            _Usuario__nombre_de_usuario=self.nombre_de_usuario,
-            _Usuario__contraseña=self.contraseña
-        ).all()
-        return len(usuarios) > 0
-
-    def ver_reclamos(self, base_datos: BaseDatos):
-        # Puede ver reclamos de su departamento
-        return base_datos.obtener_reclamos(departamento=self.departamento)
-
-    def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
-        reclamo = base_datos.session.query(reclamo).get(reclamo_id)
-        if reclamo:
-            if self not in reclamo.adherentes:
-                reclamo.adherentes.append(self)
-                base_datos.actualizar_reclamo(reclamo)
-                return True
-        return False
-
-    def map_to_modelo_bd(self):
-        """Convierte el usuario de negocio en un modelo de base de datos."""
-        return Usuario(
-            nombre=self.nombre,
-            apellido=self.apellido,
-            email=self.email,
-            nombre_de_usuario=self.nombre_de_usuario,
-            contraseña=self.contraseña,
-            claustro=getattr(self, "claustro", None),
-            rol=getattr(self, "rol", None),
-            jefe_de=getattr(self, "jefe_de", None)
+            claustro=self.__claustro,
+            rol=self.__rol,
+            **self.__kwargs
         )
     
-    def manejar_reclamo(self,id_reclamo:int, base_datos: BaseDatos):
+    def __dict__(self):
+        return {
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "email": self.email,
+            "nombre_de_usuario": self.nombre_de_usuario,
+            "contraseña": self.contraseña,
+            "claustro": self.__claustro,
+            **self.__kwargs
+        }
 
-        """Lógica para manejar un reclamo de su departamento, por el momento asumimos que se utilza solo para cambiar el estado a "resuelto"""
-
-        reclamo = base_datos.obtener_reclamo_por_id(id_reclamo = id_reclamo)
-
-        reclamo.estado = "resuelto"
-
-        base_datos.actualizar_reclamo(reclamo)
-        
-        base_datos.session.commit()
-
-    def ver_analitica(self, base_datos: BaseDatos):
-        # Aquí iría la lógica para ver estadísticas/analítica
-        pass
-
+    def __str__(self):
+        return f"Usuario(nombre={self.nombre}, apellido={self.apellido}, email={self.email}, nombre_de_usuario={self.nombre_de_usuario}, claustro={self.__claustro}, rol={self.__rol})"
+    
 class FlaskLoginUser:
     def __init__(self, usuario_dict):
         self.id = usuario_dict.get('id')

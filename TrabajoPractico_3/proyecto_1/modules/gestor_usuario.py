@@ -1,24 +1,20 @@
-from modules.usuarios import Usuario, UsuarioFinal, JefeDepartamento, SecretarioTecnico
-from modules.repositorio import RepositorioAbstracto
+from modules.usuarios import Usuario
+from modules.repositorio import RepositorioAbstracto, RepositorioUsuariosSQLAlchemy
+from modules.BaseDeDatos import BaseDatos
 
 class GestorDeUsuarios:
-    def __init__(self, repo: RepositorioAbstracto):
+    def __init__(self, repo: RepositorioUsuariosSQLAlchemy):
         self.__repo = repo  
 
     """
     Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
     """
 
-    def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol):
+    def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
         if self.__repo.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
-        # Guardar la contraseña en texto plano (NO recomendado en producción)
-        if rol == "0":
-            usuario = UsuarioFinal(nombre, apellido, email, nombre_de_usuario, password, rol)
-        elif rol == "1":
-            usuario = JefeDepartamento(nombre, apellido, email, nombre_de_usuario, password, rol)
-        elif rol == "2":
-            usuario = SecretarioTecnico(nombre, apellido, email, nombre_de_usuario, password, rol)
+        usuario = Usuario(nombre, apellido, email, nombre_de_usuario, password, rol, claustro)
+        self.__repo.guardar_registro(usuario.map_to_modelo_bd())
 
     def autenticar_usuario(self, email, password):
         usuario = self.__repo.obtener_registro_por_filtro("email", email)
@@ -26,7 +22,7 @@ class GestorDeUsuarios:
             raise ValueError("El usuario no está registrado")
         if usuario.contraseña != password:
             raise ValueError("Contraseña incorrecta")
-        return usuario.__dict__  # o usuario.to_dict() si tienes ese método
+        return usuario.__dict__ 
         
     def cargar_usuario(self, id_usuario):
         usuario = self.__repo.obtener_registro_por_filtro("id", id_usuario)
@@ -50,15 +46,34 @@ class GestorDeUsuarios:
         usuario = self.__repo.obtener_registro_por_filtro(filtro, valor)
         if not usuario:
             raise ValueError("Usuario no encontrado")
-        return usuario
+        return usuario.__str__()
 
     def generar_reporte_usuario(self, tipo_reporte, *args, **kwargs):
-        # Ejemplo: tipo_reporte puede ser "pdf" o "html"
+
         if tipo_reporte == "pdf":
-            # Aquí deberías integrar con tu clase de reporte PDF
             return "Reporte PDF generado para usuarios"
         elif tipo_reporte == "html":
-            # Aquí deberías integrar con tu clase de reporte HTML
             return "Reporte HTML generado para usuarios"
         else:
             raise ValueError("Tipo de reporte no soportado")
+        
+if __name__ == "__main__":
+    session = BaseDatos("sqlite:///data/base_datos.db")
+    session.conectar()
+    repo = RepositorioUsuariosSQLAlchemy(session=session.session)
+    gestor = GestorDeUsuarios(repo)
+    try:
+        gestor.registrar_nuevo_usuario(
+            nombre="nicolas",
+            apellido="ramirez",
+            email="ramiresn@gmail.com",
+            nombre_de_usuario="tupapacitoXD_123",
+            password="1234",
+            rol = 0,
+            claustro = "estudiante"
+        )
+        print("Usuario registrado correctamente")
+    except Exception as e:
+        print(f"Error: {e}")
+        
+    print(gestor.buscar_usuario("email", "ramiresn@gmail.com"))

@@ -1,7 +1,8 @@
 from flask_login import UserMixin, login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
-from gestor_usuario import GestorDeUsuarios
+from modules.gestor_usuario import GestorDeUsuarios
+from modules.BaseDeDatos import BaseDatos
 
 class FlaskLoginUser(UserMixin):
     def __init__(self, dicc_usuario):
@@ -65,3 +66,19 @@ class GestorLogin:
 
     def es_admin(self):
         return current_user.is_authenticated and current_user.id in self.__admin_list
+    
+if __name__ == "__main__":
+    # Ejemplo de uso
+    session = BaseDatos("sqlite:///data/base_datos.db")
+    session.conectar()
+    repo = session.session 
+    
+    
+    gestor = GestorLogin(
+        gestor_usuarios=GestorDeUsuarios(), 
+        repo = repo,
+        login_manager=None,   
+        admin_list=[1, 2, 3]
+          )
+    
+    gestor.login_usuario("tupapacitoXD_123", "1234")

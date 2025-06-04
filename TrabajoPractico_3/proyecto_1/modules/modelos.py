@@ -32,13 +32,15 @@ class Usuario(Base):
     rol = Column(String)
     jefe_de = Column(String)
 
-    # Relación muchos a muchos con Reclamo
     reclamos = relationship(
         "Reclamo",
         secondary=usuarios_reclamos,
         back_populates="usuarios"
     )
     departamento_asociado = relationship("Departamento", back_populates="jefe_departamento")
+    
+    def __str__(self):  
+        return f"Usuario: Nombre = {self.nombre}, Apellido = {self.apellido}, Email = {self.email}, Nombre_de_usuario = {self.nombre_de_usuario}, Rol = {self.rol}"
 
 class Reclamo(Base):
     __tablename__ = 'reclamos'
