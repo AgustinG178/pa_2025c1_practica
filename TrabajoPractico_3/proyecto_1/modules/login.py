@@ -1,24 +1,21 @@
 from flask_login import UserMixin, login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
-from modules.gestor_usuario import GestorDeUsuarios
+from modules.gestor_usuario import GestorUsuarios
 from modules.BaseDeDatos import BaseDatos
+from modules.repositorio import RepositorioUsuariosSQLAlchemy
 
 class FlaskLoginUser(UserMixin):
-    def __init__(self, dicc_usuario):
-        self.id = dicc_usuario["id"]
-        self.nombre = dicc_usuario["nombre"]
-        self.email = dicc_usuario["email"]
-        self.__password = dicc_usuario["password"]
+    def __init__(self, usuario):
+        self.usuario = usuario
+        self.id = usuario.id  # Asegúrate que usuario.id existe y es único
 
-    def verificar_password(self, password):
-        return self.__password == password  # Mejora: usar hash seguro en producción
+    def get_id(self):
+        return str(self.id)
 
 class GestorLogin:
-    def __init__(self, gestor_usuarios: GestorDeUsuarios, login_manager, admin_list):
-        self.__gestor_usuarios = gestor_usuarios
-        login_manager.user_loader(self.__cargar_usuario_actual)
-        self.__admin_list = admin_list
+    def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
+        self.repositorio_usuario = repositorio_usuario
 
     @property
     def nombre_usuario_actual(self):
@@ -32,10 +29,10 @@ class GestorLogin:
     def usuario_autenticado(self):
         return current_user.is_authenticated
 
-    def __cargar_usuario_actual(self, id_usuario):
-        dicc_usuario = self.__gestor_usuarios.cargar_usuario(id_usuario)
-        if dicc_usuario:
-            return FlaskLoginUser(dicc_usuario)
+    def autenticar(self, nombre_de_usuario, contraseña):
+        usuario = self.repositorio_usuario.buscar_usuario(nombre_de_usuario=nombre_de_usuario)
+        if usuario and usuario.contraseña == contraseña:
+            return usuario
         return None
 
     def login_usuario(self, nombre_de_usuario, password):

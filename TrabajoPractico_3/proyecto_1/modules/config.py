@@ -9,10 +9,8 @@ import datetime
 app = Flask("server")
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 
-URL_BD = 'sqlite:///data/base_datos.db'
-
 def crear_engine():
-    engine = create_engine(URL_BD)
+    engine = create_engine("sqlite:///data/base_datos.db")
     Session = sessionmaker(bind=engine)
     return Session
 

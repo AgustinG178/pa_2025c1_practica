@@ -17,14 +17,14 @@
             </tr>
         </thead>
         <tbody>
-            {%for reclamo in reclamos%}
+            {% for reclamo in reclamos %}
             <tr>
-                <td>{{%reclamo.id%}}</td>
-                <td>{{%reclamo.descripcion}}</td>
-                <td>{{%reclamo.estado%}}</td>
-                <td>{{%reclamo.fecha_creacion}}</td>
+                <td>{{ reclamo.id }}</td>
+                <td>{{ reclamo.descripcion }}</td>
+                <td>{{ reclamo.estado }}</td>
+                <td>{{ reclamo.fecha_creacion }}</td>
             </tr>
-            {%endfor%}
+            {% endfor %}
         </tbody>
     <p><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></p>
 </body>

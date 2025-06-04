@@ -6,7 +6,12 @@
     <title>RECLAMO</title>
 </head>
 <body>
-    
-    
+    <form action="{{ url_for('crear_reclamos') }}" method="POST">
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" name="descripcion" required>
+        <label for="departamento">Departamento:</label>
+        <input type="text" id="departamento" name="departamento" required>
+        <button type="submit">Crear Reclamo</button>
+    </form>
 </body>
 </html>

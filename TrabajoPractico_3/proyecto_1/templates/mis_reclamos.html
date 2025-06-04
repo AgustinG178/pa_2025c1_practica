@@ -20,13 +20,13 @@
         </thead>
         <tbody>
             {% for reclamo in reclamos %}
-            <tr>
-                <td>{{ reclamo.id }}</td>
-                <td>{{ reclamo.descripcion }}</td>
-                <td>{{ reclamo.estado }}</td>
-                <td>{{ reclamo.fecha_creacion }}</td>
-            </tr>
-            {% endfor %}
+    <tr>
+        <td>{{ reclamo.id }}</td>
+        <td>{{ reclamo.descripcion }}</td>
+        <td>{{ reclamo.estado }}</td>
+        <td>{{ reclamo.fecha_creacion }}</td>
+    </tr>
+{% endfor %}
         </tbody>
 </body>
 </html>

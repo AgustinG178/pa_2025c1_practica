@@ -47,7 +47,6 @@ class BaseDatos:
         """
         Actualiza un objeto Reclamo existente en la base de datos.
         """
-
         self.session.merge(reclamo_actualizado)
         self.session.commit()
 

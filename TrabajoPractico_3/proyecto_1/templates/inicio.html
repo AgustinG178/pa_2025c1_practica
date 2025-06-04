@@ -10,20 +10,14 @@
     <h1>Sistema de Reclamos - FIUNER</h1>
     <nav>
         <ul>
-<<<<<<< HEAD
-            <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>
-            <li><a href="{{ url_for('iniciar_sesion') }}">Iniciar Sesión</a></li>
-
-=======
-            {% if not current_user.is_authenticated %}
-                <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>
-                <li><a href="{{ url_for('iniciar_sesion') }}">Iniciar Sesión</a></li>
-            {% else %}
+            {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
                 <li><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></li>
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>
+                <li><a href="{{ url_for('iniciar_sesion') }}">Iniciar Sesión</a></li>
             {% endif %}
->>>>>>> 89f2f71d702dd4393f512ede348287eb855f0b34
         </ul>
     </nav>
     <hr>

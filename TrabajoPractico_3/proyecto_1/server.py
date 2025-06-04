@@ -1,17 +1,24 @@
-from flask import render_template, flash, request, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_user, login_required, logout_user, current_user
-from modules.config import app, login_manager   
+from modules.config import app, login_manager, crear_engine   
 from modules.usuarios import FlaskLoginUser
-from modules.gestor_usuario import GestorDeUsuarios
+from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
+from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin
-from modules.factoria import crear_repositorio
-from modules.gestor_reclamos import GestorReclamo  
+from modules.gestor_reclamos import GestorReclamo 
+from modules.BaseDeDatos import BaseDatos 
 
 admin_list = [1]
-repo_reclamos, repo_usuarios = crear_repositorio()
-gestor_usuarios = GestorDeUsuarios(repo_usuarios)
-gestor_login = GestorLogin(gestor_usuarios, login_manager, admin_list)
-gestor_reclamos = GestorReclamo(repo_reclamos)  # Instancia del gestor de reclamos
+base_datos = BaseDatos("sqlite:///data/base_datos.db")
+base_datos.conectar()
+Session = crear_engine()
+sqlalchemy_session = Session()
+
+repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
+repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
+gestor_usuarios = GestorUsuarios(repo_usuarios)
+gestor_login = GestorLogin(repo_usuarios)
+gestor_reclamos = GestorReclamo(repo_reclamos)  
 
 @app.route('/')
 def index():
@@ -48,7 +55,9 @@ def iniciar_sesion():
         password = request.form.get('password')
         try:
             usuario = gestor_usuarios.autenticar_usuario(email, password)
+            print("Usuario autenticado:", usuario)
             login_user(FlaskLoginUser(usuario))
+            print("Redirigiendo a inicio_usuario")
             return redirect(url_for('inicio_usuario'))
         except ValueError as e:
             flash(str(e), 'danger')
@@ -95,6 +104,13 @@ def crear_reclamos():
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_reclamos()
     return render_template('listar_reclamos.html', reclamos=reclamos)
+
+@login_manager.user_loader
+def load_user(user_id):
+    usuario = repo_usuarios.obtener_por_id(user_id)
+    if usuario:
+        return FlaskLoginUser(usuario)
+    return None
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
