@@ -220,15 +220,6 @@ class TestRepositorios(unittest.TestCase):
 
         dpto_prueba = Departamento(nombre="matematica",jefe=usuario_tabla.id)
 
-<<<<<<< HEAD:TrabajoPractico_3/tests/test_repositorios.py
-        p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)    
-
-        p_reclamo.estado = "resuelto"
-
-        self.repo_reclamos.actualizar_reclamo(p_reclamo)
-
-        self.assertEqual(p_reclamo.estado,"resuelto")
-=======
         p_reclamo = Reclamo(contenido="hahahahaha",usuario_id=usuario_tabla.id,departamento_id=dpto_prueba.id)
         
         self.repo_usuarios.guardar_registro(usuario=usuario_tabla)
@@ -237,11 +228,10 @@ class TestRepositorios(unittest.TestCase):
 
         p_reclamo.estado = "resuelto"
 
-        p_reclamo_actualizado = self.session.query(Reclamo).filter_by(id=p_reclamo.id).first()
+        self.repo_reclamos.actualizar_reclamo(reclamo=p_reclamo)
         
 
-        self.assertEqual(p)
->>>>>>> 54c3cd97740705f0e0de8ae050706278d16651d5:TrabajoPractico_3/proyecto_1/tests/test_repositorios.py
+        self.assertEqual(p_reclamo,"resuelto")
 
 if __name__ == "__main__":
     unittest.main()
