@@ -84,6 +84,12 @@ class RepositorioUsuariosSQLAlchemy(RepositorioAbstracto):
             self.__session.delete(usuario)
             self.__session.commit()
     
+    def buscar_usuario(self, **kwargs):
+        """
+        Busca un usuario por cualquier campo (por ejemplo, nombre_de_usuario, email, etc.)
+        """
+        return self.__session.query(Usuario).filter_by(**kwargs).first()
+
 class RepositorioReclamosSQLAlchemy(RepositorioAbstracto):
     def __init__(self, session):
         self.__session = session

@@ -5,10 +5,15 @@ from modules.gestor_usuario import GestorUsuarios
 from modules.BaseDeDatos import BaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
 
-class FlaskLoginUser(UserMixin):
+class FlaskLoginUser:
     def __init__(self, usuario):
-        self.usuario = usuario
-        self.id = usuario.id  # Asegúrate que usuario.id existe y es único
+        self.id = usuario.id
+        self.nombre = usuario.nombre
+        self.apellido = usuario.apellido
+        self.email = usuario.email
+        self.nombre_de_usuario = usuario.nombre_de_usuario
+        self.rol = usuario.rol
+        self._contraseña = usuario.contraseña
 
     def get_id(self):
         return str(self.id)
@@ -65,17 +70,20 @@ class GestorLogin:
         return current_user.is_authenticated and current_user.id in self.__admin_list
     
 if __name__ == "__main__":
-    # Ejemplo de uso
-    session = BaseDatos("sqlite:///data/base_datos.db")
-    session.conectar()
-    repo = session.session 
-    
-    
-    gestor = GestorLogin(
-        gestor_usuarios=GestorDeUsuarios(), 
-        repo = repo,
-        login_manager=None,   
-        admin_list=[1, 2, 3]
-          )
-    
-    gestor.login_usuario("tupapacitoXD_123", "1234")
+    # Configuración de la base de datos y repositorio
+    base_datos = BaseDatos("sqlite:///data/base_datos.db")
+    base_datos.conectar()
+    sqlalchemy_session = base_datos.session
+
+    repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
+    gestor_usuarios = GestorUsuarios(repo_usuarios)
+    gestor_login = GestorLogin(repo_usuarios)
+
+    # Prueba de autenticación
+    nombre_de_usuario = "tupapacitoXD_123"
+    password = "1234"
+    usuario = gestor_login.autenticar(nombre_de_usuario, password)
+    if usuario:
+        print(f"Login exitoso para: {usuario.nombre_de_usuario}")
+    else:
+        print("Login fallido: credenciales incorrectas")

@@ -1,10 +1,9 @@
 from flask import render_template, flash, request, redirect, url_for, session
 from flask_login import login_user, login_required, logout_user, current_user
 from modules.config import app, login_manager, crear_engine   
-from modules.usuarios import FlaskLoginUser
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
-from modules.login import GestorLogin
+from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
 from modules.BaseDeDatos import BaseDatos 
 
@@ -32,7 +31,6 @@ def registrarse():
         email = request.form.get('email')
         nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
-        rol = request.form.get('rol')
         try:
             gestor_usuarios.registrar_nuevo_usuario(
                 nombre=nombre,
@@ -40,6 +38,7 @@ def registrarse():
                 email=email,
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
+                claustro = 0,
                 rol=0
             )
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
@@ -51,13 +50,13 @@ def registrarse():
 @app.route('/iniciar_sesion', methods=['GET', 'POST'])
 def iniciar_sesion():
     if request.method == 'POST':
-        email = request.form.get('email')
+        nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
         try:
-            usuario = gestor_usuarios.autenticar_usuario(email, password)
+            usuario = gestor_login.autenticar(nombre_de_usuario, password)
             print("Usuario autenticado:", usuario)
             login_user(FlaskLoginUser(usuario))
-            print("Redirigiendo a inicio_usuario")
+            print("Redirigiendo a inicio_usuario")  
             return redirect(url_for('inicio_usuario'))
         except ValueError as e:
             flash(str(e), 'danger')

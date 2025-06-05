@@ -69,29 +69,6 @@ class Usuario():
     def __str__(self):
         return f"Usuario(nombre={self.nombre}, apellido={self.apellido}, email={self.email}, nombre_de_usuario={self.nombre_de_usuario}, claustro={self.__claustro}, rol={self.__rol})"
     
-class FlaskLoginUser:
-    def __init__(self, usuario_dict):
-        self.id = usuario_dict.get('id')
-        self.nombre = usuario_dict.get('nombre')
-        self.apellido = usuario_dict.get('apellido')
-        self.email = usuario_dict.get('email')
-        self.nombre_de_usuario = usuario_dict.get('nombre_de_usuario')
-        self.rol = usuario_dict.get('rol')
-        self._contraseña = usuario_dict.get('contraseña')
 
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)
 
 
