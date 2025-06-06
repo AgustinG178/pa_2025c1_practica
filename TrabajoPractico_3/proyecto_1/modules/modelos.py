@@ -20,7 +20,7 @@ class Departamento(Base):
     reclamos_departamento = relationship("Reclamo", back_populates="departamento_obj")
     jefe_departamento = relationship("Usuario", back_populates="departamento_asociado")
 
-class Usuario(Base):
+class ModeloUsuario(Base):
     __tablename__ = 'usuarios'
     id = Column(Integer, primary_key=True, autoincrement=True)
     nombre = Column(String)
@@ -57,7 +57,7 @@ class Usuario(Base):
     def ver_reclamos(self, gestor_reclamo):
         return gestor_reclamo.buscar_reclamos_por_usuario(self)
 
-class Reclamo(Base):
+class ModeloReclamo(Base):
     __tablename__ = 'reclamos'
     id = Column(Integer, primary_key=True, autoincrement=True)
     estado = Column(String, default="pendiente")

@@ -1,7 +1,7 @@
 from modules.BaseDeDatos import BaseDatos
-from modules.modelos import Usuario as UsuarioBD
+
 class Usuario():
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, claustro,rol, **kwargs):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, claustro, rol,id, **kwargs):
         self.__nombre = nombre
         self.__apellido = apellido
         self.__email = email
@@ -9,6 +9,7 @@ class Usuario():
         self.__contraseña = contraseña
         self.__claustro = claustro
         self.__rol = 0
+        self.__id = id
         self.__kwargs = kwargs
 
     @property
@@ -30,6 +31,10 @@ class Usuario():
     @property
     def contraseña(self):
         return self.__contraseña
+    
+    @property
+    def id(self):
+        return self.__id
 
     def registrar(self, base_datos: BaseDatos):
         pass
@@ -42,18 +47,6 @@ class Usuario():
 
     def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
         pass
-  
-    def map_to_modelo_bd(self):
-        return UsuarioBD(
-            nombre=self.nombre,
-            apellido=self.apellido,
-            email=self.email,
-            nombre_de_usuario=self.nombre_de_usuario,
-            contraseña=self.contraseña,
-            claustro=self.__claustro,
-            rol=self.__rol,
-            **self.__kwargs
-        )
     
     def __dict__(self):
         return {

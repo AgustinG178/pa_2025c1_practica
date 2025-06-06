@@ -1,4 +1,4 @@
-from flask_login import UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
 from modules.gestor_usuario import GestorUsuarios

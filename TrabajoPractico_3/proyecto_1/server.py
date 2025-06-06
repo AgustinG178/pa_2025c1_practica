@@ -53,13 +53,11 @@ def iniciar_sesion():
         nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
         try:
-            usuario = gestor_login.autenticar(nombre_de_usuario, password)
-            print("Usuario autenticado:", usuario)
-            login_user(FlaskLoginUser(usuario))
-            print("Redirigiendo a inicio_usuario")  
-            return redirect(url_for('inicio_usuario'))
-        except ValueError as e:
-            flash(str(e), 'danger')
+            gestor_login.autenticar(nombre_de_usuario, password)
+            usuario = gestor_usuarios.cargar_usuario(nombre_de_usuario)
+            return render_template('inicio_usuario')
+        except Exception as e:
+            flash(str(e))
     return render_template('login.html')
 
 @app.route('/logout')

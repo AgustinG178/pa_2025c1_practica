@@ -1,5 +1,5 @@
 from modules.usuarios import Usuario
-from modules.repositorio import RepositorioAbstracto, RepositorioUsuariosSQLAlchemy
+from modules.repositorio import RepositorioUsuariosSQLAlchemy
 from modules.BaseDeDatos import BaseDatos
 
 class GestorUsuarios:
@@ -14,20 +14,20 @@ class GestorUsuarios:
         if self.repositorio.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
         usuario = Usuario(nombre, apellido, email, nombre_de_usuario, password, rol, claustro)
-        self.repositorio.guardar_registro(usuario.map_to_modelo_bd())
+        self.repositorio.guardar_registro(usuario)
 
-    def autenticar_usuario(self, email, password):
-        usuario = self.repositorio.obtener_registro_por_filtro("email", email)
+    def autenticar_usuario(self, nombre_de_usuario, password):
+        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario, "contraseña", password)
         if not usuario:
             raise ValueError("El usuario no está registrado")
         if usuario.contraseña != password:
             raise ValueError("Contraseña incorrecta")
         return usuario.__dict__ 
         
-    def cargar_usuario(self, id_usuario):
-        usuario = self.repositorio.obtener_registro_por_filtro("id", id_usuario)
+    def cargar_usuario(self, nombre_de_usuario):
+        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario)
         if usuario:
-            return usuario.to_dict()
+            return usuario.__dict__()
         else:
             raise ValueError("Usuario no encontrado")
 
@@ -40,7 +40,7 @@ class GestorUsuarios:
         usuario = self.repositorio.obtener_registro_por_filtro("id", usuario_id)
         if not usuario:
             raise ValueError("Usuario no encontrado")
-        self.repositorio.eliminar_registro(usuario_id)
+        self.repositorio.eliminar_registro_por_id(usuario_id)
 
     def buscar_usuario(self, filtro, valor):
         usuario = self.repositorio.obtener_registro_por_filtro(filtro, valor)

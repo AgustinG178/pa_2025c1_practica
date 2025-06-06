@@ -1,6 +1,7 @@
-from modules.modelos import Usuario, Reclamo,Departamento
+from modules.modelos import ModeloUsuario, Reclamo,Departamento
 from sqlalchemy.orm import Session
 from modules.repositorio import RepositorioReclamosSQLAlchemy
+from modules.usuarios import Usuario
 
 #Tiene sentido esta clase? Para mi no, es lo mismo que los dos repositorios del modulo repositorio
 # class IRepositorioReclamos:
@@ -67,14 +68,15 @@ class GestorReclamo:
         Se buscan y devuelven todos los reclamos asociados a un usuario
         """
         if isinstance(usuario, Usuario):
-            reclamos_base = self.repositorio_reclamo.obtener_todos_los_registros()
-            reclamos_usuario = []
 
-            for reclamo in reclamos_base:
-                if reclamo.usuario_id == usuario.id:
-                    reclamos_usuario.append(reclamo)
+            try:
 
-            return reclamos_usuario
+                reclamos = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="usuario_id", valor=usuario.__id)
+
+                return reclamos
+
+            except AttributeError:
+                return "El usuario no posee reclamos asociados"
 
         raise TypeError("El usuario no es una instancia de la clase Usuario")
 
