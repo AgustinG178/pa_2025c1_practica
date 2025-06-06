@@ -94,14 +94,14 @@ def mis_reclamos():
     return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos)
 
 @app.route('/crear_reclamos', methods=['GET', 'POST'])
-@login_required
+@login_required 
 def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
         departamento = request.form.get('departamento')
         try:
             gestor_reclamos.crear_reclamo(
-                usuario_id=current_user.id,
+                usuario=current_user,
                 descripcion=descripcion,
                 departamento=departamento
             )

@@ -1,17 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RECLAMO</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
     <form action="{{ url_for('crear_reclamos') }}" method="POST">
         <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" name="descripcion" required>
+        <input type="text" id="descripcion" name="descripcion" required />
+
         <label for="departamento">Departamento:</label>
-        <input type="text" id="departamento" name="departamento" required>
+        <select id="departamento" name="departamento" required>
+            <option value="" disabled selected>Seleccione un departamento</option>
+            <option value="Ventas">Informatica</option>
+            <option value="Soporte">Servicio Tecnico</option>
+            <option value="Recursos Humanos">Matematica</option>
+            <option value="Finanzas">Mesa Entrada</option>
+        </select>
+
         <button type="submit">Crear Reclamo</button>
     </form>
 </body>
