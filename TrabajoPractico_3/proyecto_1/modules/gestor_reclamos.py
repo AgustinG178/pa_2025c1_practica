@@ -17,19 +17,20 @@ class GestorReclamo:
     def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamo = repositorio_reclamo
 
-    def crear_reclamo(self, usuario: Usuario, descripcion: str):
-
+    def crear_reclamo(self, usuario: Usuario, descripcion: str, departamento: str):
         """
         Se crea un reclamo a partir de un Usuario, descripcion y Departamento
         """
-        if isinstance(usuario, Usuario) and descripcion != "":
-
-            p_reclamo = Reclamo(usuario_id=usuario.id, contenido=descripcion)
-
-            self.repositorio_reclamo.guardar_registro(p_reclamo)
-
+        if isinstance(usuario, Usuario) and descripcion != "" and departamento != "":
+            p_reclamo = Reclamo(
+                usuario_id=usuario.id,
+                contenido=descripcion,
+                departamento=departamento
+            )
+            self.repositorio_reclamo.guardar_registro(RepositorioReclamosSQLAlchemy.mapear_reclamo_a_modelo(p_reclamo))
         else:
             return "Verificar que los datos ingresados sean correctos"
+
 
     def buscar_reclamos_por_usuario(self, usuario: Usuario):
         """

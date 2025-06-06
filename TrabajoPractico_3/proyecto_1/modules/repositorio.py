@@ -96,14 +96,24 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session = session
         ModeloReclamo.metadata.create_all(engine)
 
+    def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
+        return ModeloReclamo(
+            estado=reclamo.estado,
+            fecha_hora=reclamo.fecha_hora,
+            contenido=reclamo.contenido,
+            departamento=reclamo.departamento,
+            clasificacion=reclamo.clasificacion
+        )
+
     def guardar_registro(self, reclamo):
-        if not isinstance(reclamo, Reclamo):
+        reclamo = self.mapear_reclamo_a_modelo(reclamo)
+        if not isinstance(reclamo, ModeloReclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")
         self.__session.add(reclamo)
         self.__session.commit()
 
-    def obtener_todos_los_registros(self):
-        return self.__session.query(Reclamo).all()
+    def obtener_todos_los_registros(self, usuario_id):
+        return self.__session.query(ModeloReclamo).filter_by(usuario_id=usuario_id).all()
 
     def modificar_registro(self, reclamo_a_modificar: Reclamo):
         """

@@ -90,31 +90,40 @@ def inicio_usuario():
 @app.route('/mis_reclamos')
 @login_required
 def mis_reclamos():
-    reclamos = repo_reclamos.obtener_reclamos(current_user.id)
+    reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
     return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos)
 
 @app.route('/crear_reclamos', methods=['GET', 'POST'])
-@login_required 
+@login_required
 def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
         departamento = request.form.get('departamento')
+        print(f"[DEBUG] Datos recibidos - Descripción: {descripcion}, Departamento: {departamento}")
+        print(f"[DEBUG] Usuario actual: {current_user}")
+
         try:
             gestor_reclamos.crear_reclamo(
                 usuario=current_user,
                 descripcion=descripcion,
                 departamento=departamento
             )
+            print("[DEBUG] Reclamo creado con éxito.")
             flash('Reclamo creado exitosamente.', 'success')
             return redirect(url_for('mis_reclamos'))
         except Exception as e:
+            print(f"[ERROR] Error al crear el reclamo: {e}")
             flash(f'Error al crear el reclamo: {e}', 'danger')
+
+    else:
+        print("[DEBUG] Método GET: mostrando formulario de creación de reclamos.")
     return render_template('crear_reclamo.html')
+
 
 @app.route('/listar_reclamos')
 @login_required
 def listar_reclamos():
-    reclamos = repo_reclamos.obtener_todos_los_reclamos()
+    reclamos = repo_reclamos.obtener_todos_los_registros()
     return render_template('listar_reclamos.html', reclamos=reclamos)
 
 @login_manager.user_loader

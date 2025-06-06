@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
+    <h1>Crear Reclamo</h1>
     <form action="{{ url_for('crear_reclamos') }}" method="POST">
         <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" name="descripcion" required />
+        <input type="creacion" id="creacion" name="creacion" required />
 
         <label for="departamento">Departamento:</label>
         <select id="departamento" name="departamento" required>
@@ -19,7 +20,6 @@
             <option value="Recursos Humanos">Matematica</option>
             <option value="Finanzas">Mesa Entrada</option>
         </select>
-
         <button type="submit">Crear Reclamo</button>
     </form>
 </body>
