@@ -8,13 +8,17 @@
 </head>
 <body>
     <h1>Iniciar Sesión</h1>
-    <form action="{{ url_for('iniciar_sesion') }}" method="POST" style="max-width:400px;margin:auto;">
+    <form action="{{ url_for('iniciar_sesion') }}" method="POST" style="max-width:400px;margin:auto;", name="password">
         <div class="form-group">
             <label for="nombre_de_usuario">nombre de usuario:</label>
-            <input type="nombre_de_usuario" id="nombre_de_usuario" name="nombre_de_usuario" required>
+            <input type="nombre_de_usuario" id="nombre_de_usuario" name="nombre_de_usuario" required class ="form-usuario">
         </div>
         <div class="form-group">
             <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="password"> Repetir Contraseña:</label>
             <input type="password" id="password" name="password" required>
         </div>
         <button type="submit">Ingresar</button>

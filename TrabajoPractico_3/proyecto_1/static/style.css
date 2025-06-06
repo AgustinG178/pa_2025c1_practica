@@ -74,6 +74,17 @@ form {
     margin-bottom: 18px;
 }
 
+.form-usuario {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #bfc9d1;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-bottom: 4px;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+
 label {
     display: block;
     font-weight: bold;
@@ -133,5 +144,4 @@ button[type="submit"]:hover {
     text-align: left;
     margin-top: 5%;
     color: #f2eeee;
-
 }

@@ -69,7 +69,7 @@ def iniciar_sesion():
             print("Usuario cargado:", usuario)
             login_user(FlaskLoginUser(usuario))
             print("Usuario logueado con éxito, redirigiendo...")
-            return render_template('usuario_inicio.html', usuario=current_user)
+            return render_template('inicio.html', usuario=current_user)
         except Exception as e:
             print("Error en autenticación:", e)
             flash(str(e))
@@ -85,7 +85,7 @@ def logout():
 @app.route('/inicio_usuario')
 @login_required
 def inicio_usuario():
-    return render_template('usuario_inicio.html', usuario=current_user)
+    return render_template('inicio.html', usuario=current_user)
 
 @app.route('/mis_reclamos')
 @login_required
@@ -119,7 +119,7 @@ def listar_reclamos():
 
 @login_manager.user_loader
 def load_user(user_id):
-    usuario = repo_usuarios.obtener_por_id(user_id)
+    usuario = repo_usuarios.obtener_registro_por_filtro(campo='id', valor = user_id)
     if usuario:
         return FlaskLoginUser(usuario)
     return None
