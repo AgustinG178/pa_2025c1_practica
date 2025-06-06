@@ -1,46 +1,9 @@
-from abc import ABC, abstractmethod
-from modules.modelos import ModeloUsuario, Reclamo
+from modules.modelos import ModeloUsuario, ModeloReclamo
 from modules.config import crear_engine
-
-class Repositorio(ABC):
-    @abstractmethod
-    def guardar_registro(self, entidad:object):
-        """
-        Se guarda la entidad (objeto) en la base de datos
-        """
-
-        raise NotImplementedError
-
-    @abstractmethod
-    def obtener_todos_los_registros(self) -> list:
-        """
-        Se obtienen todos los registros (reclamos/usuarios) existentes en la base de daots
-        """
-        raise NotImplementedError
-    
-    @abstractmethod
-    def modificar_registro(self, entidad_modificada:object):
-        """
-        Se modifica una entidad, se pasa como parámetro la misma entidad con sus atributos modificados
-        """
-        raise NotImplementedError   
-    
-    @abstractmethod
-    def obtener_registro_por_filtro(self, filtro, valor):
-        """
-        Se obtiene un registro (reclamo/usuario) según un filtro correspondiente a sus atributos (id,nombre...)
-        """
-        
-        raise NotImplementedError
-    
-    @abstractmethod
-
-    def eliminar_registro_por_id(self, id):
-        """
-        Se elimina un registro mediante su id
-        """
-            
-        raise NotImplementedError
+from modules.usuarios import Usuario
+from modules.reclamo import Reclamo
+from modules.repositorio_ABC import Repositorio
+from sqlalchemy.orm import Session
 
 def crear_repositorio():
     session = crear_engine()
@@ -49,8 +12,8 @@ def crear_repositorio():
     return repo_reclamos, repo_usuario
 
 class RepositorioUsuariosSQLAlchemy(Repositorio):
-    def __init__(self, session):
-        self.__session = session
+    def __init__(self, session: Session):
+        self.__session: Session = session
         ModeloUsuario.metadata.create_all(self.__session.bind)
 
     def guardar_registro(self, usuario):
@@ -83,8 +46,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             modelo.nombre_de_usuario,
             modelo.contraseña,
             modelo.claustro,
-            modelo.rol,
-            modelo.jefe_de 
+            modelo.rol, 
         )        
     def __map_entidad_a_modelo(self, entidad: Usuario):
         return ModeloUsuario(
@@ -94,8 +56,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             nombre_de_usuario=entidad.nombre_de_usuario,
             contraseña=entidad.contraseña,
             claustro=entidad.claustro,
-            rol=entidad.rol,
-            jefe_de=entidad.jefe_de
+            rol=entidad.rol
         )
 
     def obtener_registro_por_filtro(self, filtro, valor):
@@ -115,9 +76,9 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
         return self.__session.query(ModeloUsuario).filter_by(**kwargs).first()
 
 class RepositorioReclamosSQLAlchemy(Repositorio):
-    def __init__(self, session):
-        self.__session = session
-        Reclamo.metadata.create_all(self.__session.bind)
+    def __init__(self, session: Session):
+        self.__session: Session = session
+        ModeloReclamo.metadata.create_all(self.__session.bind)
 
     def guardar_registro(self, reclamo):
         if not isinstance(reclamo, Reclamo):
@@ -127,22 +88,26 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
     def obtener_todos_los_registros(self):
         return self.__session.query(Reclamo).all()
-    
-    def modificar_registro(self, reclamo_modificado):
-        if not isinstance(reclamo_modificado, Reclamo):
+
+    def modificar_registro(self, reclamo_a_modificar: Reclamo):
+        """
+        Modifica un reclamo existente en la base de datos con los datos proporcionados.
+        """
+        if not isinstance(reclamo_a_modificar, Reclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")
-        reclamo_db = self.__session.query(Reclamo).filter_by(id=reclamo_modificado.id).first()
-        if reclamo_db:
-            reclamo_db.estado = reclamo_modificado.estado
-            reclamo_db.contenido = reclamo_modificado.contenido
-            reclamo_db.departamento_id = reclamo_modificado.departamento_id
-            reclamo_db.usuario_id = reclamo_modificado.usuario_id
-            self.__session.commit()
+
+        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.ID).first()
+        if not reclamo_db:
+            raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.ID}")
+
+        reclamo_db.estado = reclamo_a_modificar.estado
+        reclamo_db.contenido = reclamo_a_modificar.contenido
+
+        self.__session.commit()
 
     def obtener_registro_por_filtro(self, filtro, valor):
         reclamo = self.__session.query(Reclamo).filter_by(**{filtro: valor}).first()
         return reclamo if reclamo else None
-    
     
     def eliminar_registro_por_id(self, id):
         reclamo = self.__session.query(Reclamo).filter_by(id=id).first()
@@ -154,7 +119,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """
         Se actualiza la información de un reclamo
         """
-
         self.__session.merge(reclamo)
 
         self.__session.commit()

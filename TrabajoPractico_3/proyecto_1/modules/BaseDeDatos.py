@@ -1,14 +1,10 @@
-from sqlalchemy import create_engine, MetaData,  Column, Integer, String, Float, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker, relationship
-from datetime import datetime
-from sqlalchemy.ext.declarative import declarative_base
-from modules.modelos import Base, ModeloUsuario, Reclamo
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from modules.modelos import Base, Reclamo
 
 """Se encarga de la conexión, las sesiones y las operaciones CRUD (crear, leer, actualizar, borrar) usando los modelos. Es el "puente" entre la logica del programa y la base de datos."""
 
 """El método query de SQLAlchemy se utiliza para realizar consultas a la base de datos y obtener objetos de tus modelos (tablas) de manera sencilla y orientada a objetos."""
-
-Base = declarative_base()
 
 #Lo mismo con esto, en la parte de modelos hace lo mismo
 

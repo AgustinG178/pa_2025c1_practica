@@ -1,42 +1,8 @@
-from modules.modelos import ModeloUsuario, Reclamo,Departamento
-from sqlalchemy.orm import Session
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.usuarios import Usuario
+from modules.reclamo import Reclamo
 
-#Tiene sentido esta clase? Para mi no, es lo mismo que los dos repositorios del modulo repositorio
-# class IRepositorioReclamos:
-#     def __init__(self, session: Session):
-#         """
-#         Inicializa el repositorio con una sesión de base de datos.
-#         """
-#         self.session = session
-
-#     def guardar_usuario(self, usuario: Usuario):
-#         """
-#         Guarda un objeto Usuario en la base de datos.
-#         """
-#         self.session.add(usuario)
-#         self.session.commit()
-
-#     def guardar_reclamo(self, reclamo: Reclamo):
-#         """
-#         Guarda un objeto Reclamo en la base de datos.
-#         """
-#         self.session.add(reclamo)
-#         self.session.commit()
-
-#     def actualizar_reclamo(self, reclamo: Reclamo):
-#         """
-#         Actualiza un objeto Reclamo existente en la base de datos.
-#         """
-#         self.session.merge(reclamo)
-#         self.session.commit()
-
-#     def obtener_reclamos(self, usuario: Usuario):
-#         """
-#         Obtiene todos los reclamos de un usuario.
-#         """
-#         return self.session.query(Reclamo).filter_by(usuario_id=usuario.id).all()
+repositorio_reclamo = RepositorioReclamosSQLAlchemy()
 
 class GestorReclamo:
 
@@ -49,14 +15,14 @@ class GestorReclamo:
     def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamo = repositorio_reclamo
 
-    def crear_reclamo(self, usuario: Usuario, descripcion: str, departamento: Departamento):
+    def crear_reclamo(self, usuario: Usuario, descripcion: str):
 
         """
         Se crea un reclamo a partir de un Usuario, descripcion y Departamento
         """
-        if isinstance(usuario, Usuario) and isinstance(departamento, Departamento) and descripcion != "":
+        if isinstance(usuario, Usuario) and descripcion != "":
 
-            p_reclamo = Reclamo(usuario_id=usuario.id, contenido=descripcion, departamento_id=departamento.id)
+            p_reclamo = Reclamo(usuario_id=usuario.id, contenido=descripcion)
 
             self.repositorio_reclamo.guardar_registro(p_reclamo)
 
@@ -80,7 +46,7 @@ class GestorReclamo:
 
         raise TypeError("El usuario no es una instancia de la clase Usuario")
 
-    def actualizar_estado_reclamo(self, usuario: Usuario, reclamo_id: int):
+    def actualizar_estado_reclamo(self, usuario: Usuario, reclamo: Reclamo):
 
         """
         Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
@@ -89,7 +55,7 @@ class GestorReclamo:
         if usuario.rol in ["Secretario Tecnico", "Jefe de Departamento"]:
             try:
 
-                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
+                reclamo_a_modificar = self.reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
 
                 reclamo_a_modificar.estado = "resuelto"
 
@@ -97,7 +63,7 @@ class GestorReclamo:
 
                 return "¡¡Reclamo resuelto correctamente!!"
             except AttributeError:
-                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+                return f"El reclamo no existe y/o la id: {reclamo.id} no es correcta"
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
 
@@ -157,5 +123,3 @@ class GestorReclamo:
                 return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
 
         raise TypeError("El usuario no es una instancia de la clase reclamo.")
-
-#Asumo que el estado solo es "pendiente" o "resuelto"

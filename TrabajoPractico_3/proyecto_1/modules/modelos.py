@@ -1,9 +1,21 @@
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, DeclarativeBase
 from datetime import datetime, UTC
+from modules.gestor_reclamos import GestorReclamo
+from modules.reclamo import Reclamo
+from modules.usuarios import Usuario
 
-Base = declarative_base()
+gestor_reclamo = GestorReclamo()
+
+# Base de datos base para los modelos
+class Base(DeclarativeBase):
+    """
+    DeclarativeBase es la clase base moderna para todos los modelos de SQLAlchemy.
+    Esta clase base actúa como el punto de partida para todos los modelos ORM y contiene la metadata que describe las tablas asociadas.
+
+    Todos los modelos que representan tablas en la base de datos deben heredar de esta clase.
+    """
+    pass
 
 # Tabla intermedia para la relación muchos a muchos
 usuarios_reclamos = Table(
@@ -11,14 +23,6 @@ usuarios_reclamos = Table(
     Column('usuario_id', Integer, ForeignKey('usuarios.id')),
     Column('reclamo_id', Integer, ForeignKey('reclamos.id'))
 )
-
-class Departamento(Base):
-    __tablename__ = 'departamento'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    nombre = Column(String)
-    jefe = Column(Integer, ForeignKey("usuarios.id"))
-    reclamos_departamento = relationship("Reclamo", back_populates="departamento_obj")
-    jefe_departamento = relationship("Usuario", back_populates="departamento_asociado")
 
 class ModeloUsuario(Base):
     __tablename__ = 'usuarios'
@@ -51,12 +55,6 @@ class ModeloUsuario(Base):
         self.claustro = claustro
         self.rol = rol
 
-    def solicitar_reclamo(self, gestor_reclamo, descripcion, datos_adicionales):
-        gestor_reclamo.crear_reclamo(self, descripcion, datos_adicionales)
-
-    def ver_reclamos(self, gestor_reclamo):
-        return gestor_reclamo.buscar_reclamos_por_usuario(self)
-
 class ModeloReclamo(Base):
     __tablename__ = 'reclamos'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -75,7 +73,7 @@ class ModeloReclamo(Base):
     usuario = relationship("Usuario", foreign_keys=[usuario_id], backref="reclamos_creados")
     departamento_obj = relationship("Departamento", back_populates="reclamos_departamento")
 
-    @property
-    def departamento(self):
-        return self.departamento_obj.nombre if self.departamento_obj else None
+    # @property
+    # def departamento(self):
+    #     return self.departamento_obj.nombre if self.departamento_obj else None
 

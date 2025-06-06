@@ -35,6 +35,14 @@ class Usuario():
     @property
     def id(self):
         return self.__id
+    
+    @property
+    def claustro(self):
+        return self.__claustro
+    
+    @property
+    def rol(self):
+        return self.__rol
 
     def registrar(self, base_datos: BaseDatos):
         pass
