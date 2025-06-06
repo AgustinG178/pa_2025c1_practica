@@ -138,6 +138,3 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.merge(reclamo)
 
         self.__session.commit()
-        
-if __name__ == "__main__":
-    print(type(self.__session))  # Para verificar si es una instancia correcta

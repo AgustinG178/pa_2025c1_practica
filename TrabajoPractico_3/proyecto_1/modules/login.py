@@ -17,6 +17,24 @@ class FlaskLoginUser:
 
     def get_id(self):
         return str(self.id)
+    
+    """is_authenticated dice si el usuario está autenticado (normalmente True si está logueado)
+
+    is_active es para saber si el usuario está activo (usualmente True)
+
+    is_anonymous indica si es un usuario anónimo (normalmente False para usuarios logueados)"""
+    
+    @property
+    def is_authenticated(self):
+        return True
+    
+    @property
+    def is_active(self):
+        return True
+    
+    @property
+    def is_anonymous(self):
+        return False
 
 class GestorLogin:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):

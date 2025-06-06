@@ -1,14 +1,14 @@
 <mxfile host="65bd71144e">
     <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-        <mxGraphModel dx="3171" dy="3863" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="3562" dy="3882" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-0"/>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0"/>
                 <mxCell id="7" value="&lt;span&gt;Usuario&lt;/span&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;swimlaneLine=1;shadow=1;rounded=1;fontColor=default;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-                    <mxGeometry x="414" y="730" width="160" height="120" as="geometry"/>
+                    <mxGeometry x="414" y="730" width="160" height="150" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="- nombre&lt;div&gt;-apellido&lt;/div&gt;&lt;div&gt;-email&lt;/div&gt;&lt;div&gt;-nombre_de_usuario&lt;/div&gt;&lt;div&gt;-contraseña&lt;/div&gt;&lt;div&gt;- rol : list[0,1,2,3,4,5,...,n]&lt;/div&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontStyle=0;swimlaneLine=1;shadow=1;rounded=1;fontColor=default;" parent="7" vertex="1">
-                    <mxGeometry y="26" width="160" height="94" as="geometry"/>
+                <mxCell id="8" value="- nombre&lt;div&gt;- apellido&lt;/div&gt;&lt;div&gt;- email&lt;/div&gt;&lt;div&gt;- nombre_de_usuario&lt;/div&gt;&lt;div&gt;- contraseña&lt;/div&gt;&lt;div&gt;- rol : int&lt;/div&gt;&lt;div&gt;- claustro: str&lt;/div&gt;&lt;div&gt;- id:int&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontStyle=0;swimlaneLine=1;shadow=1;rounded=1;fontColor=default;" parent="7" vertex="1">
+                    <mxGeometry y="26" width="160" height="124" as="geometry"/>
                 </mxCell>
                 <mxCell id="288" style="edgeStyle=none;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;startArrow=diamondThin;startFill=0;endArrow=none;endFill=0;startSize=12;fontColor=default;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="19" target="285" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -172,7 +172,7 @@
                 <mxCell id="252" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;rounded=1;fontColor=default;" parent="250" vertex="1">
                     <mxGeometry y="52" width="380" height="8" as="geometry"/>
                 </mxCell>
-                <mxCell id="253" value="+ crear_reclamo(usuario, descripcion, datos_adicionales):&amp;nbsp;&lt;br&gt;+ buscar_reclamos_por_usuario(usuario):&amp;nbsp; +actualizar_estado_reclamo(reclamo_id, nuevo_estado):&lt;br&gt;&amp;nbsp;+listar_todos_los_reclamos():&amp;nbsp;&lt;br&gt;+ eliminar_reclamo(reclamo_id)&lt;div&gt;+ asignar_departamento(reclamo_id, departamento)&lt;/div&gt;&lt;div&gt;+ agregar_adherente(reclamo_id, usuario)&lt;br&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;fontColor=default;" parent="250" vertex="1">
+                <mxCell id="253" value="+ crear_reclamo(usuario, descripcion, datos_adicionales):&amp;nbsp;&lt;br&gt;+ buscar_reclamos_por_usuario(usuario): +actualizar_estado_reclamo(reclamo_id, nuevo_estado):&lt;br&gt;+ listar_todos_los_reclamos():&amp;nbsp;&lt;br&gt;+ eliminar_reclamo(reclamo_id)&lt;div&gt;+ asignar_departamento(reclamo_id, departamento)&lt;/div&gt;&lt;div&gt;+ agregar_adherente(reclamo_id, usuario)&lt;br&gt;&lt;br&gt;&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;rounded=1;fontColor=default;" parent="250" vertex="1">
                     <mxGeometry y="60" width="380" height="110" as="geometry"/>
                 </mxCell>
                 <mxCell id="254" value="RepositorioUsuarios" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;rounded=1;fontColor=default;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">

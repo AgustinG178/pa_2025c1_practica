@@ -53,12 +53,16 @@ def iniciar_sesion():
     if request.method == 'POST':
         nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
+        print(f"Intentando login: {nombre_de_usuario} / {password}")
         try:
             gestor_login.autenticar(nombre_de_usuario, password)
             usuario = gestor_usuarios.cargar_usuario(nombre_de_usuario)
+            print("Usuario cargado:", usuario)
             login_user(FlaskLoginUser(usuario))
-            return redirect(url_for('inicio_usuario'))
+            print("Usuario logueado con éxito, redirigiendo...")
+            return render_template('usuario_inicio.html', usuario=current_user)
         except Exception as e:
+            print("Error en autenticación:", e)
             flash(str(e))
     return render_template('login.html')
 
