@@ -2,6 +2,13 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, DeclarativeBase
 from datetime import datetime, UTC
 
+"""
+relationship() crea una relación entre dos clases en SQLAlchemy, como por ejemplo uno-a-muchos o muchos-a-muchos.  
+Permite acceder desde un objeto a los objetos relacionados en otra tabla, como `usuario.reclamos` o `reclamo.usuario`.
+"""
+
+
+
 # Base de datos base para los modelos
 class Base(DeclarativeBase):
     """
@@ -32,11 +39,10 @@ class ModeloUsuario(Base):
     jefe_de = Column(String)
 
     reclamos = relationship(
-        "Reclamo",
+        "ModeloReclamo",
         secondary=usuarios_reclamos,
         back_populates="usuarios"
     )
-    departamento_asociado = relationship("Departamento", back_populates="jefe_departamento")
     
     def __str__(self):  
         return f"Usuario: Nombre = {self.nombre}, Apellido = {self.apellido}, Email = {self.email}, Nombre_de_usuario = {self.nombre_de_usuario}, Rol = {self.rol}"
@@ -61,12 +67,11 @@ class ModeloReclamo(Base):
 
     # Relación muchos a muchos con Usuario
     usuarios = relationship(
-        "Usuario",
+        "ModeloUsuario",
         secondary=usuarios_reclamos,
         back_populates="reclamos"
     )
-    usuario = relationship("Usuario", foreign_keys=[usuario_id], backref="reclamos_creados")
-    departamento_obj = relationship("Departamento", back_populates="reclamos_departamento")
+    usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
 
     # @property
     # def departamento(self):

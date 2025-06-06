@@ -1,5 +1,5 @@
 from flask import render_template, flash, request, redirect, url_for
-from flask_login import login_required, logout_user, current_user
+from flask_login import login_required, logout_user, current_user, login_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
@@ -39,7 +39,8 @@ def registrarse():
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
                 claustro = 0,
-                rol=0
+                rol=0,
+                id=None  # El ID se asigna automáticamente por la base de datos
             )
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
             return redirect(url_for('iniciar_sesion'))
@@ -55,7 +56,8 @@ def iniciar_sesion():
         try:
             gestor_login.autenticar(nombre_de_usuario, password)
             usuario = gestor_usuarios.cargar_usuario(nombre_de_usuario)
-            return render_template('inicio_usuario')
+            login_user(FlaskLoginUser(usuario))
+            return redirect(url_for('inicio_usuario'))
         except Exception as e:
             flash(str(e))
     return render_template('login.html')

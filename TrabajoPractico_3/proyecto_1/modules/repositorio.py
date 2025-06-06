@@ -3,23 +3,23 @@ from modules.config import crear_engine
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.repositorio_ABC import Repositorio
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session as SessionSQL
 
-engine, Session = crear_engine()  # Session es sessionmaker
+engine, session = crear_engine()  # Session es sessionmaker
 
 def crear_repositorio():
-    session1 = Session()  # crea una sesión activa
-    session2 = Session()  # otra sesión independiente
+    session1 = SessionSQL()  # crea una sesión activa
+    session2 = SessionSQL()  # otra sesión independiente
     repo_reclamos = RepositorioReclamosSQLAlchemy(session1)
     repo_usuario = RepositorioUsuariosSQLAlchemy(session2)
     return repo_reclamos, repo_usuario
 
 class RepositorioUsuariosSQLAlchemy(Repositorio):
-    def __init__(self, session):
+    def __init__(self, session: SessionSQL):
         self.__session = session
-        ModeloUsuario.metadata.create_all(engine)  # crea tablas con engine
+        ModeloUsuario.metadata.create_all(engine)
 
-    def guardar_registro(self, usuario):
+    def guardar_registro(self, usuario:ModeloUsuario):
         if not isinstance(usuario, ModeloUsuario):
             raise ValueError("El parámetro no es una instancia de la clase ModeloUsuario")
         self.__session.add(usuario)
@@ -40,17 +40,34 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             usuario_db.contraseña = usuario_modificado.contraseña
             self.__session.commit()
                     
+    def obtener_registro_por_filtro(self, campo, valor, campo2=None, valor2=None):
+        # Implementación para el método abstracto esperado
+        query = self.__session.query(ModeloUsuario).filter(getattr(ModeloUsuario, campo) == valor)
+        if campo2 and valor2:
+            query = query.filter(getattr(ModeloUsuario, campo2) == valor2)
+        modelo = query.first()
+        if modelo:
+            return self.__map_modelo_a_entidad(modelo)
+        return None
+
+    def obtener_registro_por_filtros(self, **filtros):
+        modelo = self.__session.query(ModeloUsuario).filter_by(**filtros).first()
+        if modelo:
+            return self.__map_modelo_a_entidad(modelo)
+        return None
+    
     def __map_modelo_a_entidad(self, modelo: ModeloUsuario):
         return Usuario(
-            modelo.id,
-            modelo.nombre,
-            modelo.apellido,
-            modelo.email,
-            modelo.nombre_de_usuario,
-            modelo.contraseña,
-            modelo.claustro,
-            modelo.rol, 
-        )        
+            nombre=modelo.nombre,
+            apellido=modelo.apellido,
+            email=modelo.email,
+            nombre_de_usuario=modelo.nombre_de_usuario,
+            contraseña=modelo.contraseña,
+            claustro=modelo.claustro,
+            rol=modelo.rol,
+            id=modelo.id
+        )
+
     def __map_entidad_a_modelo(self, entidad: Usuario):
         return ModeloUsuario(
             nombre=entidad.nombre,
@@ -61,10 +78,6 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             claustro=entidad.claustro,
             rol=entidad.rol
         )
-
-    def obtener_registro_por_filtro(self, filtro, valor):
-        usuario = self.__session.query(ModeloUsuario).filter_by(**{filtro: valor}).first()
-        return self.__map_modelo_a_entidad(usuario) if usuario else None
     
     def eliminar_registro_por_id(self, id):
         usuario = self.__session.query(ModeloUsuario).filter_by(id=id).first()
@@ -79,8 +92,8 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
         return self.__session.query(ModeloUsuario).filter_by(**kwargs).first()
 
 class RepositorioReclamosSQLAlchemy(Repositorio):
-    def __init__(self, session: Session):
-        self.__session: Session = session
+    def __init__(self, session: SessionSQL):
+        self.__session = session
         ModeloReclamo.metadata.create_all(engine)
 
     def guardar_registro(self, reclamo):
@@ -125,3 +138,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.merge(reclamo)
 
         self.__session.commit()
+        
+if __name__ == "__main__":
+    print(type(self.__session))  # Para verificar si es una instancia correcta
