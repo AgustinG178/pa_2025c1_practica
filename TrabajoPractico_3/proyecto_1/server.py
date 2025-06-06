@@ -22,7 +22,6 @@ gestor_reclamos = GestorReclamo(repo_reclamos)
 @app.route('/')
 def index():
     return render_template('inicio.html')
-
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
     if request.method == 'POST':
@@ -31,21 +30,31 @@ def registrarse():
         email = request.form.get('email')
         nombre_de_usuario = request.form.get('nombre_de_usuario')
         password = request.form.get('password')
+
+        print(f"[DEBUG] Datos recibidos -> nombre: {nombre}, apellido: {apellido}, email: {email}, usuario: {nombre_de_usuario}")
+
         try:
+            print("[DEBUG] Intentando registrar nuevo usuario...")
             gestor_usuarios.registrar_nuevo_usuario(
                 nombre=nombre,
                 apellido=apellido,
                 email=email,
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
-                claustro = 0,
+                claustro=0,
                 rol=0,
                 id=None  # El ID se asigna automáticamente por la base de datos
             )
+            print("[DEBUG] Usuario registrado exitosamente.")
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
             return redirect(url_for('iniciar_sesion'))
         except ValueError as e:
+            print(f"[ERROR] Error al registrar usuario: {e}")
             flash(str(e), 'danger')
+        except Exception as e:
+            print(f"[ERROR] Error inesperado al registrar usuario: {e}")
+            flash('Ocurrió un error inesperado. Por favor, inténtelo más tarde.', 'danger')
+
     return render_template('registrarse.html')
 
 @app.route('/iniciar_sesion', methods=['GET', 'POST'])

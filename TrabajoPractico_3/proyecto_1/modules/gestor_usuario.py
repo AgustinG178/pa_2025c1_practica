@@ -13,8 +13,11 @@ class GestorUsuarios:
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro, id):
         if self.repositorio.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
+        
         usuario = Usuario(nombre, apellido, email, nombre_de_usuario, password, rol, claustro, id)
-        self.repositorio.guardar_registro(usuario)
+        modelo_usuario = self.repositorio._map_entidad_a_modelo(usuario) 
+        self.repositorio.guardar_registro(modelo_usuario)
+
 
     def autenticar_usuario(self, nombre_de_usuario, password):
         usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario, "contraseña", password)
