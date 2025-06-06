@@ -156,3 +156,69 @@ button[type="submit"]:hover {
     margin-top: 5%;
     color: #f2eeee;
 }
+
+/* Estilos para tablas */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1em;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+thead {
+    background-color: #003366;
+    color: #fff;
+    text-align: left;
+}
+
+thead th {
+    padding: 12px 16px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f5f7fa;
+}
+
+tbody tr:hover {
+    background-color: #e6e9ef;
+}
+
+tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    border-left: 1px solid #ddd;
+}
+
+tbody td:first-child {
+    border-left: none;
+}
+
+/* Opcional: Estilo para botones dentro de tablas */
+
+table button {
+    background-color: #003366;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+table button:hover {
+    background-color: #00509e;
+}

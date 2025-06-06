@@ -64,6 +64,7 @@ class ModeloReclamo(Base):
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
     departamento_id = Column(String, ForeignKey('departamento.id'))
+    clasificacion = Column(String)
 
     # Relación muchos a muchos con Usuario
     usuarios = relationship(
@@ -76,4 +77,9 @@ class ModeloReclamo(Base):
     # @property
     # def departamento(self):
     #     return self.departamento_obj.nombre if self.departamento_obj else None
-
+    
+class ModeloDepartamento(Base):
+    __tablename__ = 'departamento'
+    id = Column(String, primary_key=True)
+    nombre = Column(String)
+    reclamos = relationship("ModeloReclamo", backref="departamento_obj")

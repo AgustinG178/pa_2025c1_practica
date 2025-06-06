@@ -1,4 +1,4 @@
-from modules.modelos import ModeloUsuario, ModeloReclamo
+from modules.modelos import ModeloUsuario, ModeloReclamo, ModeloDepartamento
 from modules.config import crear_engine
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
@@ -96,20 +96,20 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session = session
         ModeloReclamo.metadata.create_all(engine)
 
+    @staticmethod
     def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
         return ModeloReclamo(
             estado=reclamo.estado,
             fecha_hora=reclamo.fecha_hora,
             contenido=reclamo.contenido,
-            departamento=reclamo.departamento,
-            clasificacion=reclamo.clasificacion
+            usuario_id=reclamo.usuario_id,  # Asegúrate que Reclamo tenga el atributo usuario_id
+            clasificacion=reclamo.clasificacion  # Si este campo existe en ModeloReclamo y Reclamo
         )
 
-    def guardar_registro(self, reclamo):
-        reclamo = self.mapear_reclamo_a_modelo(reclamo)
-        if not isinstance(reclamo, ModeloReclamo):
-            raise ValueError("El parámetro no es una instancia de la clase Reclamo")
-        self.__session.add(reclamo)
+    def guardar_registro(self, modelo_reclamo: ModeloReclamo):
+        if not isinstance(modelo_reclamo, ModeloReclamo):
+            raise ValueError("El parámetro debe ser un ModeloReclamo")
+        self.__session.add(modelo_reclamo)
         self.__session.commit()
 
     def obtener_todos_los_registros(self, usuario_id):
@@ -148,3 +148,36 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.merge(reclamo)
 
         self.__session.commit()
+
+if __name__ == "__main__":
+    from modules.config import crear_engine
+    from datetime import datetime
+
+    # Crear engine y sesión
+    engine, Session = crear_engine()
+    session = Session()
+
+    # Instanciar el repositorio
+    repo = RepositorioReclamosSQLAlchemy(session)
+
+    # Crear reclamo de prueba
+    reclamo_prueba = Reclamo(
+        estado="pendiente",
+        fecha_hora=datetime.now(),
+        contenido="Reclamo de prueba",
+        departamento="soporte",  # o lo que uses para 'departamento_id'
+        clasificacion = "general", # o lo que uses para 'clasificacion_id'
+        usuario_id=None  # Este campo se asignará manualmente más tarde
+    )
+
+    # Asignar usuario_id manualmente (debería coincidir con uno real en la tabla usuarios)
+    reclamo_prueba.usuario_id = 1
+
+    # Mapear y guardar
+    modelo = repo.mapear_reclamo_a_modelo(reclamo_prueba)
+    repo.guardar_registro(modelo)
+
+    # Verificar que se guardó correctamente
+    reclamos_guardados = repo.obtener_todos_los_registros(usuario_id=1)
+    # for r in reclamos_guardados:
+    #     print(f"ID: {r.id}, Estado: {r.estado}, Contenido: {r.contenido}, Usuario: {r.usuario_id}")
