@@ -1,11 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, DeclarativeBase
 from datetime import datetime, UTC
-from modules.gestor_reclamos import GestorReclamo
-from modules.reclamo import Reclamo
-from modules.usuarios import Usuario
-
-gestor_reclamo = GestorReclamo()
 
 # Base de datos base para los modelos
 class Base(DeclarativeBase):

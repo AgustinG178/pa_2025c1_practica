@@ -6,13 +6,14 @@ from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 import datetime
 
+
 app = Flask("server")
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 
 def crear_engine():
     engine = create_engine("sqlite:///data/base_datos.db")
     Session = sessionmaker(bind=engine)
-    return Session
+    return engine, Session
 
 app.config.from_object(__name__)
 app.config["SESSION_TYPE"] = "filesystem"

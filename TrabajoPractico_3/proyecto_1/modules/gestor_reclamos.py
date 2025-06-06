@@ -1,8 +1,10 @@
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
+from modules.config import crear_engine
 
-repositorio_reclamo = RepositorioReclamosSQLAlchemy()
+session = crear_engine()
+repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
 
 class GestorReclamo:
 
@@ -79,26 +81,6 @@ class GestorReclamo:
 
                 return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
 
-            except AttributeError:
-                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
-
-        raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
-
-    def asignar_departamento(self, usuario: Usuario, reclamo_id: int, departamento_nuevo: Departamento):
-        """
-        Se cambia el departamento al cual está asociado un reclamo.
-        """
-        if usuario.rol == "Secretario Tecnico":
-
-            try:
-
-                reclamo = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
-
-                reclamo.departamento_id == departamento_nuevo.id
-
-                self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo)
-
-                return f"El reclamo fue asignado al departamento {departamento_nuevo.nombre} correctamente!"
             except AttributeError:
                 return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
 

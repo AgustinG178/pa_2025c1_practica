@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from modules.modelos import Base, Reclamo
+from modules.modelos import Base
+from modules.reclamo import Reclamo
 
 """Se encarga de la conexión, las sesiones y las operaciones CRUD (crear, leer, actualizar, borrar) usando los modelos. Es el "puente" entre la logica del programa y la base de datos."""
 

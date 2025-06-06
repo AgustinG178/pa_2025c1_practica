@@ -5,16 +5,19 @@ from modules.reclamo import Reclamo
 from modules.repositorio_ABC import Repositorio
 from sqlalchemy.orm import Session
 
+engine, Session = crear_engine()  # Session es sessionmaker
+
 def crear_repositorio():
-    session = crear_engine()
-    repo_reclamos =  RepositorioReclamosSQLAlchemy(session())
-    repo_usuario = RepositorioUsuariosSQLAlchemy(session())
+    session1 = Session()  # crea una sesión activa
+    session2 = Session()  # otra sesión independiente
+    repo_reclamos = RepositorioReclamosSQLAlchemy(session1)
+    repo_usuario = RepositorioUsuariosSQLAlchemy(session2)
     return repo_reclamos, repo_usuario
 
 class RepositorioUsuariosSQLAlchemy(Repositorio):
-    def __init__(self, session: Session):
-        self.__session: Session = session
-        ModeloUsuario.metadata.create_all(self.__session.bind)
+    def __init__(self, session):
+        self.__session = session
+        ModeloUsuario.metadata.create_all(engine)  # crea tablas con engine
 
     def guardar_registro(self, usuario):
         if not isinstance(usuario, ModeloUsuario):
@@ -78,7 +81,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
 class RepositorioReclamosSQLAlchemy(Repositorio):
     def __init__(self, session: Session):
         self.__session: Session = session
-        ModeloReclamo.metadata.create_all(self.__session.bind)
+        ModeloReclamo.metadata.create_all(engine)
 
     def guardar_registro(self, reclamo):
         if not isinstance(reclamo, Reclamo):

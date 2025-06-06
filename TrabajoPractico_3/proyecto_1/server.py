@@ -1,5 +1,5 @@
 from flask import render_template, flash, request, redirect, url_for, session
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import login_required, logout_user, current_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
@@ -10,7 +10,7 @@ from modules.BaseDeDatos import BaseDatos
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
-Session = crear_engine()
+engine, Session = crear_engine()
 sqlalchemy_session = Session()
 
 repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
