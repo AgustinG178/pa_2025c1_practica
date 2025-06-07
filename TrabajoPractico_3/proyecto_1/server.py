@@ -6,19 +6,24 @@ from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
 from modules.BaseDeDatos import BaseDatos
-from datetime import datetime, UTC 
+from modules.classifier import Clasificador
+from modules.preprocesamiento import ProcesadorArchivo
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
 engine, Session = crear_engine()
 sqlalchemy_session = Session()
-
 repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
 gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
-gestor_reclamos = GestorReclamo(repo_reclamos)  
+procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
+X, y = procesador.datosEntrenamiento
+clf = Clasificador(X, y)
+clf._entrenar_clasificador()
+gestor_reclamos = GestorReclamo(repo_reclamos, clf) 
+ 
 
 @app.route('/')
 def index():
@@ -109,16 +114,24 @@ def crear_reclamos():
         print(f"[DEBUG] Usuario actual: {current_user}")
 
         try:
+            clasificacion_predicha = clf.clasificar([descripcion])[0]
+            clasificacion_predicha_str = str(clasificacion_predicha)
+            print(f"[DEBUG] Clasificación predicha: {clasificacion_predicha} ({type(clasificacion_predicha)})")
+
             reclamo = gestor_reclamos.crear_reclamo(
                 usuario=current_user,
                 descripcion=descripcion,
-                departamento=departamento
+                departamento=departamento,
+                clasificacion=clasificacion_predicha_str
             )
             print("[DEBUG] Reclamo creado con éxito.")
-            flash('Reclamo creado exitosamente.', 'success')
+            print(f"[DEBUG] Reclamo.clasificacion: {reclamo.clasificacion} ({type(reclamo.clasificacion)})")
+
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+            print(f"[DEBUG] ModeloReclamo.clasificacion antes de guardar: {modelo.clasificacion} ({type(modelo.clasificacion)})")
+
             repo_reclamos.guardar_registro(modelo)
-            flash('Reclamo guardado en la base de datos.', 'success')
+            flash('Reclamo creado y guardado exitosamente.', 'success')
             print("[DEBUG] Reclamo guardado en la base de datos.")
             return redirect(url_for('mis_reclamos'))
         except Exception as e:

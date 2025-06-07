@@ -3,6 +3,7 @@ from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
+from modules.classifier import Clasificador
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -15,10 +16,11 @@ class GestorReclamo:
     Sus metodos son practicamente los mismos que los del repositorio.
     """
 
-    def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
+    def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy, clasificador: Clasificador):
         self.repositorio_reclamo = repositorio_reclamo
+        self.clasificador = clasificador
 
-    def crear_reclamo(self, usuario, descripcion: str, departamento: str):
+    def crear_reclamo(self, usuario, descripcion: str, departamento: str, clasificacion: str):
         # acepta cualquier objeto con atributo id, por ejemplo
         if not hasattr(usuario, 'id') or not descripcion or not departamento:
             raise ValueError("Verificar que los datos ingresados sean correctos")
@@ -28,11 +30,10 @@ class GestorReclamo:
             usuario_id=usuario.id,
             contenido=descripcion,
             departamento=departamento,
-            clasificacion="general"
+            clasificacion=clasificacion
         )
         return p_reclamo
-
-
+    
     def buscar_reclamos_por_usuario(self, usuario: Usuario):
         """
         Se buscan y devuelven todos los reclamos asociados a un usuario

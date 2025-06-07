@@ -1,56 +1,89 @@
-from modules.text_vectorizer import TextVectorizer
-from sklearn.preprocessing import LabelEncoder
-from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier
+from modules.preprocesamiento import TextVectorizer
+from modules.preprocesamiento import ProcesadorArchivo
+import pickle
+import numpy as np
+from modules.preprocesamiento import TextVectorizer
+from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
+class Clasificador():
+    def __init__(self, X=np.array, y=np.array, escalado=True):       
+        self.X= X 
+        self.y= y
+        self.escalado = escalado
+        self.vectorizer = TextVectorizer()
+        self.word_vectors = self.__get_word_vectors()
+        self._entrenar_clasificador()
 
-class ClaimsClassifier(BaseEstimator, ClassifierMixin):
-    
-    def __init__(self):
-        pass
+    def __get_word_vectors(self):
+        #se entrena el vectorizador 
+        self.vectorizer.fit(self.X)
+        #el metodo "transform se encarga de trasnformar las cadenas de texto a una matriz binaria"
+        return self.vectorizer.transform(self.X)
 
-    def fit(self, X, y):
-        # X, y = check_X_y(X, y, accept_sparse=True) #No lo puedo usar con strings
-        self.encoder_ = LabelEncoder()
-        y = self.encoder_.fit_transform(y)
-        pipe = Pipeline([
-            ('vectorizer', TextVectorizer()),
-            ('scaler', StandardScaler()),
-            ('classifier', RandomForestClassifier(max_depth=20, max_features='log2', n_estimators=10))
-        ])
-        self.clf_ = pipe.fit(X, y)
-        if self.clf_:
-            self.is_fitted_ = True
-        return self
-    
-    def predict(self, X):
-        check_is_fitted(self)
-        # X = check_array(X, accept_sparse=True)
-        return self.encoder_.inverse_transform(self.clf_.predict(X))
-    
-    def clasificar(self, X):
-        """Clasifica una lista de reclamos
+    def _entrenar_clasificador(self):
+        X_train, X_test, y_train, y_test = train_test_split(
+        self.word_vectors, self.y, test_size=0.2, shuffle=True, stratify=self.y, random_state=0)
+        
+        if self.escalado:
+            self.sc = StandardScaler()
+            X_train = self.sc.fit_transform(X_train)
+            X_test = self.sc.transform(X_test)
+       
+        grid = {
+                    'C': [0.01, 0.1, 0.5, 1, 5, 10, 15, 100], 
+                    'kernel': ['rbf', 'sigmoid', 'linear', 'poly'], 
+                    'gamma': [0.001, 0.01, 0.05, 0.1, 0.5, 1],
+                    'degree': [2,3]
+                }
+
+        svc = SVC(random_state=42)
+        grid_search = GridSearchCV(estimator=svc, param_grid=grid, cv=3, scoring="accuracy")
+        grid_search.fit(X_train, y_train)
+        #se guarda el mejor modelo (el de mejor desempeño)
+        self.clf_best = grid_search.best_estimator_
+        #se vuelve a entrenar el mejor modelo
+        self.clf_best.fit(X_train, y_train)   
+        print(accuracy_score(self.clf_best.predict(X_test), y_test))
+        print(self.clf_best)
+
+    def clasificar(self, texto):
+        """_clasificar_
         Args:
-            X (List): Lista de reclamos a clasificar, el formato de cada reclamo debe ser un string
+            texto (_array_): _array de strings que contenga el/los reclamos _
         Returns:
-            clasificación: Lista con las clasificaciones de los reclamos, el formato de cada clasificación es un string
-            los valores posibles dependen de las etiquetas en y usadas en el entrenamiento
-        """
-        return self.predict(X)
-    
+            _array_: _retorno un array con los nombres de departamentos correspondientes a los reclamos ingresados_
+        """ 
+        x = self.vectorizer.transform(texto)
+        if self.escalado:
+            x = self.sc.transform(x)
+        prediccion = self.clf_best.predict(x)
+        print(prediccion)
+        salida=[0] * len(prediccion) #salida tiene el mismo tamaño que los reclamos
 
-if __name__ == "__main__":
-    from modules.create_csv import crear_csv
-    datos = crear_csv("./data/frases.json")
-    X = datos['reclamo']
-    y = datos['etiqueta']
-    clf = ClaimsClassifier()
-    clf.fit(X, y)
-    print(clf.clasificar(["La computadora 1 del laboratorio 3 no enciende", \
-                          "El proyector del aula 2 no proyecta la imagen", \
-                          "El piso del aula 5 está muy sucio", \
-                          "No puedo enviar mi trabajo por correo electrónico porque la red no funciona"]))
-    
+        #'secretaría técnica': 0, 'soporte informático': 1, 'maestranza': 2
+        for i in range(len(prediccion)):        
+            if prediccion[i] == 0:
+                salida[i] = "secretaría técnica" #tecnica
+            elif prediccion[i] == 1:
+                salida[i] = "soporte informático" #alumnado
+            elif prediccion[i] == 2:
+                salida[i]= "maestranza"         #otro
+        return salida
+        
+
+if __name__== "__main__":  
+    procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
+
+    X, y = procesador.datosEntrenamiento
+    cls=  Clasificador(X,y,escalado=True)
+
+    text= ["No puedo enviar mi trabajo por correo electrónico porque la red no funciona.","El piso del aula 5 está muy sucio."]
+    print(cls.clasificar(text))  
+
+    with open('./data/clasificador_svm.pkl', 'wb') as archivo:
+        pickle.dump(cls, archivo)
+    archivo.close()
