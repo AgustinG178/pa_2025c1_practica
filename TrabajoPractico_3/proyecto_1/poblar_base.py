@@ -52,14 +52,21 @@ usuarios_info = [
 reclamos_info = [
     "Hay goteras en el techo del aula 4",
     "No funciona la calefacción en la biblioteca",
-    "Falta iluminación en el pasillo del 2° piso",
-    "El baño del ala sur está fuera de servicio",
+    "Falta iluminación en el pasillo del modulo 2",
+    "El baño al lado del departamento de electronica está fuera de servicio",
     "Problemas con la conexión WiFi en los laboratorios",
     "Falta insumos en el laboratorio de química",
-    "El proyector del aula 302 no funciona",
-    "Fuga de agua en el baño del 1° piso",
-    "El ascensor no funciona desde hace semanas",
-    "Reclamo por ruido constante durante clases"
+    "El proyector del aula 2 no funciona",
+    "Fuga de agua en el baño del decanato",
+    "El ascensor de la bilbioteca no funciona desde hace semanas",
+    "Reclamo por ruido constante durante clases en el horario de fiosologia",
+    "El aire acondicionado del aula magna no enfría adecuadamente",
+    "El campus no está funcionando correctamente",
+    "El sistema de reservas de aulas no permite reservar el aula 3",
+    "El servicio de limpieza no está cumpliendo con los horarios establecidos",
+    "El servicio de cafetería no está funcionando correctamente",
+    "Los buzcochos del kiosco estan muy caros y no son de buena calidad",
+    "La cantina no me acepta pagar despues de las 13 hs"
 ]
 
 # ─── Script Principal ───────────────────────────────────────────────────────────
