@@ -24,6 +24,9 @@ class FlaskLoginUser:
 
     is_anonymous indica si es un usuario anónimo (normalmente False para usuarios logueados)"""
     
+    def __str__(self):
+        return f"FlaskLoginUser(id={self.id}, nombre={self.nombre}, apellido={self.apellido}, email={self.email}, nombre_de_usuario={self.nombre_de_usuario}, rol={self.rol})"
+    
     @property
     def is_authenticated(self):
         return True

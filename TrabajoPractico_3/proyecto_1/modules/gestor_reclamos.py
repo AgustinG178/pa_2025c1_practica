@@ -2,7 +2,7 @@ from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
-from datetime import datetime
+from datetime import datetime, UTC
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -18,22 +18,19 @@ class GestorReclamo:
     def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamo = repositorio_reclamo
 
-
-
-    def crear_reclamo(self, usuario: Usuario, descripcion: str, departamento: str):
-        if isinstance(usuario, Usuario) and descripcion and departamento:
-            p_reclamo = Reclamo(
-                estado="pendiente",
-                fecha_hora=datetime.now(),
-                usuario_id=usuario.id,
-                contenido=descripcion,
-                departamento=departamento,
-                clasificacion="general"
-            )
-            modelo = self.repositorio_reclamo.mapear_reclamo_a_modelo(p_reclamo)
-            self.repositorio_reclamo.guardar_registro(modelo)
-        else:
-            return "Verificar que los datos ingresados sean correctos"
+    def crear_reclamo(self, usuario, descripcion: str, departamento: str):
+        # acepta cualquier objeto con atributo id, por ejemplo
+        if not hasattr(usuario, 'id') or not descripcion or not departamento:
+            raise ValueError("Verificar que los datos ingresados sean correctos")
+        p_reclamo = Reclamo(
+            estado="pendiente",
+            fecha_hora=datetime.now(),
+            usuario_id=usuario.id,
+            contenido=descripcion,
+            departamento=departamento,
+            clasificacion="general"
+        )
+        return p_reclamo
 
 
     def buscar_reclamos_por_usuario(self, usuario: Usuario):

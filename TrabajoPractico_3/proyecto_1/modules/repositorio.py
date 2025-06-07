@@ -1,4 +1,4 @@
-from modules.modelos import ModeloUsuario, ModeloReclamo, ModeloDepartamento
+from modules.modelos import ModeloUsuario, ModeloReclamo
 from modules.config import crear_engine
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
@@ -102,8 +102,9 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             estado=reclamo.estado,
             fecha_hora=reclamo.fecha_hora,
             contenido=reclamo.contenido,
-            usuario_id=reclamo.usuario_id,  # Asegúrate que Reclamo tenga el atributo usuario_id
-            clasificacion=reclamo.clasificacion  # Si este campo existe en ModeloReclamo y Reclamo
+            usuario_id=reclamo.usuario_id,
+            departamento = reclamo.departamento,  
+            clasificacion=reclamo.clasificacion  
         )
 
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):

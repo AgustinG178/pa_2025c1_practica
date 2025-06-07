@@ -15,17 +15,27 @@
                 <th>Descripción</th>
                 <th>Estado</th>
                 <th>Fecha de creación</th>
+                <th>Departamento</th>
+                <th>Clasificación</th>
+                <th>ID Usuario</th>
             </tr>
         </thead>
         <tbody>
             {% for reclamo in reclamos %}
-    <tr>
-        <td>{{ reclamo.id }}</td>
-        <td>{{ reclamo.contenido }}</td>
-        <td>{{ reclamo.estado }}</td>
-        <td>{{ reclamo.fecha_creacion }}</td>
-    </tr>
-{% endfor %}
+            <tr>
+                <td>{{ reclamo.id }}</td>
+                <td>{{ reclamo.contenido }}</td>
+                <td>{{ reclamo.estado }}</td>
+                <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y') }}</td>
+                <td>{{ reclamo.departamento }}</td>
+                <td>{{ reclamo.clasificacion }}</td>
+                <td>{{ reclamo.usuario_id }}</td>
+            </tr>
+            {% endfor %}
         </tbody>
+    </table>
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
 </body>
 </html>

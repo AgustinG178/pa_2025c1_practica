@@ -15,3 +15,7 @@ class Reclamo:
 
     def cambiar_estado(self, nuevo_estado: str):
         self.estado = nuevo_estado
+        
+    def __str__(self):
+        return f"Reclamo: {self.contenido} | Estado: {self.estado} | Fecha: {self.fecha_hora} | Departamento: {self.departamento} | Clasificación: {self.clasificacion} | Usuario ID: {self.usuario_id}"
+    

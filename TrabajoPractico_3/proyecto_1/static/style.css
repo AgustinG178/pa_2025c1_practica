@@ -222,3 +222,61 @@ table button {
 table button:hover {
     background-color: #00509e;
 }
+
+/* Estilos mejorados para enlaces <a> */
+
+a {
+    position: relative;
+    color: #003366;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -3px;
+    background-color: #00509e;
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+a.boton-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    left: 0;
+    bottom: 0;
+    background-color: #00509e;
+    transition: width 0.3s ease;
+    border-radius: 0 0 6px 6px;
+}
+
+
+a.boton-link:hover::after,
+a.boton-link:focus::after {
+    width: 100%;
+}
+
+a.enlace-boton {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #003366;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a.enlace-boton:hover {
+  background-color: #5bc0de; /* celeste */
+  color: #ffffff;
+  cursor: pointer;
+}
+

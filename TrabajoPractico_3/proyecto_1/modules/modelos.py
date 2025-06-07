@@ -58,12 +58,12 @@ class ModeloUsuario(Base):
 
 class ModeloReclamo(Base):
     __tablename__ = 'reclamos'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True)
     estado = Column(String, default="pendiente")
-    fecha_hora = Column(DateTime, default=lambda: datetime.now(UTC))
+    fecha_hora = Column(DateTime, default=datetime.utcnow)
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    departamento_id = Column(String, ForeignKey('departamento.id'))
+    departamento = Column(String)  
     clasificacion = Column(String)
 
     # Relación muchos a muchos con Usuario
@@ -78,8 +78,7 @@ class ModeloReclamo(Base):
     # def departamento(self):
     #     return self.departamento_obj.nombre if self.departamento_obj else None
     
-class ModeloDepartamento(Base):
-    __tablename__ = 'departamento'
-    id = Column(String, primary_key=True)
-    nombre = Column(String)
-    reclamos = relationship("ModeloReclamo", backref="departamento_obj")
+# class ModeloDepartamento(Base):
+#     __tablename__ = 'departamento'
+#     id = Column(Integer, primary_key=True)
+#     nombre = Column(String)

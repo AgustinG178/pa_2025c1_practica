@@ -5,7 +5,8 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclam
 from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
-from modules.BaseDeDatos import BaseDatos 
+from modules.BaseDeDatos import BaseDatos
+from datetime import datetime, UTC 
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
@@ -22,6 +23,11 @@ gestor_reclamos = GestorReclamo(repo_reclamos)
 @app.route('/')
 def index():
     return render_template('inicio.html')
+
+@app.route('/inicio')
+def inicio():
+    return render_template('inicio.html')
+
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
     if request.method == 'POST':
@@ -103,13 +109,17 @@ def crear_reclamos():
         print(f"[DEBUG] Usuario actual: {current_user}")
 
         try:
-            gestor_reclamos.crear_reclamo(
+            reclamo = gestor_reclamos.crear_reclamo(
                 usuario=current_user,
                 descripcion=descripcion,
                 departamento=departamento
             )
             print("[DEBUG] Reclamo creado con éxito.")
             flash('Reclamo creado exitosamente.', 'success')
+            modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+            repo_reclamos.guardar_registro(modelo)
+            flash('Reclamo guardado en la base de datos.', 'success')
+            print("[DEBUG] Reclamo guardado en la base de datos.")
             return redirect(url_for('mis_reclamos'))
         except Exception as e:
             print(f"[ERROR] Error al crear el reclamo: {e}")
