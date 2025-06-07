@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sistema de Reclamos - FIUNER</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-    <h1>Sistema de Reclamos - FIUNER</h1>
-    <nav>
+    <h1 class="titulo-principal">Sistema de Reclamos - FIUNER</h1>
+    <main>
+    <nav class="menu-principal">
         <ul>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
@@ -21,6 +22,53 @@
         </ul>
     </nav>
     <hr>
-    <p>Bienvenido al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.</p>
+
+    {% if current_user.is_authenticated %}
+        <p class="saludo">Bienvenido al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.</p>
+
+        {% if ultimos_reclamos %}
+            <section class="contenedor-flashcards">
+                <h2 class="titulo-seccion">Últimos Reclamos Realizados</h2>
+                <div class="flashcards-grid">
+                    {% for reclamo in ultimos_reclamos %}
+                        <div class="flashcard">
+                            <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
+                            <p><strong>Fecha:</strong> {{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+                            <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    
+    {% else %}
+        <div class="home-container">
+            <div class="flashcard-big">
+                <h2 class="titulo-flashcard-grande">¿De qué se trata este sistema?</h2>
+                <p>
+                    Este sistema permite gestionar y hacer seguimiento a reclamos dentro de la Facultad de Ingeniería de la UNER.
+                    Podrás registrar nuevos reclamos, visualizar el estado de los mismos y colaborar con otros usuarios para mejorar nuestros servicios.
+                </p>
+                <p>
+                    Para comenzar, debes registrarte o iniciar sesión en el sistema.
+                </p>
+            </div>
+            <aside class="creadores">
+                <h2 class="titulo-creadores">Creadores del Proyecto</h2>
+                <ul class="lista-creadores">
+                    <li>Agustin Grioni<br><small>Desarrollador principal</small></li>
+                    <li>Nicolas Ramirez<br><small>Desarrollador principal</small></li>
+                </ul>
+            </aside>
+        </div>
+    {% endif %}
+    </main>
+<footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agustin.gru@fiuner.edu.ar">agugrio17@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a></p>
+    </div>
+</footer>
+
 </body>
 </html>
+

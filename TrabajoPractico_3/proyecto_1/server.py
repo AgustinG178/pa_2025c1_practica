@@ -27,11 +27,13 @@ gestor_reclamos = GestorReclamo(repo_reclamos, clf)
 
 @app.route('/')
 def index():
-    return render_template('inicio.html')
+    ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
+    return render_template('inicio.html', ultimos_reclamos=ultimos)
 
 @app.route('/inicio')
 def inicio():
-    return render_template('inicio.html')
+    ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
+    return render_template('inicio.html', ultimos_reclamos=ultimos)
 
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
@@ -80,11 +82,12 @@ def iniciar_sesion():
             print("Usuario cargado:", usuario)
             login_user(FlaskLoginUser(usuario))
             print("Usuario logueado con éxito, redirigiendo...")
-            return render_template('inicio.html', usuario=current_user)
+            return redirect(url_for('index'))
         except Exception as e:
             print("Error en autenticación:", e)
             flash(str(e))
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
@@ -125,23 +128,38 @@ def crear_reclamos():
                 clasificacion=clasificacion_predicha_str
             )
             print("[DEBUG] Reclamo creado con éxito.")
-            print(f"[DEBUG] Reclamo.clasificacion: {reclamo.clasificacion} ({type(reclamo.clasificacion)})")
 
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-            print(f"[DEBUG] ModeloReclamo.clasificacion antes de guardar: {modelo.clasificacion} ({type(modelo.clasificacion)})")
-
             repo_reclamos.guardar_registro(modelo)
-            flash('Reclamo creado y guardado exitosamente.', 'success')
             print("[DEBUG] Reclamo guardado en la base de datos.")
-            return redirect(url_for('mis_reclamos'))
+
+            # Buscar reclamos similares
+            reclamos_similares = repo_reclamos.buscar_similares(clasificacion_predicha_str, modelo.id)
+
+            # Redirigir a página de ultimo reclamo
+            return render_template(
+                'ultimo_reclamo.html',
+                reclamo=modelo,
+                similares=reclamos_similares
+            )
+
         except Exception as e:
             print(f"[ERROR] Error al crear el reclamo: {e}")
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
-    else:
-        print("[DEBUG] Método GET: mostrando formulario de creación de reclamos.")
+    print("[DEBUG] Método GET: mostrando formulario de creación de reclamos.")
     return render_template('crear_reclamo.html')
 
+
+@app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
+@login_required
+def adherirse(reclamo_id):
+    try:
+        repo_reclamos.adherir_usuario(reclamo_id, current_user.id)
+        flash("Te adheriste al reclamo correctamente.", "success")
+    except Exception as e:
+        flash(f"Error al adherirse al reclamo: {e}", "danger")
+    return redirect(url_for('mis_reclamos'))
 
 @app.route('/listar_reclamos')
 @login_required

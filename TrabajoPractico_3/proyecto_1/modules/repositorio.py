@@ -5,7 +5,9 @@ from modules.reclamo import Reclamo
 from modules.repositorio_ABC import Repositorio
 from sqlalchemy.orm import Session as SessionSQL
 
-engine, session = crear_engine()  # Session es sessionmaker
+engine, Session = crear_engine()  # Session es sessionmaker
+
+
 
 def crear_repositorio():
     session1 = SessionSQL()  # crea una sesión activa
@@ -149,36 +151,60 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.merge(reclamo)
 
         self.__session.commit()
+        
+    def buscar_similares(self, clasificacion, reclamo_id):
+        return (
+            self.__session.query(ModeloReclamo)
+            .filter_by(clasificacion=clasificacion)
+            .filter(ModeloReclamo.id != reclamo_id)
+            .all()
+        )
+
+    def obtener_ultimos_reclamos(self, limit=4):
+        return (
+            self.__session.query(ModeloReclamo)
+            .order_by(ModeloReclamo.fecha_hora.desc())
+            .limit(limit)
+            .all()
+        )
+
 
 if __name__ == "__main__":
     from modules.config import crear_engine
     from datetime import datetime
 
-    # Crear engine y sesión
+    # # Crear engine y sesión
+    # engine, Session = crear_engine()
+    # session = Session()
+
+    # # Instanciar el repositorio
+    # repo = RepositorioReclamosSQLAlchemy(session)
+
+    # # Crear reclamo de prueba
+    # reclamo_prueba = Reclamo(
+    #     estado="pendiente",
+    #     fecha_hora=datetime.now(),
+    #     contenido="Reclamo de prueba",
+    #     departamento="soporte",  # o lo que uses para 'departamento_id'
+    #     clasificacion = "general", # o lo que uses para 'clasificacion_id'
+    #     usuario_id=None  # Este campo se asignará manualmente más tarde
+    # )
+
+    # # Asignar usuario_id manualmente (debería coincidir con uno real en la tabla usuarios)
+    # reclamo_prueba.usuario_id = 1
+
+    # # Mapear y guardar
+    # modelo = repo.mapear_reclamo_a_modelo(reclamo_prueba)
+    # repo.guardar_registro(modelo)
+
+    # # Verificar que se guardó correctamente
+    # reclamos_guardados = repo.obtener_todos_los_registros(usuario_id=1)
+    # # for r in reclamos_guardados:
+    # #     print(f"ID: {r.id}, Estado: {r.estado}, Contenido: {r.contenido}, Usuario: {r.usuario_id}")
     engine, Session = crear_engine()
     session = Session()
-
-    # Instanciar el repositorio
     repo = RepositorioReclamosSQLAlchemy(session)
-
-    # Crear reclamo de prueba
-    reclamo_prueba = Reclamo(
-        estado="pendiente",
-        fecha_hora=datetime.now(),
-        contenido="Reclamo de prueba",
-        departamento="soporte",  # o lo que uses para 'departamento_id'
-        clasificacion = "general", # o lo que uses para 'clasificacion_id'
-        usuario_id=None  # Este campo se asignará manualmente más tarde
-    )
-
-    # Asignar usuario_id manualmente (debería coincidir con uno real en la tabla usuarios)
-    reclamo_prueba.usuario_id = 1
-
-    # Mapear y guardar
-    modelo = repo.mapear_reclamo_a_modelo(reclamo_prueba)
-    repo.guardar_registro(modelo)
-
-    # Verificar que se guardó correctamente
-    reclamos_guardados = repo.obtener_todos_los_registros(usuario_id=1)
-    # for r in reclamos_guardados:
-    #     print(f"ID: {r.id}, Estado: {r.estado}, Contenido: {r.contenido}, Usuario: {r.usuario_id}")
+    ultimos = repo.obtener_ultimos_reclamos(limit=4)
+    print(f"Últimos {len(ultimos)} reclamos:")
+    for r in ultimos:
+        print(f"ID: {r.id} - Contenido: {r.contenido} - Fecha: {r.fecha_hora} - Clasificación: {r.clasificacion}")
