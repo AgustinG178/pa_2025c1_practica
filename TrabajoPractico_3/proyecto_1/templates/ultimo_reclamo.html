@@ -1,30 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reclamos Similares</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-<h1>Reclamos Similares</h1>
-<h2>Reclamo creado</h2>
-<p><strong>Descripción:</strong> {{ reclamo.descripcion }}</p>
-<p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
+<body class="pagina-ultimo-reclamo">
+>
+    <h1>Reclamos Similares</h1>
 
-<h3>Reclamos similares</h3>
-<ul>
-  {% for r in similares %}
-    <li>
-      {{ r.descripcion }}
-      <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
-        <button type="submit">Adherirse</button>
-      </form>
-    </li>
-  {% else %}
-    <p>No se encontraron reclamos similares.</p>
-  {% endfor %}
-</ul>
+    <section class="home-container">
+        <div class="flashcard-big">
+            <h2 class="titulo-flashcard-grande">Reclamo creado</h2>
+            <p><strong>Descripción:</strong> {{ reclamo.descripcion }}</p>
+            <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
+        </div>
+    </section>
 
+    <div class="contenedor-flashcards">
+        <h2 class="titulo-seccion">Reclamos similares</h2>
+        {% if similares %}
+            <div class="flashcards-grid">
+                {% for r in similares %}
+                    <div class="flashcard">
+                        <p>{{ r.contenido }}</p>
+                        <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
+                            <button type="submit">Adherirse</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="text-align:center;">No se encontraron reclamos similares.</p>
+        {% endif %}
+    </div>
+
+    <div style="text-align:center; margin-top: 30px;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
+    </div>
+    <footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+    </div>
+    </footer>
 </body>
 </html>
+
+

@@ -155,11 +155,15 @@ def crear_reclamos():
 @login_required
 def adherirse(reclamo_id):
     try:
-        repo_reclamos.adherir_usuario(reclamo_id, current_user.id)
+        gestor_reclamos.agregar_adherente(reclamo_id, current_user)
+        print(type(current_user))  # Ver qué clase es realmente
+        print(current_user)        # Ver su contenido
         flash("Te adheriste al reclamo correctamente.", "success")
+    except ValueError as e:
+        flash(str(e), "warning")
     except Exception as e:
-        flash(f"Error al adherirse al reclamo: {e}", "danger")
-    return redirect(url_for('mis_reclamos'))
+        flash(f"Ocurrió un error inesperado: {e}", "danger")
+    return redirect(url_for('inicio_usuario'))
 
 @app.route('/listar_reclamos')
 @login_required

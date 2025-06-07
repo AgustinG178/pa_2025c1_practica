@@ -492,6 +492,22 @@ footer a:hover {
     text-decoration: underline;
 }
 
+.flashcard button {
+    background-color: #003366;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.flashcard button:hover {
+    background-color: #00509e;
+}
+
+
 
 
 

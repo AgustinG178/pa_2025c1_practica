@@ -4,6 +4,7 @@ from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.classifier import Clasificador
+from modules.login import FlaskLoginUser
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -91,20 +92,24 @@ class GestorReclamo:
 
     def agregar_adherente(self, reclamo_id, usuario: Usuario):
         """
-        Se agrega un adherente a un reclamo
+        Agrega un adherente a un reclamo si no está ya adherido.
         """
 
-        if isinstance(usuario, Usuario):
+        if not isinstance(usuario, FlaskLoginUser):
+            raise TypeError("El usuario no es una instancia de la clase FlaskLoginUser")
 
-            try:
+        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(
+            filtro="id", valor=reclamo_id
+        )
 
-                reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
+        if reclamo_a_adherir is None:
+            raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")
 
-                reclamo_a_adherir.usuarios.append(usuario)
+        if usuario in reclamo_a_adherir.usuarios:
+            raise ValueError("El usuario ya está adherido a este reclamo.")
 
-                return "El usuario se ha adherido correctamente al reclamo."
-            except AttributeError:
+        reclamo_a_adherir.usuarios.append(usuario)
+        self.repositorio_reclamo.session.commit()  # Asegúrate de exponer `session` o hacer commit desde el repo
 
-                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+        return "El usuario se ha adherido correctamente al reclamo."
 
-        raise TypeError("El usuario no es una instancia de la clase reclamo.")
