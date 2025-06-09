@@ -58,9 +58,8 @@ def registrarse():
                 email=email,
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
-                claustro=0,
-                rol=0,
-                id=None  # El ID se asigna automáticamente por la base de datos
+                rol=0
+                claustro="estudiante",
             )
             print("[DEBUG] Usuario registrado exitosamente.")
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
@@ -207,7 +206,7 @@ def analitica_reclamos():
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
         graficos=rutas
-    )
+)
 
 @login_manager.user_loader
 def load_user(user_id):
