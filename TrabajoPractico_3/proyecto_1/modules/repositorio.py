@@ -67,10 +67,11 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             email=modelo.email,
             nombre_de_usuario=modelo.nombre_de_usuario,
             contraseña=modelo.contraseña,
-            claustro=modelo.claustro,
-            rol=modelo.rol,
+            rol=modelo.rol,         
+            claustro=modelo.claustro,  
             id=modelo.id
         )
+
 
     def _map_entidad_a_modelo(self, entidad: Usuario):
         return ModeloUsuario(
@@ -79,9 +80,10 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             email=entidad.email,
             nombre_de_usuario=entidad.nombre_de_usuario,
             contraseña=entidad.contraseña,
-            claustro=entidad.claustro,
-            rol=entidad.rol
+            rol=entidad.rol,       
+            claustro=entidad.claustro  
         )
+
     
     def eliminar_registro_por_id(self, id):
         usuario = self.__session.query(ModeloUsuario).filter_by(id=id).first()

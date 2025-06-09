@@ -1,48 +1,79 @@
 from modules.BaseDeDatos import BaseDatos
 
-class Usuario():
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, claustro, rol,id, **kwargs):
+class Usuario:
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol, claustro, id=None):
         self.__nombre = nombre
         self.__apellido = apellido
         self.__email = email
         self.__nombre_de_usuario = nombre_de_usuario
         self.__contraseña = contraseña
+        self.__rol = rol
         self.__claustro = claustro
-        self.__rol = 0
         self.__id = id
-        self.__kwargs = kwargs
-
+    
     @property
     def nombre(self):
         return self.__nombre
+
+    @nombre.setter
+    def nombre(self, value):
+        self.__nombre = value
 
     @property
     def apellido(self):
         return self.__apellido
 
+    @apellido.setter
+    def apellido(self, value):
+        self.__apellido = value
+
     @property
     def email(self):
         return self.__email
+
+    @email.setter
+    def email(self, value):
+        self.__email = value
 
     @property
     def nombre_de_usuario(self):
         return self.__nombre_de_usuario
 
+    @nombre_de_usuario.setter
+    def nombre_de_usuario(self, value):
+        self.__nombre_de_usuario = value
+
     @property
     def contraseña(self):
         return self.__contraseña
-    
+
+    @contraseña.setter
+    def contraseña(self, value):
+        self.__contraseña = value
+
+    @property
+    def rol(self):
+        return self.__rol
+
+    @rol.setter
+    def rol(self, value):
+        self.__rol = value
+
+    @property
+    def claustro(self):
+        return self.__claustro
+
+    @claustro.setter
+    def claustro(self, value):
+        self.__claustro = value
+        
     @property
     def id(self):
         return self.__id
     
-    @property
-    def claustro(self):
-        return self.__claustro
-    
-    @property
-    def rol(self):
-        return self.__rol
+    @id.setter
+    def id(self):
+        self.__id=None
 
     def registrar(self, base_datos: BaseDatos):
         pass
