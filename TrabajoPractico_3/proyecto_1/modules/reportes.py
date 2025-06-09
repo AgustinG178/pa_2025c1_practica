@@ -126,8 +126,17 @@ class GeneradorReportes:
 
         agrupados_por_mes = Counter([r.fecha_hora.month for r in reclamos if r.fecha_hora])
         return dict(agrupados_por_mes)
-
-
+    
+    def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
+        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            ModeloReclamo.fecha_hora >= fecha_limite
+        )
+        if clasificacion:
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
+        reclamos = query.all()
+        # Filtramos y devolvemos solo las cantidades de adherentes que no sean None
+        return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
 
 
 if __name__ == '__main__':

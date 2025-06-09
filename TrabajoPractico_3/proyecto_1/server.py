@@ -11,8 +11,6 @@ from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
 from modules.reportes import GeneradorReportes
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
-import os
-import uuid
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
