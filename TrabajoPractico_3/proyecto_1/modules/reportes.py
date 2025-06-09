@@ -139,16 +139,7 @@ class GeneradorReportes:
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
 
 
-if __name__ == '__main__':
-    
-    # Crear repositorio con la sesión
+if __name__ == '__main__': #pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
-
-    # Instanciar el generador de reportes
     generador = GeneradorReportes(repo_reclamos)
-
-    # Ejecutar algunos métodos de análisis
     print("Cantidad total de reclamos:", generador.cantidad_total_reclamos())
-    
-    # Si agregaste más métodos, prueba otros acá
-    # print("Reclamos por estado pendiente:", generador.reclamos_por_estado("pendiente"))

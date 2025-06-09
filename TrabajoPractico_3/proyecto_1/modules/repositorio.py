@@ -151,7 +151,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         if not isinstance(reclamo_a_modificar, Reclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")
 
-        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.ID).first()
+        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.id).first()
         if not reclamo_db:
             raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.ID}")
 
@@ -195,7 +195,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         )
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
     from datetime import datetime
 

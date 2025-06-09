@@ -70,10 +70,6 @@ class Usuario:
     @property
     def id(self):
         return self.__id
-    
-    @id.setter
-    def id(self):
-        self.__id=None
 
     def registrar(self, base_datos: BaseDatos):
         pass
