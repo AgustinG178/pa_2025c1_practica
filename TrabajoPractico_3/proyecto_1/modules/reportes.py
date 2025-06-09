@@ -3,6 +3,7 @@ from modules.modelos import ModeloReclamo
 from sqlalchemy import func
 from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
+from collections import Counter
 
 engine, Session = crear_engine()
 
@@ -72,6 +73,61 @@ class GeneradorReportes:
             ModeloReclamo.fecha_hora >= fecha_limite,
             ModeloReclamo.clasificacion == clasificacion
         ).all()
+        
+    def listar_clasificaciones_unicas(self):
+        clasificaciones = self.repositorio_reclamos.session.query(
+            ModeloReclamo.clasificacion
+        ).distinct().all()
+        # devuelve lista de tuplas, pasamos a lista simple
+        lista = [c[0] for c in clasificaciones]
+        print("Clasificaciones únicas en la base:", lista)
+        return lista
+
+
+    def clasificacion_por_rol(self, rol):
+        # convertimos rol a int por si viene como string
+        try:
+            rol_int = int(rol)
+        except ValueError:
+            return None
+
+        mapa_roles = {
+            2: 'soporte informático',
+            3: 'secretaría técnica',
+            4: 'maestranza'
+        }
+        return mapa_roles.get(rol_int)
+
+
+    def obtener_datos_para_torta(self, rol):
+        clasificacion = self.clasificacion_por_rol(rol)
+        if clasificacion is None:
+            return {}
+
+        from sqlalchemy import func
+
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.estado,
+            func.count(ModeloReclamo.id)
+        ).filter(func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()).group_by(ModeloReclamo.estado).all()
+
+        return dict(query)
+
+
+    def obtener_datos_para_histograma(self, rol):
+        clasificacion = self.clasificacion_por_rol(rol)
+        if clasificacion is None:
+            return {}
+
+        from sqlalchemy import func
+        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()
+        ).all()
+
+        agrupados_por_mes = Counter([r.fecha_hora.month for r in reclamos if r.fecha_hora])
+        return dict(agrupados_por_mes)
+
+
 
 
 if __name__ == '__main__':

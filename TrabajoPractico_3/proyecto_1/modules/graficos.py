@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 class GraficadoraTorta:
-    def graficar(self, datos: dict, nombre_archivo='torta_estado.png', ruta = "static/graficos"):
+    def graficar(self, datos: dict, nombre_archivo:str, subcarpeta:str):
         etiquetas = list(datos.keys())
         valores = list(datos.values())
 
@@ -12,15 +12,17 @@ class GraficadoraTorta:
         plt.title('Distribución de Reclamos por Estado')
         plt.axis('equal')
 
-        ruta = os.path.join('static', 'graficos', nombre_archivo)
-        plt.savefig(ruta)
+        ruta_carpeta = os.path.join('static', 'graficos', subcarpeta)
+        os.makedirs(ruta_carpeta, exist_ok=True)  # Esto crea la carpeta si no existe
+
+        ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
+        plt.savefig(ruta_archivo)
         plt.close()
 
-        return f'graficos/{nombre_archivo}'
-
+        return f'graficos/{subcarpeta}/{nombre_archivo}'
 
 class GraficadoraHistograma:
-    def graficar(self, datos: list, titulo: str, xlabel: str, ylabel: str, nombre_archivo='histograma_estado.png'):
+    def graficar(self, datos: list, titulo: str, xlabel: str, ylabel: str, nombre_archivo:str, subcarpeta:str):
         if not datos:
             print(f"[!] No hay datos para graficar: {titulo}")
             return
@@ -31,12 +33,16 @@ class GraficadoraHistograma:
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.tight_layout()
-        
-        ruta = os.path.join('static', 'graficos', nombre_archivo)
-        plt.savefig(ruta)
+
+        ruta_carpeta = os.path.join('static', 'graficos', subcarpeta)
+        os.makedirs(ruta_carpeta, exist_ok=True)
+
+        ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
+        plt.savefig(ruta_archivo)
         plt.close()
-        
-        return f'graficos/{nombre_archivo}'
+
+        return f'graficos/{subcarpeta}/{nombre_archivo}'
+
 
     def graficar_por_clasificacion(self, datos_por_clasificacion: dict, titulo: str, xlabel: str, ylabel: str):
         if not datos_por_clasificacion:
@@ -57,20 +63,41 @@ class GraficadoraHistograma:
         plt.show()
         
 class Graficadora:
-    def __init__(self, generador_reportes, graficadora_torta, graficadora_histograma):
+    def __init__(self, generador_reportes:GeneradorReportes, graficadora_torta:GraficadoraTorta, graficadora_histograma:GraficadoraHistograma):
         self.generador_reportes = generador_reportes
         self.graficadora_torta = graficadora_torta
         self.graficadora_histograma = graficadora_histograma
 
-    def graficar_todo(self, clasificacion=None):
-        if clasificacion:
-            datos_estado = self.generador_reportes.cantidad_reclamos_por_estado_filtrado(clasificacion)
-            reclamos = self.generador_reportes.reclamos_recientes_filtrado(clasificacion, 365)
-        else:
+    def graficar_todo(self, clasificacion=None, es_secretario_tecnico=False):
+        rutas = {}
+
+        if es_secretario_tecnico:
+            # Carpeta para secretario técnico
+            subcarpeta = 'secretario_tecnico'
+
+            # Torta general de estados (todos los reclamos)
             datos_estado = self.generador_reportes.cantidad_reclamos_por_estado()
+            rutas["torta"] = self.graficadora_torta.graficar(
+                datos_estado,
+                nombre_archivo="torta_estado_general.png",
+                subcarpeta=subcarpeta
+            )
+
+            # Reclamos recientes sin filtro
             reclamos = self.generador_reportes.reclamos_recientes(365)
 
-        self.graficadora_torta.graficar(datos_estado, "Distribución de Reclamos por Estado")
+        else:
+            # Carpeta según clasificación (soporte_informatico, secretario_tecnico, maestranza)
+            subcarpeta = clasificacion.replace(" ", "_")
+
+            datos_estado = self.generador_reportes.cantidad_reclamos_por_estado_filtrado(clasificacion)
+            rutas["torta"] = self.graficadora_torta.graficar(
+                datos_estado,
+                nombre_archivo=f"torta_estado_{subcarpeta}.png",
+                subcarpeta=subcarpeta
+            )
+
+            reclamos = self.generador_reportes.reclamos_recientes_filtrado(clasificacion, 365)
 
         datos_por_clasificacion = {}
         for reclamo in reclamos:
@@ -78,14 +105,34 @@ class Graficadora:
                 clave = reclamo.clasificacion or "Sin Clasificar"
                 datos_por_clasificacion.setdefault(clave, []).append(reclamo.cantidad_adherentes)
 
-        self.graficadora_histograma.graficar_por_clasificacion(
-            datos_por_clasificacion,
-            "Distribución de Adherentes por Clasificación",
-            "Cantidad de Adherentes",
-            "Frecuencia"
+        nombre_histograma = "histograma_adherentes.png" if es_secretario_tecnico else f"histograma_{subcarpeta}.png"
+        rutas["histograma"] = self.graficadora_histograma.graficar(
+            datos=[adherentes for adherentes_list in datos_por_clasificacion.values() for adherentes in adherentes_list],
+            titulo="Distribución de Adherentes",
+            xlabel="Cantidad de Adherentes",
+            ylabel="Frecuencia",
+            nombre_archivo=nombre_histograma,
+            subcarpeta=subcarpeta
         )
 
+        return rutas
+    
+    def graficar_torta_por_rol(self, rol, nombre_archivo, subcarpeta):
+        datos = self.generador_reportes.obtener_datos_para_torta(rol)
+        self.graficadora_torta.graficar(datos, nombre_archivo, subcarpeta)
         
+    def graficar_histograma_por_rol(self, rol, nombre_archivo, subcarpeta):
+        datos = self.generador_reportes.obtener_datos_para_histograma(rol)
+
+        self.graficadora_histograma.graficar(
+        datos=datos,
+        titulo="Distribución de reclamos",
+        xlabel="Cantidad",
+        ylabel="Frecuencia",
+        nombre_archivo=nombre_archivo,
+        subcarpeta=subcarpeta
+    )
+
 if __name__ == "__main__":
     from modules.config import crear_engine
     from repositorio import RepositorioReclamosSQLAlchemy
@@ -101,6 +148,19 @@ if __name__ == "__main__":
     generador = GeneradorReportes(repositorio)
     graficadora = Graficadora(generador, graficadora_torta, graficadora_histograma)
 
-    graficadora.graficar_todo()
+    # Roles por los que queremos generar gráficos
+    roles = {
+        '2': 'soporte_informatico',
+        '3': 'secretario_tecnico',
+        '4': 'maestranza'
+    }
+
+    for rol, nombre_directorio in roles.items():
+        print(f"Generando gráficos para rol {rol} ({nombre_directorio})...")
+        graficadora.graficar_torta_por_rol(rol, nombre_directorio, 'tortas')
+        graficadora.graficar_histograma_por_rol(rol, nombre_directorio, 'histogramas')
+
+    print("Todos los gráficos fueron generados exitosamente.")
+
 
 

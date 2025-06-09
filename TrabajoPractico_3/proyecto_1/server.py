@@ -96,7 +96,6 @@ def iniciar_sesion():
             flash(str(e))
     return render_template('login.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -141,10 +140,8 @@ def crear_reclamos():
             repo_reclamos.guardar_registro(modelo)
             print("[DEBUG] Reclamo guardado en la base de datos.")
 
-            # Buscar reclamos similares
             reclamos_similares = repo_reclamos.buscar_similares(clasificacion_predicha_str, modelo.id)
 
-            # Redirigir a página de ultimo reclamo
             return render_template(
                 'ultimo_reclamo.html',
                 reclamo=modelo,
@@ -183,36 +180,33 @@ def listar_reclamos():
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():
-    # Mapeo de roles a clasificaciones
+    # Mapeo rol a clasificación (solo para roles de jefes)
     clasificacion_map = {
         "2": "soporte informatico",
         "3": "secretario tecnico",
         "4": "maestranza"
     }
-    clasificacion_usuario = clasificacion_map.get(current_user.rol)
+    
+    rol_usuario = current_user.rol
+    clasificacion_usuario = clasificacion_map.get(rol_usuario)
+    es_secretario = (rol_usuario == "1")
 
-    # Inicialización de componentes
     generador = GeneradorReportes(repo_reclamos)
     torta = GraficadoraTorta()
     histograma = GraficadoraHistograma()
     graficadora = Graficadora(generador, torta, histograma)
 
-    # Generación de gráficos (filtrados o no)
-    if clasificacion_usuario:
-        rutas = graficadora.graficar_todo(clasificacion=clasificacion_usuario)
-    else:
-        rutas = graficadora.graficar_todo()
+    rutas = graficadora.graficar_todo(clasificacion=clasificacion_usuario, es_secretario_tecnico=es_secretario)
 
-    # Datos adicionales
     cantidad_total = generador.cantidad_total_reclamos()
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
-
+    print("Rutas graficos:", rutas)
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas  # contiene rutas como 'graficos/torta_estado.png'
+        graficos=rutas
     )
 
 @login_manager.user_loader
