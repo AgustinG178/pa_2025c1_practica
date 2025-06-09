@@ -9,6 +9,10 @@ from modules.BaseDeDatos import BaseDatos
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
+from modules.reportes import GeneradorReportes
+from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
+import os
+import uuid
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
@@ -28,7 +32,7 @@ gestor_reclamos = GestorReclamo(repo_reclamos, clf)
 @app.route('/')
 def index():
     ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
-    return render_template('inicio.html', ultimos_reclamos=ultimos)
+    return render_template('inicio.html', ultimos_reclamos=ultimos, current_user=current_user)
 
 @app.route('/inicio')
 def inicio():
@@ -157,7 +161,7 @@ def crear_reclamos():
 @app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
 @login_required
 def adherirse(reclamo_id):
-    usuario_actual = current_user.usuario_orm
+    usuario_actual = current_user
     try:
         gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
         flash("Te adheriste al reclamo correctamente.", "success")
@@ -175,6 +179,41 @@ def adherirse(reclamo_id):
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_registros()
     return render_template('listar_reclamos.html', reclamos=reclamos)
+
+@app.route("/analitica")
+@login_required
+def analitica_reclamos():
+    # Mapeo de roles a clasificaciones
+    clasificacion_map = {
+        "2": "soporte informatico",
+        "3": "secretario tecnico",
+        "4": "maestranza"
+    }
+    clasificacion_usuario = clasificacion_map.get(current_user.rol)
+
+    # Inicialización de componentes
+    generador = GeneradorReportes(repo_reclamos)
+    torta = GraficadoraTorta()
+    histograma = GraficadoraHistograma()
+    graficadora = Graficadora(generador, torta, histograma)
+
+    # Generación de gráficos (filtrados o no)
+    if clasificacion_usuario:
+        rutas = graficadora.graficar_todo(clasificacion=clasificacion_usuario)
+    else:
+        rutas = graficadora.graficar_todo()
+
+    # Datos adicionales
+    cantidad_total = generador.cantidad_total_reclamos()
+    promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
+
+    return render_template(
+        "analitica_reclamos.html",
+        current_user=current_user,
+        cantidad_total=cantidad_total,
+        promedio_adherentes=promedio_adherentes,
+        graficos=rutas  # contiene rutas como 'graficos/torta_estado.png'
+    )
 
 @login_manager.user_loader
 def load_user(user_id):

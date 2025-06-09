@@ -1,12 +1,16 @@
-body {
+html, body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #f5f7fa;
     color: #222;
     margin: 0;
     padding: 0;
+    height: 100%;
 }
 main {
-    flex: 1;
+  min-height: calc(100vh - 100px); /* Ajusta 100px al alto aproximado de tu header + footer */
+  padding-bottom: 20px; /* Espacio extra para que no quede justo */
+  box-sizing: border-box;
+  flex:1
 }
 h1 {
     background-color: #003366;
@@ -522,6 +526,28 @@ footer a:hover {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+.flashcards-graficos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  padding: 10px;
+}
+
+.flashcards-graficos .flashcard {
+  max-width: 500px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.flashcards-graficos .flashcard img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
 
 
 

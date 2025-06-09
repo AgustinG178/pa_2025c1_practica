@@ -5,7 +5,8 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from modules.config import crear_engine
-from random import choice
+from random import choice, randint
+from datetime import datetime, timedelta
 """
 poblar_base.py
 
@@ -49,24 +50,32 @@ usuarios_info = [
     {"nombre": "Carlos", "apellido": "Martínez", "email": "carlos@example.com", "usuario": "carlos"},
 ]
 
+# Jefes y secretario técnico
+usuarios_info += [
+    {"nombre": "Jefa", "apellido": "Informática", "email": "soporte@fiuner.edu.ar", "usuario": "jefe_soporte", "rol": 2},
+    {"nombre": "Jefa", "apellido": "Maestranza", "email": "maestranza@fiuner.edu.ar", "usuario": "jefe_maestranza", "rol": 4},
+    {"nombre": "Secretaria", "apellido": "Técnica", "email": "secretaria@fiuner.edu.ar", "usuario": "secretario", "rol": 3},
+    {"nombre": "Tecnico", "apellido": "Ayudante", "email": "tecnico@fiuner.edu.ar", "usuario": "tecnico", "rol": 1},
+]
+
 reclamos_info = [
     "Hay goteras en el techo del aula 4",
     "No funciona la calefacción en la biblioteca",
     "Falta iluminación en el pasillo del modulo 2",
-    "El baño al lado del departamento de electronica está fuera de servicio",
+    "El baño al lado del departamento de electrónica está fuera de servicio",
     "Problemas con la conexión WiFi en los laboratorios",
-    "Falta insumos en el laboratorio de química",
+    "Faltan insumos en el laboratorio de química",
     "El proyector del aula 2 no funciona",
     "Fuga de agua en el baño del decanato",
-    "El ascensor de la bilbioteca no funciona desde hace semanas",
-    "Reclamo por ruido constante durante clases en el horario de fiosologia",
+    "El ascensor de la biblioteca no funciona desde hace semanas",
+    "Reclamo por ruido constante durante clases en el horario de fisiología",
     "El aire acondicionado del aula magna no enfría adecuadamente",
-    "El campus no está funcionando correctamente",
+    "El campus virtual no está funcionando correctamente",
     "El sistema de reservas de aulas no permite reservar el aula 3",
-    "El servicio de limpieza no está cumpliendo con los horarios establecidos",
+    "El servicio de limpieza no cumple con los horarios establecidos",
     "El servicio de cafetería no está funcionando correctamente",
-    "Los buzcochos del kiosco estan muy caros y no son de buena calidad",
-    "La cantina no me acepta pagar despues de las 13 hs"
+    "Los bizcochos del kiosco están muy caros y no son de buena calidad",
+    "La cantina no acepta pagos después de las 13 hs"
 ]
 
 # ─── Script Principal ───────────────────────────────────────────────────────────
@@ -74,41 +83,48 @@ if __name__ == "__main__":
     # Crear usuarios
     for u in usuarios_info:
         try:
+            rol = u.get("rol", 0)
             gestor_usuarios.registrar_nuevo_usuario(
                 nombre=u["nombre"],
                 apellido=u["apellido"],
                 email=u["email"],
                 nombre_de_usuario=u["usuario"],
-                password="1234",  # Contraseña simple para testing
+                password="1234",
                 claustro=0,
-                rol=0,
+                rol=rol,
                 id=None
             )
             print(f"✔ Usuario creado: {u['usuario']}")
         except Exception as e:
             print(f"✖ Usuario '{u['usuario']}' ya existe o error: {e}")
 
-    # Obtener usuario para asignar a los reclamos
-# Obtener todos los usuarios disponibles
-usuarios_db = [repo_usuarios.obtener_registro_por_filtro("nombre_de_usuario", u["usuario"]) for u in usuarios_info]
-usuarios_db = [u for u in usuarios_db if u is not None]
+    # Obtener usuarios de la base
+    usuarios_db = repo_usuarios.obtener_todos_los_registros()
+    if not usuarios_db:
+        print("✖ No se encontraron usuarios válidos para asignar reclamos.")
+        exit()
 
-if not usuarios_db:
-    print("✖ No se encontraron usuarios válidos para asignar reclamos.")
-else:
-    for desc in reclamos_info:
+    # Crear reclamos
+    for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
         try:
-            usuario_aleatorio = choice(usuarios_db)
+            usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
+            estado = choice(["pendiente", "resuelto"])
+            fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
+
             reclamo = gestor_reclamos.crear_reclamo(
-                usuario=usuario_aleatorio,
+                usuario=usuario,
                 descripcion=desc,
-                departamento="Mantenimiento",
-                clasificacion=str(clasificacion)
+                departamento="General",
+                clasificacion=clasificacion
             )
+
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+            modelo.estado = estado
+            modelo.fecha_hora = fecha_random
+            modelo.cantidad_adherentes = randint(0, 20)
+
             repo_reclamos.guardar_registro(modelo)
-            print(f"✔ Reclamo creado para {usuario_aleatorio.nombre_de_usuario}: {desc}")
+            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario}: {desc}")
         except Exception as e:
             print(f"✖ Error creando reclamo '{desc}': {e}")
-

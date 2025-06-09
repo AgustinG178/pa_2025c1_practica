@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Análisis de Reclamos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <header>
+        <h1>Análisis de Reclamos</h1>
+        <nav>
+            <ul class="menu-principal">
+                <li><a href="{{ url_for('index') }}">Inicio</a></li>
+                <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
+                <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="contenedor-flashcards">
+            <h2 class="titulo-seccion">Resumen General</h2>
+            <div class="flashcards-grid">
+                <div class="flashcard">
+                    <p><strong>Cantidad Total de Reclamos:</strong> {{ cantidad_total }}</p>
+                </div>
+                <div class="flashcard">
+                    <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
+                </div>
+            </div>
+        </section>
+
+        <hr />
+
+                <section class="contenedor-flashcards">
+            <h2 class="titulo-seccion">Vista Personalizada</h2>
+
+            {% if current_user.rol == '2' %}
+                <div class="flashcard">
+                    <h3 style="text-align:center;">Panel de Soporte Informático</h3>
+                    <p>Visualización de reclamos técnicos y fallas del sistema.</p>
+                </div>
+
+            {% elif current_user.rol == '3' %}
+                <div class="flashcard">
+                    <h3 style="text-align:center;">Panel del Secretario Técnico</h3>
+                    <p>Resumen administrativo y reclamos pendientes por departamento.</p>
+                </div>
+
+            {% elif current_user.rol == '4' %}
+                <div class="flashcard">
+                    <h3 style="text-align:center;">Panel de Maestranza</h3>
+                    <p>Reclamos de mantenimiento, limpieza e infraestructura edilicia.</p>
+                </div>
+
+            {% else %}
+                <div class="flashcard">
+                    <p>No tenés permisos especiales para esta vista.</p>
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+    <footer class="pie-de-pagina">
+        <div class="contenedor-footer">
+            <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+        </div>
+    </footer>
+</body>
+</html>
+

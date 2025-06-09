@@ -14,6 +14,11 @@
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
                 <li><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></li>
+                
+                {% if current_user.claustro == "2" or current_user.rol == "2" %}
+                    <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
+                {% endif %}
+                
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
             {% else %}
                 <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>

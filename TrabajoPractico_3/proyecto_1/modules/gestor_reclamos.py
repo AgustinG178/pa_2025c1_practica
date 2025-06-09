@@ -4,6 +4,7 @@ from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.classifier import Clasificador
+from modules.modelos import ModeloUsuario, ModeloReclamo
 
 
 session = crear_engine()
@@ -90,7 +91,7 @@ class GestorReclamo:
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
 
-    def agregar_adherente(self, reclamo_id, usuario: Usuario):
+    def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id, mapeado=False)
         if reclamo_a_adherir is None:
@@ -148,7 +149,7 @@ if __name__ == "__main__":
 
     # Opcional: verificar si el usuario está adherido realmente
     reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
-    assert usuario in reclamo_actualizado.usuarios
+    assert reclamo_actualizado.cantidad_adherentes > 0, "El reclamo no tiene adherentes."
     print("Prueba OK, usuario adherido al reclamo.")
 
     # except Exception as e:

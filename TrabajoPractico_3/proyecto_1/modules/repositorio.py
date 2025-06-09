@@ -105,6 +105,10 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         Commit de la sesión actual.
         """
         self.__session.commit()
+        
+    @property
+    def session(self):
+        return self.__session
 
     @staticmethod
     def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
