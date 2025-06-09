@@ -507,6 +507,21 @@ footer a:hover {
     background-color: #00509e;
 }
 
+/* Mensajes flash de error */
+.flash-error {
+    background-color: #f8d7da;  /* rojo claro suave */
+    color: #721c24;             /* rojo oscuro para el texto */
+    border: 1.5px solid #f5c6cb; /* borde rosa suave */
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 12px auto;
+    max-width: 600px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(114, 28, 36, 0.2);
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
 
 
 

@@ -7,8 +7,6 @@ from sqlalchemy.orm import Session as SessionSQL
 
 engine, Session = crear_engine()  # Session es sessionmaker
 
-
-
 def crear_repositorio():
     session1 = SessionSQL()  # crea una sesión activa
     session2 = SessionSQL()  # otra sesión independiente
@@ -41,6 +39,10 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             usuario_db.nombre_de_usuario = usuario_modificado.nombre_de_usuario
             usuario_db.contraseña = usuario_modificado.contraseña
             self.__session.commit()
+     
+    def obtener_modelo_por_id(self, id):
+        """obtener_modelo_por_id da una instancia directa de SQLAlchemy."""
+        return self.__session.query(ModeloUsuario).filter_by(id=id).first()
                     
     def obtener_registro_por_filtro(self, campo, valor, campo2=None, valor2=None):
         # Implementación para el método abstracto esperado
@@ -97,6 +99,12 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
     def __init__(self, session: SessionSQL):
         self.__session = session
         ModeloReclamo.metadata.create_all(engine)
+        
+    def commit(self):
+        """
+        Commit de la sesión actual.
+        """
+        self.__session.commit()
 
     @staticmethod
     def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
@@ -107,6 +115,18 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             usuario_id=reclamo.usuario_id,
             departamento = reclamo.departamento,  
             clasificacion=reclamo.clasificacion  
+        )
+        
+    @staticmethod
+    def mapear_modelo_a_reclamo(modelo: ModeloReclamo) -> Reclamo:
+        return Reclamo(
+            id=modelo.id,
+            estado=modelo.estado,
+            fecha_hora=modelo.fecha_hora,
+            contenido=modelo.contenido,
+            usuario_id=modelo.usuario_id,
+            departamento=modelo.departamento,
+            clasificacion=modelo.clasificacion
         )
 
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):
@@ -134,12 +154,12 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
         self.__session.commit()
 
-    def obtener_registro_por_filtro(self, filtro, valor):
-        reclamo = self.__session.query(Reclamo).filter_by(**{filtro: valor}).first()
-        return reclamo if reclamo else None
+    def obtener_registro_por_filtro(self, filtro, valor, mapeado=True):
+        modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
+        return self.mapear_modelo_a_reclamo(modelo) if modelo and mapeado else modelo
     
     def eliminar_registro_por_id(self, id):
-        reclamo = self.__session.query(Reclamo).filter_by(id=id).first()
+        reclamo = self.__session.query(ModeloReclamo).filter_by(id=id).first()
         if reclamo:
             self.__session.delete(reclamo)
             self.__session.commit()
@@ -148,8 +168,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """
         Se actualiza la información de un reclamo
         """
-        self.__session.merge(reclamo)
-
+        modelo = self.mapear_reclamo_a_modelo(reclamo)
+        self.__session.merge(modelo)
         self.__session.commit()
         
     def buscar_similares(self, clasificacion, reclamo_id):

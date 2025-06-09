@@ -7,37 +7,41 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy
 
 class FlaskLoginUser:
     def __init__(self, usuario):
+        self._usuario = usuario  # Guardo la instancia ORM original
         self.id = usuario.id
         self.nombre = usuario.nombre
         self.apellido = usuario.apellido
         self.email = usuario.email
         self.nombre_de_usuario = usuario.nombre_de_usuario
-        self.rol = usuario.rol
         self._contraseña = usuario.contraseña
+        self.rol = usuario.rol
+        self.claustro = usuario.claustro
 
     def get_id(self):
         return str(self.id)
-    
-    """is_authenticated dice si el usuario está autenticado (normalmente True si está logueado)
 
-    is_active es para saber si el usuario está activo (usualmente True)
-
-    is_anonymous indica si es un usuario anónimo (normalmente False para usuarios logueados)"""
-    
     def __str__(self):
         return f"FlaskLoginUser(id={self.id}, nombre={self.nombre}, apellido={self.apellido}, email={self.email}, nombre_de_usuario={self.nombre_de_usuario}, rol={self.rol})"
-    
+
     @property
     def is_authenticated(self):
         return True
-    
+
     @property
     def is_active(self):
         return True
-    
+
     @property
     def is_anonymous(self):
         return False
+    
+    @property
+    def contraseña(self):
+        return self._contraseña
+    
+    @property
+    def usuario_orm(self):
+        return self._usuario  # Devuelve la instancia ORM original
 
 class GestorLogin:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):

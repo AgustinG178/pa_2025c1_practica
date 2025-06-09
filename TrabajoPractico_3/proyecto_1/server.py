@@ -8,6 +8,7 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.BaseDeDatos import BaseDatos
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
+from sqlalchemy.exc import IntegrityError
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
@@ -24,7 +25,6 @@ clf = Clasificador(X, y)
 clf._entrenar_clasificador()
 gestor_reclamos = GestorReclamo(repo_reclamos, clf) 
  
-
 @app.route('/')
 def index():
     ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
@@ -67,6 +67,10 @@ def registrarse():
         except Exception as e:
             print(f"[ERROR] Error inesperado al registrar usuario: {e}")
             flash('Ocurrió un error inesperado. Por favor, inténtelo más tarde.', 'danger')
+        except IntegrityError as e:
+            print(f"[ERROR] Error de integridad: {e}")
+            flash('El nombre de usuario o el email ya están en uso. Por favor, elija otro.', 'danger')
+            sqlalchemy_session.rollback() #revierte o deshace todos los cambios realizados en la transacción actual que aún no se han confirmado (commit).
 
     return render_template('registrarse.html')
 
@@ -93,7 +97,7 @@ def iniciar_sesion():
 @login_required
 def logout():
     logout_user()
-    flash('Sesión cerrada correctamente.', 'success')
+    print('Sesión cerrada correctamente.', 'success')
     return redirect(url_for('index'))
 
 @app.route('/inicio_usuario')
@@ -150,19 +154,20 @@ def crear_reclamos():
     print("[DEBUG] Método GET: mostrando formulario de creación de reclamos.")
     return render_template('crear_reclamo.html')
 
-
 @app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
 @login_required
 def adherirse(reclamo_id):
+    usuario_actual = current_user.usuario_orm
     try:
-        gestor_reclamos.agregar_adherente(reclamo_id, current_user)
-        print(type(current_user))  # Ver qué clase es realmente
-        print(current_user)        # Ver su contenido
+        gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
         flash("Te adheriste al reclamo correctamente.", "success")
     except ValueError as e:
         flash(str(e), "warning")
     except Exception as e:
         flash(f"Ocurrió un error inesperado: {e}", "danger")
+    except IntegrityError as e:
+        flash("Ya estás adherido a este reclamo.", "warning")
+        sqlalchemy_session.rollback()
     return redirect(url_for('inicio_usuario'))
 
 @app.route('/listar_reclamos')

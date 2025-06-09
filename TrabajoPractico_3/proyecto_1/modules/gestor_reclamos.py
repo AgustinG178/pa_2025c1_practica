@@ -1,10 +1,10 @@
-from modules.repositorio import RepositorioReclamosSQLAlchemy
+from modules.repositorio import RepositorioReclamosSQLAlchemy, RepositorioUsuariosSQLAlchemy
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.classifier import Clasificador
-from modules.login import FlaskLoginUser
+
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -91,25 +91,68 @@ class GestorReclamo:
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
 
     def agregar_adherente(self, reclamo_id, usuario: Usuario):
-        """
-        Agrega un adherente a un reclamo si no está ya adherido.
-        """
-
-        if not isinstance(usuario, FlaskLoginUser):
-            raise TypeError("El usuario no es una instancia de la clase FlaskLoginUser")
-
-        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(
-            filtro="id", valor=reclamo_id
-        )
-
+        
+        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id, mapeado=False)
         if reclamo_a_adherir is None:
             raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")
-
         if usuario in reclamo_a_adherir.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.")
+        reclamo_a_adherir.cantidad_adherentes += 1
+        self.repositorio_reclamo.commit()
+    
+if __name__ == "__main__":
 
-        reclamo_a_adherir.usuarios.append(usuario)
-        self.repositorio_reclamo.session.commit()  # Asegúrate de exponer `session` o hacer commit desde el repo
+    from modules.config import crear_engine
+    from modules.modelos import ModeloUsuario, ModeloReclamo
+    from modules.preprocesamiento import ProcesadorArchivo
 
-        return "El usuario se ha adherido correctamente al reclamo."
+    # 1. Crear engine y session (usa tu configuración real o una in-memory SQLite)
+    engine, Session = crear_engine()  
+    session = Session()
+
+    # 2. Crear repositorio y gestor
+    repositorio = RepositorioReclamosSQLAlchemy(session)
+    procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
+    X, y = procesador.datosEntrenamiento
+    clasificador = Clasificador(X, y)
+    clasificador._entrenar_clasificador()
+
+    gestor = GestorReclamo(repositorio, clasificador)
+    repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
+    repositorio_reclamos = RepositorioReclamosSQLAlchemy(session)
+
+    # 3. Crear usuario y reclamo en DB para la prueba
+    usuario = repo_usuarios.obtener_registro_por_filtros(nombre="Laura", apellido = "Garcia", email="LauraGarcia@example.com",nombre_de_usuario='Laurita777', contraseña='1234', rol=0, claustro="estudiante")
+    print("[DEBUG] Usuario creado:", usuario)
+    #session.add(usuario)
+    print("[DEBUG] Usuario agregado a la sesión.")
+    #session.commit()  # para que usuario.id se genere
+    print("[DEBUG] Usuario presente en la base de datos con ID:", usuario.id)
+
+    reclamo = Reclamo(
+        estado="pendiente",
+        fecha_hora=datetime.now(),
+        contenido="Reclamo prueba",
+        departamento="Servicio Técnico",
+        clasificacion="soporte informático",
+        usuario_id=usuario.id
+    )
+    modelo_r = repositorio_reclamos.mapear_reclamo_a_modelo(reclamo)
+    repositorio_reclamos.guardar_registro(modelo_r)
+    print("[DEBUG] Reclamo creado:", modelo_r)
+    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id)
+
+    # 4. Probar agregar adherente
+    resultado = gestor.agregar_adherente(modelo_r.id, usuario)
+    print(resultado)
+
+    # Opcional: verificar si el usuario está adherido realmente
+    reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
+    assert usuario in reclamo_actualizado.usuarios
+    print("Prueba OK, usuario adherido al reclamo.")
+
+    # except Exception as e:
+    #     print("Error al agregar adherente:", e)
+
+
 

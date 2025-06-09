@@ -65,6 +65,7 @@ class ModeloReclamo(Base):
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
     departamento = Column(String)  
     clasificacion = Column(String)
+    cantidad_adherentes = Column(Integer, default=0)
 
     # Relación muchos a muchos con Usuario
     usuarios = relationship(
