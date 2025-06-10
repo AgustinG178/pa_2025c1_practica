@@ -135,6 +135,6 @@ class TestRepositoriosSQLAlchemy(unittest.TestCase):
         self.assertEqual(reclamo_db.estado, "cerrado")
         self.assertEqual(reclamo_db.contenido, "Servidor reparado")
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     unittest.main()
 

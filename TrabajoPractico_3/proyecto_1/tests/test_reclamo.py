@@ -57,5 +57,5 @@ class TestReclamo(unittest.TestCase):
         )
         self.assertEqual(reclamo_con_id.id, 42)
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     unittest.main()

@@ -63,5 +63,5 @@ class TestUsuario(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.usuario.id = 456  # Debe lanzar error porque no tiene setter
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     unittest.main()

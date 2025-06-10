@@ -92,5 +92,5 @@ class TestMonticuloBinario(unittest.TestCase):
         self.assertEqual(heap.extraer(), 8)
         self.assertEqual(heap.top(), 5)
 
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
     unittest.main()

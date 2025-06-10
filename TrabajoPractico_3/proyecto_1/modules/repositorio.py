@@ -193,6 +193,10 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             .limit(limit)
             .all()
         )
+        
+    def obtener_por_id(self, id_reclamo):
+        return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
+
 
 
 if __name__ == "__main__": #pragma: no cover

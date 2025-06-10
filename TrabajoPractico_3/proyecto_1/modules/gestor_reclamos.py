@@ -82,7 +82,8 @@ class GestorReclamo:
 
             try:
 
-                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id=reclamo_id)
+                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
+
 
                 return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
 
@@ -101,7 +102,7 @@ class GestorReclamo:
         reclamo_a_adherir.cantidad_adherentes += 1
         self.repositorio_reclamo.commit()
     
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
     from modules.modelos import ModeloUsuario, ModeloReclamo
@@ -141,7 +142,7 @@ if __name__ == "__main__":
     modelo_r = repositorio_reclamos.mapear_reclamo_a_modelo(reclamo)
     repositorio_reclamos.guardar_registro(modelo_r)
     print("[DEBUG] Reclamo creado:", modelo_r)
-    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id)
+    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id) #pragma: no cover 
 
     # 4. Probar agregar adherente
     resultado = gestor.agregar_adherente(modelo_r.id, usuario)

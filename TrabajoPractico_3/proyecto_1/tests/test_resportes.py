@@ -47,5 +47,5 @@ class TestGeneradorReportes(unittest.TestCase):
         self.mock_repositorio.session.query.assert_called_once()
         self.mock_repositorio.session.query.return_value.filter.assert_called_once()
 
-if __name__ == '__main__':
+if __name__ == '__main__': #pragma: no cover
     unittest.main()
