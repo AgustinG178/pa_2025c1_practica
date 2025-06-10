@@ -12,8 +12,16 @@
     <section class="home-container">
         <div class="flashcard-big">
             <h2 class="titulo-flashcard-grande">Reclamo creado</h2>
-            <p><strong>Descripción:</strong> {{ reclamo.descripcion }}</p>
+            <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
             <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
+            <form method="post" action="{{ url_for('adherirse', reclamo_id=0) }}">
+                <input type="hidden" name="descripcion" value="{{ reclamo.contenido }}">
+                <input type="hidden" name="departamento" value="{{ reclamo.departamento }}">
+                <input type="hidden" name="clasificacion" value="{{ reclamo.clasificacion }}">
+                <div style="text-align: center;">
+                    <button type="submit" name="accion" value="confirmar" class="botton">Confirmar Reclamo</button>
+                </div>
+            </form>
         </div>
     </section>
 
@@ -25,7 +33,10 @@
                     <div class="flashcard">
                         <p>{{ r.contenido }}</p>
                         <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
-                            <button type="submit">Adherirse</button>
+                    
+                            <div style="text-align: center;">
+                                <button type="submit" name="accion" value="adherir">Adherirse</button>
+                            </div>
                         </form>
                     </div>
                 {% endfor %}
@@ -40,10 +51,3 @@
     </div>
     <footer class="pie-de-pagina">
     <div class="contenedor-footer">
-        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
-    </div>
-    </footer>
-</body>
-</html>
-
-

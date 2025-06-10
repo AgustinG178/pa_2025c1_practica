@@ -34,7 +34,7 @@ repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(session)
 
 gestor_usuarios = GestorUsuarios(repo_usuarios)
-procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
+procesador = ProcesadorArchivo("data/frases.json")
 X, y = procesador.datosEntrenamiento
 
 clf = Clasificador(X, y)

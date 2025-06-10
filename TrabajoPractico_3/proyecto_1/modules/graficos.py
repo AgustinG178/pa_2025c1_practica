@@ -4,6 +4,9 @@ import os
 
 class GraficadoraTorta:
     def graficar(self, datos: dict, nombre_archivo:str, subcarpeta:str):
+        """
+        Genera un grafico de torta apareciendo los datos proporcionados, reclamos por ejemplo.
+        """
         etiquetas = list(datos.keys())
         valores = list(datos.values())
 
@@ -23,6 +26,10 @@ class GraficadoraTorta:
 
 class GraficadoraHistograma:
     def graficar(self, datos: list, titulo: str, xlabel: str, ylabel: str, nombre_archivo:str, subcarpeta:str):
+
+        """
+        Genera un histograma a partir de los datos proporcionados, reclamos por ejemplo
+        """
         if not datos:
             print(f"[!] No hay datos para graficar: {titulo}")
             return
@@ -45,6 +52,9 @@ class GraficadoraHistograma:
 
 
     def graficar_por_clasificacion(self, datos_por_clasificacion: dict, titulo: str, xlabel: str, ylabel: str):
+        """
+        Se genera un histograma por clasificación de reclamos
+        """
         if not datos_por_clasificacion:
             print(f"[!] No hay datos para graficar: {titulo}")
             return
@@ -63,6 +73,9 @@ class GraficadoraHistograma:
         plt.show()
         
 class Graficadora:
+    """
+    Clase generado de graficos, encargada de generar gráficos de torta y histogramas, emplea las clases GraficadoraTorta y GraficadoraHistograma.
+    """
     def __init__(self, generador_reportes:GeneradorReportes, graficadora_torta:GraficadoraTorta, graficadora_histograma:GraficadoraHistograma):
         self.generador_reportes = generador_reportes
         self.graficadora_torta = graficadora_torta
@@ -118,10 +131,18 @@ class Graficadora:
         return rutas
     
     def graficar_torta_por_rol(self, rol, nombre_archivo, subcarpeta):
+
+        """
+        Se genera un grafico de torta para un rol específico, por ejemplo, soporte informático o un jefe de departamento.
+        """
         datos = self.generador_reportes.obtener_datos_para_torta(rol)
         self.graficadora_torta.graficar(datos, nombre_archivo, subcarpeta)
         
     def graficar_histograma_por_rol(self, rol, nombre_archivo, subcarpeta):
+
+        """
+        Se genera un histograma para un rol específico, por ejemplo, soporte informático o un jefe de departamento.
+        """
         datos = self.generador_reportes.obtener_datos_para_histograma(rol)
 
         self.graficadora_histograma.graficar(
