@@ -43,7 +43,8 @@ class GestorReclamo:
 
             try:
 
-                reclamos = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="usuario_id", valor=usuario.__id)
+                reclamos = self.repositorio_reclamo.obtener_todos_los_registros(usuario_id=usuario.id)
+
 
                 return reclamos
 
@@ -58,18 +59,16 @@ class GestorReclamo:
         Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
         """
 
-        if usuario.rol in ["Secretario Tecnico", "Jefe de Departamento"]:
+        if usuario.rol in [0,1]: 
             try:
-
-                reclamo_a_modificar = self.reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
-
+                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
                 reclamo_a_modificar.estado = "resuelto"
-
                 self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
-
-                return "¡¡Reclamo resuelto correctamente!!"
+                print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
+                return
             except AttributeError:
-                return f"El reclamo no existe y/o la id: {reclamo.id} no es correcta"
+                print(f"[DEBUG] El reclamo con id {reclamo.id} no existe o no es correcto")
+                return
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
 

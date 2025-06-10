@@ -9,6 +9,7 @@ class Reclamo:
         self.departamento = departamento
         self.clasificacion = clasificacion
         self.usuario_id = usuario_id
+        self.cantidad_adherentes = kwargs.get("cantidad_adherentes")
 
     def __repr__(self):
         return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, departamento={self.departamento}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"

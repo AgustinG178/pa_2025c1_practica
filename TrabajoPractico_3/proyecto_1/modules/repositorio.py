@@ -45,7 +45,8 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
         return self.__session.query(ModeloUsuario).filter_by(id=id).first()
                     
     def obtener_registro_por_filtro(self, campo, valor, campo2=None, valor2=None):
-        # Implementación para el método abstracto esperado
+        
+        #Implementación para el método abstracto esperado
         query = self.__session.query(ModeloUsuario).filter(getattr(ModeloUsuario, campo) == valor)
         if campo2 and valor2:
             query = query.filter(getattr(ModeloUsuario, campo2) == valor2)
@@ -108,13 +109,18 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
     @staticmethod
     def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
+        # Incluye el id si está presente en el objeto Reclamo
+        kwargs = {}
+        if hasattr(reclamo, 'id') and reclamo.id is not None:
+            kwargs['id'] = reclamo.id
         return ModeloReclamo(
             estado=reclamo.estado,
             fecha_hora=reclamo.fecha_hora,
             contenido=reclamo.contenido,
             usuario_id=reclamo.usuario_id,
-            departamento = reclamo.departamento,  
-            clasificacion=reclamo.clasificacion  
+            departamento=reclamo.departamento,
+            clasificacion=reclamo.clasificacion,
+            **kwargs
         )
         
     @staticmethod
@@ -126,7 +132,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             contenido=modelo.contenido,
             usuario_id=modelo.usuario_id,
             departamento=modelo.departamento,
-            clasificacion=modelo.clasificacion
+            clasificacion=modelo.clasificacion,
+            cantidad_adherentes=modelo.cantidad_adherentes
         )
 
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):
@@ -145,9 +152,9 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         if not isinstance(reclamo_a_modificar, Reclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")
 
-        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.ID).first()
+        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.id).first()
         if not reclamo_db:
-            raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.ID}")
+            raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.id}")
 
         reclamo_db.estado = reclamo_a_modificar.estado
         reclamo_db.contenido = reclamo_a_modificar.contenido

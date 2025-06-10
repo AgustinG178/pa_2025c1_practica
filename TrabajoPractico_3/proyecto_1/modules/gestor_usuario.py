@@ -4,6 +4,9 @@ from modules.BaseDeDatos import BaseDatos
 
 class GestorUsuarios:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
+        """
+        Inicializa el gestor de usuarios con el repositorio proporcionado.
+        """
         self.repositorio = repositorio_usuario
 
     """
@@ -11,6 +14,10 @@ class GestorUsuarios:
     """
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro, id):
+        """
+        Registra un nuevo usuario en la base de datos si el email no está registrado.
+        Lanza ValueError si el usuario ya existe.
+        """
         if self.repositorio.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
         
@@ -20,6 +27,10 @@ class GestorUsuarios:
 
 
     def autenticar_usuario(self, nombre_de_usuario, password):
+        """
+        Autentica un usuario por nombre de usuario y contraseña.
+        Lanza ValueError si el usuario no está registrado o la contraseña es incorrecta.
+        """
         usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario, "contraseña", password)
         if not usuario:
             raise ValueError("El usuario no está registrado")
@@ -27,32 +38,43 @@ class GestorUsuarios:
             raise ValueError("Contraseña incorrecta")
         return usuario
         
-    def cargar_usuario(self, nombre_de_usuario):
-        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario)
-        if usuario:
-            return usuario
-        else:
-            raise ValueError("Usuario no encontrado")
-
     def actualizar_usuario(self, usuario_modificado):
+
+        """
+        Actualiza los datos de un usuario existente en la base de datos.
+        Lanza ValueError si el usuario no tiene id.
+        """
         if not hasattr(usuario_modificado, "id"):
             raise ValueError("El usuario modificado debe tener un id")
-        self.repositorio.modificar_registro(usuario_modificado)
+        
+        #Se mapea el usuario modificado a uno del modelo de la base de datos
+        self.repositorio.modificar_registro(self.repositorio._map_entidad_a_modelo(usuario_modificado))
 
     def eliminar_usuario(self, usuario_id):
+        """
+        Elimina un usuario de la base de datos por su id.
+        Lanza ValueError si el usuario no existe.
+        """
         usuario = self.repositorio.obtener_registro_por_filtro("id", usuario_id)
         if not usuario:
             raise ValueError("Usuario no encontrado")
         self.repositorio.eliminar_registro_por_id(usuario_id)
 
     def buscar_usuario(self, filtro, valor):
+        """
+        Busca un usuario por un filtro y valor dados.
+        Lanza ValueError si el usuario no existe.
+        """
         usuario = self.repositorio.obtener_registro_por_filtro(filtro, valor)
         if not usuario:
             raise ValueError("Usuario no encontrado")
         return usuario.__str__()
 
     def generar_reporte_usuario(self, tipo_reporte, *args, **kwargs):
-
+        """
+        Genera un reporte de usuarios en el formato especificado (pdf o html).
+        Lanza ValueError si el tipo de reporte no es soportado.
+        """
         if tipo_reporte == "pdf":
             return "Reporte PDF generado para usuarios"
         elif tipo_reporte == "html":
@@ -84,14 +106,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"No se registró nuevo usuario (probablemente ya existe): {e}")
 
-    #Ahora probamos cargar_usuario
-    """Cargar Usuario anda correctamente"""
-    try:
-        usuario = gestor.cargar_usuario(nombre_usuario)
-        print("Usuario cargado correctamente:")
-        print(usuario)
-    except Exception as e:
-        print(f"Error al cargar usuario: {e}")
     #Intentamos autenticar al usuario
     """Autenticar Usuario anda correctamente"""
     try:
@@ -116,4 +130,3 @@ if __name__ == "__main__":
         print("Usuario actualizado correctamente")
     except Exception as e:
         print(f"Error al actualizar usuario: {e}")
-        
