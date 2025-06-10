@@ -9,6 +9,8 @@ from modules.BaseDeDatos import BaseDatos
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
+from modules.reportes import GeneradorReportes
+from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
 
 admin_list = [1]
 base_datos = BaseDatos("sqlite:///data/base_datos.db")
@@ -28,7 +30,7 @@ gestor_reclamos = GestorReclamo(repo_reclamos, clf)
 @app.route('/')
 def index():
     ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
-    return render_template('inicio.html', ultimos_reclamos=ultimos)
+    return render_template('inicio.html', ultimos_reclamos=ultimos, current_user=current_user)
 
 @app.route('/inicio')
 def inicio():
@@ -54,9 +56,8 @@ def registrarse():
                 email=email,
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
-                claustro=0,
-                rol=0,
-                id=None  # El ID se asigna automáticamente por la base de datos
+                rol=0
+                claustro="estudiante",
             )
             print("[DEBUG] Usuario registrado exitosamente.")
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
@@ -91,7 +92,6 @@ def iniciar_sesion():
             print("Error en autenticación:", e)
             flash(str(e))
     return render_template('login.html')
-
 
 @app.route('/logout')
 @login_required
@@ -137,10 +137,8 @@ def crear_reclamos():
             repo_reclamos.guardar_registro(modelo)
             print("[DEBUG] Reclamo guardado en la base de datos.")
 
-            # Buscar reclamos similares
             reclamos_similares = repo_reclamos.buscar_similares(clasificacion_predicha_str, modelo.id)
 
-            # Redirigir a página de ultimo reclamo
             return render_template(
                 'ultimo_reclamo.html',
                 reclamo=modelo,
@@ -157,7 +155,7 @@ def crear_reclamos():
 @app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
 @login_required
 def adherirse(reclamo_id):
-    usuario_actual = current_user.usuario_orm
+    usuario_actual = current_user
     try:
         gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
         flash("Te adheriste al reclamo correctamente.", "success")
@@ -175,6 +173,38 @@ def adherirse(reclamo_id):
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_registros()
     return render_template('listar_reclamos.html', reclamos=reclamos)
+
+@app.route("/analitica")
+@login_required
+def analitica_reclamos():
+    # Mapeo rol a clasificación (solo para roles de jefes)
+    clasificacion_map = {
+        "2": "soporte informatico",
+        "3": "secretario tecnico",
+        "4": "maestranza"
+    }
+    
+    rol_usuario = current_user.rol
+    clasificacion_usuario = clasificacion_map.get(rol_usuario)
+    es_secretario = (rol_usuario == "1")
+
+    generador = GeneradorReportes(repo_reclamos)
+    torta = GraficadoraTorta()
+    histograma = GraficadoraHistograma()
+    graficadora = Graficadora(generador, torta, histograma)
+
+    rutas = graficadora.graficar_todo(clasificacion=clasificacion_usuario, es_secretario_tecnico=es_secretario)
+
+    cantidad_total = generador.cantidad_total_reclamos()
+    promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
+    print("Rutas graficos:", rutas)
+    return render_template(
+        "analitica_reclamos.html",
+        current_user=current_user,
+        cantidad_total=cantidad_total,
+        promedio_adherentes=promedio_adherentes,
+        graficos=rutas
+)
 
 @login_manager.user_loader
 def load_user(user_id):

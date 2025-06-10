@@ -1,24 +1,145 @@
-class Graficadora:
-    def generar_grafico(self, datos, tipo):
-        # Lógica para graficar
-        pass
+from datetime import datetime, timedelta
+from modules.modelos import ModeloReclamo
+from sqlalchemy import func
+from modules.config import crear_engine
+from modules.repositorio import RepositorioReclamosSQLAlchemy
+from collections import Counter
 
-class ReporteHTML(IReporte):
-    def __init__(self, graficadora=None):
-        self.graficadora = graficadora
+engine, Session = crear_engine()
 
-    def generarHTML(self, datos):
-        if self.graficadora:
-            grafico = self.graficadora.generar_grafico(datos, tipo="barras")
-        # Lógica para generar HTML
-        pass
+session = Session()
 
-class ReportePDF(IReporte):
-    def __init__(self, graficadora=None):
-        self.graficadora = graficadora
+"""func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de tus consultas ORM."""
+from sqlalchemy import func
+from datetime import datetime, timedelta
 
-    def generarPDF(self, datos):
-        if self.graficadora:
-            grafico = self.graficadora.generar_grafico(datos, tipo="pie")
-        # Lógica para generar PDF
-        pass
+class GeneradorReportes:
+    def __init__(self, repositorio_reclamos: RepositorioReclamosSQLAlchemy):
+        self.repositorio_reclamos = repositorio_reclamos
+
+    def cantidad_total_reclamos(self):
+        return self.repositorio_reclamos.session.query(ModeloReclamo).count()
+
+    def cantidad_reclamos_por_estado(self):
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.estado, 
+            func.count(ModeloReclamo.id)
+        ).group_by(ModeloReclamo.estado).all()
+        return dict(query)
+
+    def cantidad_reclamos_por_departamento(self):
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.departamento,
+            func.count(ModeloReclamo.id)
+        ).group_by(ModeloReclamo.departamento).all()
+        return dict(query)
+
+    def cantidad_reclamos_por_clasificacion(self):
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.clasificacion,
+            func.count(ModeloReclamo.id)
+        ).group_by(ModeloReclamo.clasificacion).all()
+        return dict(query)
+
+    def cantidad_promedio_adherentes(self):
+        query = self.repositorio_reclamos.session.query(
+            func.avg(ModeloReclamo.cantidad_adherentes)
+        ).scalar()
+        return query or 0
+
+    def reclamos_recientes(self, dias=7):
+        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            ModeloReclamo.fecha_hora >= fecha_limite
+        ).all()
+        return reclamos
+
+    def reclamos_por_usuario(self, usuario_id):
+        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
+            usuario_id=usuario_id
+        ).all()
+        return reclamos
+    
+    def cantidad_reclamos_por_estado_filtrado(self, clasificacion):    
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.estado,
+            func.count(ModeloReclamo.id)
+        ).filter_by(clasificacion=clasificacion).group_by(ModeloReclamo.estado).all()
+        return dict(query)
+
+    def reclamos_recientes_filtrado(self, clasificacion, dias=7):
+        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            ModeloReclamo.fecha_hora >= fecha_limite,
+            ModeloReclamo.clasificacion == clasificacion
+        ).all()
+        
+    def listar_clasificaciones_unicas(self):
+        clasificaciones = self.repositorio_reclamos.session.query(
+            ModeloReclamo.clasificacion
+        ).distinct().all()
+        # devuelve lista de tuplas, pasamos a lista simple
+        lista = [c[0] for c in clasificaciones]
+        print("Clasificaciones únicas en la base:", lista)
+        return lista
+
+
+    def clasificacion_por_rol(self, rol):
+        # convertimos rol a int por si viene como string
+        try:
+            rol_int = int(rol)
+        except ValueError:
+            return None
+
+        mapa_roles = {
+            2: 'soporte informático',
+            3: 'secretaría técnica',
+            4: 'maestranza'
+        }
+        return mapa_roles.get(rol_int)
+
+
+    def obtener_datos_para_torta(self, rol):
+        clasificacion = self.clasificacion_por_rol(rol)
+        if clasificacion is None:
+            return {}
+
+        from sqlalchemy import func
+
+        query = self.repositorio_reclamos.session.query(
+            ModeloReclamo.estado,
+            func.count(ModeloReclamo.id)
+        ).filter(func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()).group_by(ModeloReclamo.estado).all()
+
+        return dict(query)
+
+
+    def obtener_datos_para_histograma(self, rol):
+        clasificacion = self.clasificacion_por_rol(rol)
+        if clasificacion is None:
+            return {}
+
+        from sqlalchemy import func
+        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()
+        ).all()
+
+        agrupados_por_mes = Counter([r.fecha_hora.month for r in reclamos if r.fecha_hora])
+        return dict(agrupados_por_mes)
+    
+    def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
+        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+            ModeloReclamo.fecha_hora >= fecha_limite
+        )
+        if clasificacion:
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
+        reclamos = query.all()
+        # Filtramos y devolvemos solo las cantidades de adherentes que no sean None
+        return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
+
+
+if __name__ == '__main__': #pragma: no cover
+    repo_reclamos = RepositorioReclamosSQLAlchemy(session)
+    generador = GeneradorReportes(repo_reclamos)
+    print("Cantidad total de reclamos:", generador.cantidad_total_reclamos())

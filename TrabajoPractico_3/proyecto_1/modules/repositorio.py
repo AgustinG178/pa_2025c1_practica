@@ -68,10 +68,11 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             email=modelo.email,
             nombre_de_usuario=modelo.nombre_de_usuario,
             contraseña=modelo.contraseña,
-            claustro=modelo.claustro,
-            rol=modelo.rol,
+            rol=modelo.rol,         
+            claustro=modelo.claustro,  
             id=modelo.id
         )
+
 
     def _map_entidad_a_modelo(self, entidad: Usuario):
         return ModeloUsuario(
@@ -80,9 +81,10 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             email=entidad.email,
             nombre_de_usuario=entidad.nombre_de_usuario,
             contraseña=entidad.contraseña,
-            claustro=entidad.claustro,
-            rol=entidad.rol
+            rol=entidad.rol,       
+            claustro=entidad.claustro  
         )
+
     
     def eliminar_registro_por_id(self, id):
         usuario = self.__session.query(ModeloUsuario).filter_by(id=id).first()
@@ -106,6 +108,10 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         Commit de la sesión actual.
         """
         self.__session.commit()
+        
+    @property
+    def session(self):
+        return self.__session
 
     @staticmethod
     def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
@@ -194,9 +200,13 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             .limit(limit)
             .all()
         )
+        
+    def obtener_por_id(self, id_reclamo):
+        return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
 
 
-if __name__ == "__main__":
+
+if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
     from datetime import datetime
 

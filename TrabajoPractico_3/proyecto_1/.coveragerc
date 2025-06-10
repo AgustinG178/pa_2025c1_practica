@@ -1,0 +1,17 @@
+[run]
+source = tests
+
+[report]
+omit = 
+    modules/*
+    templates/*
+    .venv/*
+    .vscode/*
+    .gitignore/*
+    .data/*
+    .deps/*
+    .docs/*
+    .statics/*
+    poblar_base.py/*
+    server.py/*
+

@@ -1,4 +1,7 @@
 import heapq
+from modules.repositorio import RepositorioReclamosSQLAlchemy
+from modules.reportes import GeneradorReportes
+from modules.config import crear_engine
 
 """
 Este módulo utiliza el módulo estándar 'heapq' de Python para implementar operaciones eficientes sobre montículos (heaps).
@@ -21,31 +24,95 @@ class Estadisticas:
         else:
             return datos_ordenados[medio]
 
-    def separar_en_monticulo(self):
-        # Separa los datos en dos montículos para calcular la mediana
-        min_heap = []
-        max_heap = []
+    def obtener_maximo(self):
+        if not self.datos:
+            return None
+        return max(self.datos)
+
+    def obtener_minimo(self):
+        if not self.datos:
+            return None
+        return min(self.datos)
+
+    def obtener_promedio(self):
+        if not self.datos:
+            return None
+        return sum(self.datos) / len(self.datos)
+
+class MonticuloMediana(Estadisticas):
+    def __init__(self, datos):
+        super().__init__(datos)
+        self.min_heap = []  # heap de mayores
+        self.max_heap = []  # heap de menores (como negativos)
+
+        self._construir_monticulos()
+
+    def _construir_monticulos(self):
         for num in self.datos:
-            if not max_heap or num <= -max_heap[0]:
-                heapq.heappush(max_heap, -num)
-            else:
-                heapq.heappush(min_heap, num)
-            # Balancear los montículos
-            if len(max_heap) > len(min_heap) + 1:
-                heapq.heappush(min_heap, -heapq.heappop(max_heap))
-            elif len(min_heap) > len(max_heap):
-                heapq.heappush(max_heap, -heapq.heappop(min_heap))
-        return [-x for x in max_heap], min_heap
-    
+            self.insertar(num)
 
-class MonticuloMaxima:
-    def calcular_maxima(self, datos):
-        if not datos:
-            return None
-        return -heapq.nlargest(1, [-x for x in datos])[0]
+    def insertar(self, valor):
+        if not self.max_heap or valor <= -self.max_heap[0]:
+            heapq.heappush(self.max_heap, -valor)
+        else:
+            heapq.heappush(self.min_heap, valor)
 
-class MonticuloMinima:
-    def calcular_minima(self, datos):
-        if not datos:
+        # Balanceo
+        if len(self.max_heap) > len(self.min_heap) + 1:
+            heapq.heappush(self.min_heap, -heapq.heappop(self.max_heap))
+        elif len(self.min_heap) > len(self.max_heap):
+            heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))
+
+    def obtener_mediana(self):
+        if not self.datos:
             return None
-        return heapq.nsmallest(1, datos)[0]
+        if len(self.max_heap) == len(self.min_heap):
+            return (-self.max_heap[0] + self.min_heap[0]) / 2
+        else:
+            return -self.max_heap[0]
+
+class MonticuloBinario:
+    def __init__(self, es_maximo=False):
+        self.es_maximo = es_maximo
+        self.heap = []
+
+    def insertar(self, valor):
+        if self.es_maximo:
+            heapq.heappush(self.heap, -valor)
+        else:
+            heapq.heappush(self.heap, valor)
+
+    def extraer(self):
+        if self.es_maximo:
+            return -heapq.heappop(self.heap)
+        else:
+            return heapq.heappop(self.heap)
+
+    def top(self):
+        if self.es_maximo:
+            return -self.heap[0]
+        else:
+            return self.heap[0]
+
+    def __len__(self):
+        return len(self.heap)
+
+
+if __name__ == "__main__":
+    enigne, Session = crear_engine()
+    session = Session()
+    repo_reclamos = RepositorioReclamosSQLAlchemy(session)
+    generador = GeneradorReportes(repo_reclamos)
+
+    datos_adherentes = generador.obtener_cantidades_adherentes(dias=365)
+
+    print("Datos de adherentes:", datos_adherentes)
+
+    monticulo_mediana = MonticuloMediana(datos_adherentes)
+    mediana = monticulo_mediana.obtener_mediana()
+    print("Mediana calculada con montículos:", mediana)
+
+    # Probamos insertar un nuevo dato
+    monticulo_mediana.insertar(25)
+    print("Mediana después de insertar 25:", monticulo_mediana.obtener_mediana())
+

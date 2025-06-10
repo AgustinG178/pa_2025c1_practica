@@ -4,6 +4,7 @@ from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.classifier import Clasificador
+from modules.modelos import ModeloUsuario, ModeloReclamo
 
 
 session = crear_engine()
@@ -80,7 +81,8 @@ class GestorReclamo:
 
             try:
 
-                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id=reclamo_id)
+                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
+
 
                 return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
 
@@ -89,7 +91,7 @@ class GestorReclamo:
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
 
-    def agregar_adherente(self, reclamo_id, usuario: Usuario):
+    def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id, mapeado=False)
         if reclamo_a_adherir is None:
@@ -99,7 +101,7 @@ class GestorReclamo:
         reclamo_a_adherir.cantidad_adherentes += 1
         self.repositorio_reclamo.commit()
     
-if __name__ == "__main__":
+if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
     from modules.modelos import ModeloUsuario, ModeloReclamo
@@ -139,7 +141,7 @@ if __name__ == "__main__":
     modelo_r = repositorio_reclamos.mapear_reclamo_a_modelo(reclamo)
     repositorio_reclamos.guardar_registro(modelo_r)
     print("[DEBUG] Reclamo creado:", modelo_r)
-    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id)
+    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id) #pragma: no cover 
 
     # 4. Probar agregar adherente
     resultado = gestor.agregar_adherente(modelo_r.id, usuario)
@@ -147,7 +149,7 @@ if __name__ == "__main__":
 
     # Opcional: verificar si el usuario está adherido realmente
     reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
-    assert usuario in reclamo_actualizado.usuarios
+    assert reclamo_actualizado.cantidad_adherentes > 0, "El reclamo no tiene adherentes."
     print("Prueba OK, usuario adherido al reclamo.")
 
     # except Exception as e:

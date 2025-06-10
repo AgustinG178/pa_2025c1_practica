@@ -34,9 +34,8 @@ class ModeloUsuario(Base):
     email = Column(String, unique=True)
     nombre_de_usuario = Column(String, unique=True)
     contraseña = Column(String)
-    claustro = Column(String)
     rol = Column(String)
-    jefe_de = Column(String)
+    claustro = Column(String)
 
     reclamos = relationship(
         "ModeloReclamo",
@@ -47,14 +46,15 @@ class ModeloUsuario(Base):
     def __str__(self):  
         return f"Usuario: Nombre = {self.nombre}, Apellido = {self.apellido}, Email = {self.email}, Nombre_de_usuario = {self.nombre_de_usuario}, Rol = {self.rol}"
 
-    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, claustro, rol):
+    def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol, claustro):
         self.nombre = nombre
         self.apellido = apellido
         self.email = email
         self.nombre_de_usuario = nombre_de_usuario
         self.contraseña = contraseña
-        self.claustro = claustro
         self.rol = rol
+        self.claustro = claustro
+        
 
 class ModeloReclamo(Base):
     __tablename__ = 'reclamos'
