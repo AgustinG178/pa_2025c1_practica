@@ -113,7 +113,6 @@ def iniciar_sesion():
             flash(str(e))
     return render_template('login.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -123,7 +122,6 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
 @app.route('/inicio_usuario')
 @login_required
 def inicio_usuario():
@@ -131,7 +129,6 @@ def inicio_usuario():
     Página de inicio personalizada para el usuario autenticado.
     """
     return render_template('inicio.html', usuario=current_user)
-
 
 @app.route('/mis_reclamos')
 @login_required
@@ -141,7 +138,6 @@ def mis_reclamos():
     """
     reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
     return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos)
-
 
 @app.route('/crear_reclamos', methods=['GET', 'POST'])
 @login_required
@@ -168,7 +164,6 @@ def crear_reclamos():
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
     return render_template('crear_reclamo.html')
-
 
 @app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
 @login_required
@@ -206,7 +201,6 @@ def adherirse(reclamo_id):
 
     return redirect(url_for('inicio_usuario'))
 
-
 @app.route('/listar_reclamos')
 @login_required
 def listar_reclamos():
@@ -215,7 +209,6 @@ def listar_reclamos():
     """
     reclamos = repo_reclamos.obtener_todos_los_registros()
     return render_template('listar_reclamos.html', reclamos=reclamos)
-
 
 @app.route("/analitica")
 @login_required
