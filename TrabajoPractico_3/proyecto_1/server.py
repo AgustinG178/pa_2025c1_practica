@@ -150,7 +150,7 @@ def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
         departamento = request.form.get('departamento')
-        imagen = request.files.get('imagen')
+        
         try:
             clasificacion_predicha = clf.clasificar([descripcion])[0]
             reclamo = gestor_reclamos.crear_reclamo(
@@ -160,14 +160,21 @@ def crear_reclamos():
                 clasificacion=str(clasificacion_predicha)
             )
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-            #Provisoriamente guardamos el reclamo en la bd, si posteriormente se adhiere a otro el usuario, lo borramos, lo mismo con la imagen
+            #Provisoriamente guardamos el reclamo en la bd, si posteriormente se adhiere a otro el usuario, lo borramos, lo mismo con la imagen si es que se adjunta una
             repo_reclamos.guardar_registro(modelo)
             
             sqlalchemy_session.refresh(modelo)
-            gestor_imagenes_reclamos.guardar_imagen(reclamo_id=modelo.id,imagen=imagen)
+            imagen = request.files.get('imagen')
             reclamos_similares = repo_reclamos.buscar_similares(str(clasificacion_predicha), modelo.id)
+
+            if imagen and imagen.filename:
+
+                gestor_imagenes_reclamos.guardar_imagen(reclamo_id=modelo.id,imagen=imagen)
+
+                return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
+            
+
             return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
-        
         except Exception as e:
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
