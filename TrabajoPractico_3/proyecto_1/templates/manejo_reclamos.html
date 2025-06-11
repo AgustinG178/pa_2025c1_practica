@@ -42,19 +42,18 @@
                                       and reclamo.clasificacion == 'secretario tecnico' 
                                       and reclamo.estado != 'resuelto' %}
                                     <option value="{{ reclamo.id }}">
-                                        {{ reclamo.id }} – {{ reclamo.estado }}
+                                        {{ reclamo.id }} - {{ reclamo.estado }}
                                     </option>
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
-
                         {% if current_user.rol == '4' %}
                             {% for reclamo in reclamos %}
-                                {% if reclamo.departamento == dpto 
+                                {% if reclamo.departamento == 'maestranza' 
                                       and reclamo.clasificacion == 'maestranza' 
                                       and reclamo.estado != 'resuelto' %}
                                     <option value="{{ reclamo.id }}">
-                                        {{ reclamo.id }} – {{ reclamo.estado }}
+                                        {{ reclamo.id }} - {{ reclamo.estado }}
                                     </option>
                                 {% endif %}
                             {% endfor %}
@@ -76,7 +75,6 @@
                 <button type="submit">Confirmar</button>
             </form>
         </div>
-
         <!-- Tabla de reclamos -->
         <div>
             <table class="tabla-reclamos">
@@ -117,8 +115,6 @@
                                 {{reclamo.tiempo_estimado}}
                             {%endif%}
                         </td>
-                        
-                    
                     </tr>
                     {% endif %}
                     {% endfor %}
