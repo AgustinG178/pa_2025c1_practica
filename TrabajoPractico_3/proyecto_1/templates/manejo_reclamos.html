@@ -33,13 +33,48 @@
                     <label for="accion">Acción:</label>
                     <select id="accion" name="accion" required>
                         <option value="" disabled selected>Seleccione una acción:</option>
-                        <option value="eliminar">Eliminar</option>
+                        <option value="invalidar">Invalidar</option>
                         <option value="resolver">Resolver</option>
+                        <option value = "actualizar">Actualizar (en proceso)</option>
                     </select>
                 </div>
 
                 <button type="submit">Confirmar</button>
             </form>
+    
+        </div>
+    
+        <div>
+            <table class="tabla-reclamos">
+                <thead>
+                    <tr>
+                        <th>ID Reclamo</th>
+                        <th>ID Usuario Creador</th>
+                        <th>IDS Adheridos</th>
+                        <th>Fecha/Hora</th>
+                        <th>Estado</th>
+                        <th>Tiempo Estimado</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    {%for reclamo in reclamos%}
+                    {%if reclamo.d%}
+                    <tr>
+                        <td>{{reclamo.id}}</td>
+                        <td>{{reclamo.usuario_id}}</td>
+                        <td>{%for usuario in reclamo.usuarios%}
+                                {{usuario.id}}{% if not loop.last %}, {% endif %}
+                            {%endfor%}
+
+                        </td>
+                        <td>{{reclamo.fecha_hora}}</td>
+                        <td>{{reclamo.tiempo_estimado}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
             <aside class="sidebar-reclamos">
                 <h3 class="titulo-seccion">IDs de Reclamos de tu Departamento</h3>
