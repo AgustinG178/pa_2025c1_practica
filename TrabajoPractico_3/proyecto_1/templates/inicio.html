@@ -16,6 +16,7 @@
                 <li><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></li>
                 {% if current_user.rol in ['1', '2', '3', '4'] %}
                     <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
+                    <li><a href="{{ url_for('manejo_reclamos') }}">Manejo de Reclamos</a></li>
                 {% endif %}
                 
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
@@ -27,26 +28,19 @@
     </nav>
     <hr>
 
-    {% if current_user.is_authenticated %}
-        <p class="saludo">Bienvenido al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.</p>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-                <div id="flash-messages">
+            <div id="flash-messages">
                 {% for category, message in messages %}
                     <div class="flash-{{ category }}">{{ message }}</div>
                 {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">
-                {{ message }}
             </div>
-            {% endfor %}
         {% endif %}
-        {% endwith %}
+    {% endwith %}
+    {% if current_user.is_authenticated %}
+        <p class="saludo">
+            Bienvenido {{ current_user.nombre_de_usuario }} al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.
+        </p>
         {% if ultimos_reclamos %}
             <section class="contenedor-flashcards">
                 <h2 class="titulo-seccion">Últimos Reclamos Realizados</h2>

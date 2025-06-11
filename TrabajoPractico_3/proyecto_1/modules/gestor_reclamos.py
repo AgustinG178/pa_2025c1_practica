@@ -60,7 +60,7 @@ class GestorReclamo:
         Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
         """
 
-        if usuario.rol in [0,1]: 
+        if int(usuario.rol) in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
             try:
                 reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
                 reclamo_a_modificar.estado = "resuelto"
@@ -77,7 +77,7 @@ class GestorReclamo:
         """
         Se elimina un reclamo (accediendo a este con su id) asociado a un usuario, realizando sus  pertinentes verificaciones.
         """
-        if usuario.rol in ["Secretario Tecnico", "Jefe de Departamento"]:
+        if usuario.rol in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
 
             try:
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejo Reclamos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>MANEJO RECLAMOS</h1>
+        <h2 style = "text-align: center;">Bienvenido {{current_user.nombre_de_usuario}}, se mostrarán todos los reclamos relacionados al departamento {{dpto}}; ingrese la id del reclamo que quiere resolver/eliminar, a 
+        continuacion seleccione la accion a realizar y confirme.
+        <br>
+        </h2>
+    
+    </header>
+    <div class="contenedor-principal" style="text-align: center;">
+    <form class="formulario-reclamos" action="{{ url_for('manejo_reclamos') }}" method="POST">
+        <label for="reclamo_id">ID del Reclamo:</label>
+        <select id="reclamo_id" name="reclamo_id" required>
+            <option value="" disabled selected>Seleccione un reclamo:</option>
+            {% for reclamo in reclamos %}
+
+                    {% if reclamo.estado != 'resuelto'%}
+                        <option value="{{ reclamo.id }}">{{ reclamo.id }} - {{ reclamo.estado }}</option>
+                    {% endif %}
+            {% endfor %}
+        </select>        
+        <label for="accion">Acción:</label>
+        <select id="accion" name="accion" required>
+            <option value="" disabled selected>Seleccione una acción:</option>
+            <option value="eliminar">Eliminar</option>
+            <option value="resolver">Resolver</option>
+        </select>
+        <button type="submit">Confirmar</button>
+    </form>
+
+    
+    <div class="sidebar-ids">
+        <h3>IDs de Reclamos de tu Departamento</h3>
+        <ul>
+            {% for reclamo in reclamos %}
+                {% if reclamo.departamento == dpto%}
+                    <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="mensaje-flash-centro">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        <div class="flash-{{ category }}">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}    
+            {% endif %}
+        {% endwith %}
+    </div>  
+
+<a href="{{ url_for('inicio') }}" class="button-center">Volver</a>
+</body>
+</html>

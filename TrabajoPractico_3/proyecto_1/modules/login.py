@@ -46,6 +46,20 @@ class FlaskLoginUser:
     def usuario_orm(self):
         return self._usuario  # Devuelve la instancia ORM original
 
+    def rol_to_dpto (self):
+        """
+        Convierte el rol de un usuario a un departamento (al carecer de una clase departamento y optar como rol, debemos realizar dicho mapeo).
+        """
+
+        relacion_roles_dpto = {
+            1:"Servicio Tecnico",
+            2:"Mesa Entrada",
+            3:"Informatica",
+            4:"Matematica"
+        }
+
+        return relacion_roles_dpto[int(self.rol)] #devuelve el dpto asociado al rol del usuario
+
 class GestorLogin:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
         self.repositorio_usuario = repositorio_usuario

@@ -224,6 +224,47 @@ def analitica_reclamos():
         graficos=rutas
 )
 
+@app.route("/manejar_reclamos",methods = ["GET","POST"])
+@login_required
+def manejo_reclamos():
+    print("[DEBUG] Entrando a manejo_reclamos. Usuario actual:", current_user)
+    #Pagina para el manejo de reclamos, es decir, resolver o eliminarlos.
+    print(f"[DEBUG] Rol del usuario: {current_user.rol}")
+    if current_user.rol not in ["2", "3", "4"]:
+        print("[DEBUG] Usuario sin permisos para manejo de reclamos.")
+        flash("No tienes permisos para acceder a esta sección.","danger")
+        return redirect(url_for('index'))
+    
+    if request.method == "POST":
+        print("[DEBUG] POST recibido en manejo_reclamos.")
+        accion = request.form.get('accion')
+        reclamo_id = request.form.get('reclamo_id')
+        print(f"[DEBUG] Acción: {accion}, Reclamo ID: {reclamo_id}")
+        reclamo = repo_reclamos.obtener_registro_por_filtro(filtro="id",valor=reclamo_id)
+        print(f"[DEBUG] Reclamo obtenido: {reclamo}")
+
+        if accion == "resolver":
+            try:
+                gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo,usuario=current_user)
+                print(f"[DEBUG] Reclamo {reclamo_id} resuelto por usuario {current_user.nombre_de_usuario}")
+                flash("Reclamo resuelto exitosamente.", "success")
+            except Exception as e:
+                print(f"[ERROR] Error al resolver el reclamo: {e}")
+                flash(f"Error al resolver el reclamo: {e}", "danger")
+
+
+
+        elif accion == "eliminar":
+            try:
+                gestor_reclamos.eliminar_reclamo(usuario=current_user,reclamo_id=reclamo_id)
+                print(f"[DEBUG] Reclamo {reclamo_id} eliminado por usuario {current_user.nombre_de_usuario}")
+                flash("Reclamo eliminado exitosamente.", "success")
+            except Exception as e:
+                print(f"[ERROR] Error al eliminar el reclamo: {e}")
+                flash(f"Error al eliminar el reclamo: {e}", "danger")
+
+    print(f"[DEBUG] Renderizando manejo_reclamos.html para dpto: {current_user.rol_to_dpto()}")
+    return render_template('manejo_reclamos.html', reclamos=repo_reclamos.obtener_registros_por_filtro(filtro="departamento",valor=current_user.rol_to_dpto()), usuario = current_user, dpto = current_user.rol_to_dpto())
 @login_manager.user_loader
 def load_user(user_id):
     usuario = repo_usuarios.obtener_registro_por_filtro(campo='id', valor = user_id)

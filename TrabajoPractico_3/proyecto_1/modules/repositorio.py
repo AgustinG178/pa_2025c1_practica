@@ -204,7 +204,13 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
     def obtener_por_id(self, id_reclamo):
         return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
 
-
+    def obtener_registros_por_filtro(self, filtro,valor):
+        
+        """
+        Obtiene todos los registros que coinciden con un filtro específico.
+        """
+        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
+        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
 
 if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
