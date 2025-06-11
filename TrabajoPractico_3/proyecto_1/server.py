@@ -321,7 +321,8 @@ def manejo_reclamos():
                 flash(f"Error al eliminar el reclamo: {e}", "danger")
 
     print(f"[DEBUG] Renderizando manejo_reclamos.html para dpto: {current_user.rol_to_dpto()}")
-    return render_template('manejo_reclamos.html', reclamos=repo_reclamos.obtener_registros_por_filtro(filtro="departamento",valor=current_user.rol_to_dpto()), usuario = current_user, dpto = current_user.rol_to_dpto(),)
+    return render_template('manejo_reclamos.html', reclamos=repo_reclamos.obtener_registros_por_filtro(filtro="departamento",valor=current_user.rol_to_dpto()), usuario = current_user, dpto = current_user.rol_to_dpto())
+
 @login_manager.user_loader
 def load_user(user_id):
     """
