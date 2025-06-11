@@ -77,6 +77,15 @@ class GestorUsuarios:
         else:
             raise ValueError("Tipo de reporte no soportado")
         
+    def cargar_usuario(self, nombre_de_usuario):
+        """
+        Carga un usuario por su nombre de usuario.
+        Lanza ValueError si el usuario no existe.
+        """
+        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario)
+        if not usuario:
+            raise ValueError("Usuario no encontrado")
+        return usuario
 if __name__ == "__main__":
     session = BaseDatos("sqlite:///data/base_datos.db")
     session.conectar()

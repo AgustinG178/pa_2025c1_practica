@@ -21,7 +21,7 @@ repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
 gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
-procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
+procesador = ProcesadorArchivo("data/frases.json")
 X, y = procesador.datosEntrenamiento
 clf = Clasificador(X, y)
 clf._entrenar_clasificador()
@@ -56,8 +56,8 @@ def registrarse():
                 email=email,
                 nombre_de_usuario=nombre_de_usuario,
                 password=password,
-                rol=0
-                claustro="estudiante",
+                rol=0,
+                claustro="estudiante"
             )
             print("[DEBUG] Usuario registrado exitosamente.")
             flash('Usuario registrado exitosamente. ¡Ahora puede iniciar sesión!', 'success')
@@ -131,11 +131,10 @@ def crear_reclamos():
                 departamento=departamento,
                 clasificacion=clasificacion_predicha_str
             )
-            print("[DEBUG] Reclamo creado con éxito.")
+            print("[DEBUG] Obejto dominio Reclamo creado con éxito.")
 
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-            repo_reclamos.guardar_registro(modelo)
-            print("[DEBUG] Reclamo guardado en la base de datos.")
+        
 
             reclamos_similares = repo_reclamos.buscar_similares(clasificacion_predicha_str, modelo.id)
 
@@ -156,16 +155,35 @@ def crear_reclamos():
 @login_required
 def adherirse(reclamo_id):
     usuario_actual = current_user
-    try:
-        gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
-        flash("Te adheriste al reclamo correctamente.", "success")
-    except ValueError as e:
-        flash(str(e), "warning")
-    except Exception as e:
-        flash(f"Ocurrió un error inesperado: {e}", "danger")
-    except IntegrityError as e:
-        flash("Ya estás adherido a este reclamo.", "warning")
-        sqlalchemy_session.rollback()
+    accion = request.form.get('accion')
+    descripcion = request.form.get('descripcion')
+    departamento = request.form.get('departamento')
+    clasificacion = request.form.get('clasificacion')
+
+    if accion == "confirmar":
+        # Guardar el reclamo que se intento crear inicialmente
+        reclamo = gestor_reclamos.crear_reclamo(
+            usuario=usuario_actual,
+            descripcion=descripcion,
+            departamento=departamento,
+            clasificacion=clasificacion
+        )
+        modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+        repo_reclamos.guardar_registro(modelo)
+        flash("Reclamo creado exitosamente.", "success")
+    elif accion == "adherir":
+        # Adherirse a un reclamo existente se adhiere al reclamo y no se guarda el reclamo inicial en la bd
+        
+        try:
+            gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
+            flash("Te adheriste al reclamo correctamente.", "success")
+        except ValueError as e:
+            flash(str(e), "warning")
+        except Exception as e:
+            flash(f"Ocurrió un error inesperado: {e}", "danger")
+        except IntegrityError as e:
+            flash("Ya estás adherido a este reclamo.", "warning")
+            sqlalchemy_session.rollback()
     return redirect(url_for('inicio_usuario'))
 
 @app.route('/listar_reclamos')

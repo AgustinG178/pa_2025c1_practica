@@ -16,6 +16,9 @@ class FlaskLoginUser:
         self._contraseña = usuario.contraseña
         self.rol = usuario.rol
         self.claustro = usuario.claustro
+        self.id = usuario.id  # Aseguramos que id sea un atributo de la clase
+        if not hasattr(self, 'id'):
+            raise ValueError("El usuario debe tener un id")
 
     def get_id(self):
         return str(self.id)

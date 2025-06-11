@@ -511,6 +511,16 @@ footer a:hover {
     background-color: #00509e;
 }
 
+/* Mensajes flash de éxito */
+.flash-success {
+    background-color: #d4edda;  /* verde claro suave */
+    color: #155724;             /* verde oscuro para el texto */
+    display: flex;
+    justify-content: center;  /* Centrado horizontal */
+    align-items: center;      /* Centrado vertical */
+    height: 100px;            
+}
+
 /* Mensajes flash de error */
 .flash-error {
     background-color: #f8d7da;  /* rojo claro suave */

@@ -15,9 +15,15 @@ class GeneradorReportes:
         self.repositorio_reclamos = repositorio_reclamos
 
     def cantidad_total_reclamos(self):
+        """
+        Se devuelve el total de reclamos en la base de datos como un numero.
+        """
         return self.repositorio_reclamos.session.query(ModeloReclamo).count()
 
     def cantidad_reclamos_por_estado(self):
+        """
+        Se devuelve un diccionario con la cantidad de reclamos agrupados por estado.
+        """
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado, 
             func.count(ModeloReclamo.id)
@@ -25,6 +31,9 @@ class GeneradorReportes:
         return dict(query)
 
     def cantidad_reclamos_por_departamento(self):
+        """
+        Se devuelve un diccionario con la cantidad de reclamos agrupados por departamento.
+        """
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.departamento,
             func.count(ModeloReclamo.id)
@@ -32,6 +41,9 @@ class GeneradorReportes:
         return dict(query)
 
     def cantidad_reclamos_por_clasificacion(self):
+        """
+        Se devuelve un diccionario con la cantidad de reclamos agrupados por clasificación.
+        """
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion,
             func.count(ModeloReclamo.id)
@@ -39,12 +51,18 @@ class GeneradorReportes:
         return dict(query)
 
     def cantidad_promedio_adherentes(self):
+        """
+        Se devuelve el promedio de adherentes por reclamo. En caso de que no haya reclamos se devuelve 0.
+        """
         query = self.repositorio_reclamos.session.query(
             func.avg(ModeloReclamo.cantidad_adherentes)
         ).scalar()
         return query or 0
 
     def reclamos_recientes(self, dias=7):
+        """
+        Se devuelve una lista de los reclamos creados en los últimos 7 días.
+        """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
@@ -52,12 +70,18 @@ class GeneradorReportes:
         return reclamos
 
     def reclamos_por_usuario(self, usuario_id):
+        """
+        Se devuelve una lista de reclamos creados por un usuario específico.
+        """
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
             usuario_id=usuario_id
         ).all()
         return reclamos
     
-    def cantidad_reclamos_por_estado_filtrado(self, clasificacion):    
+    def cantidad_reclamos_por_estado_filtrado(self, clasificacion):   
+        """"
+        Se devuelve un diccionario con la cantidad de reclamos agrupados por estado, filtrados por clasificación.
+        """ 
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado,
             func.count(ModeloReclamo.id)
@@ -65,6 +89,9 @@ class GeneradorReportes:
         return dict(query)
 
     def reclamos_recientes_filtrado(self, clasificacion, dias=7):
+        """
+        Se devuelve una lista de reclamos recientes filtrados por clasificación.
+        """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite,
@@ -72,6 +99,9 @@ class GeneradorReportes:
         ).all()
         
     def listar_clasificaciones_unicas(self):
+        """
+        Se devuelve una lista de clasificaciones únicas de reclamos en la base de datos.
+        """
         clasificaciones = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion
         ).distinct().all()
@@ -82,6 +112,9 @@ class GeneradorReportes:
 
 
     def clasificacion_por_rol(self, rol):
+        """
+        Se devuelve la la clasificacion  de un rol especifico (el string asociado al rol en numero)
+        """
         # convertimos rol a int por si viene como string
         try:
             rol_int = int(rol)
@@ -97,6 +130,10 @@ class GeneradorReportes:
 
 
     def obtener_datos_para_torta(self, rol):
+        """
+        Se obtieen los datos necesarios para generar un gráfico de torta, filtrados por rol.
+        Si el rol no tiene una clasificación asociada, se devuelve un diccionario vacío (esto ocurriría si un estudiante intenta pedir un grafico de torta).
+        """
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
@@ -112,6 +149,10 @@ class GeneradorReportes:
 
 
     def obtener_datos_para_histograma(self, rol):
+        """
+        Se obtienen los datos necesarios para generar un histograma, filtrados por rol.
+        Si el rol no tiene una clasificación asociada, se devuelve un diccionario vacío (esto ocurriría si un estudiante intenta pedir un grafico de histograma).
+        """
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
@@ -125,6 +166,10 @@ class GeneradorReportes:
         return dict(agrupados_por_mes)
     
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
+        """
+        Se obtienen las cantidades de adherentes de los reclamos creados en los últimos '365' días.
+        Si se especifica una clasificación, se filtran los reclamos por esa clasificación.
+        """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
