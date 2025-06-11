@@ -50,7 +50,7 @@
                     <tr>
                         <th>ID Reclamo</th>
                         <th>ID Usuario Creador</th>
-                        <th>IDS Adheridos</th>
+                        <th>IDS Usuarios Adheridos</th>
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
                         <th>Tiempo Estimado</th>
@@ -59,33 +59,40 @@
                 </thead>
                 <tbody>
                     {%for reclamo in reclamos%}
-                    {%if reclamo.d%}
+                    {%if reclamo.departamento == dpto%}
                     <tr>
                         <td>{{reclamo.id}}</td>
                         <td>{{reclamo.usuario_id}}</td>
-                        <td>{%for usuario in reclamo.usuarios%}
-                                {{usuario.id}}{% if not loop.last %}, {% endif %}
-                            {%endfor%}
 
+                        <td>{%if reclamos.cantidad_adherentes == 1%}
+                                Sin adherentes
+                            {% else %}
+                                {%for usuario in reclamo.usuarios%}
+                                    {{usuario.id}}{% if not loop.last %}, {% endif %}
+                                {%endfor%}
+                            {%endif%}
                         </td>
-                        <td>{{reclamo.fecha_hora}}</td>
-                        <td>{{reclamo.tiempo_estimado}}</td>
 
+                        <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{reclamo.estado}}</td>
+                        <td>
+                            {%if reclamo.estado == 'resuelto'%}
+                                    ---
+                            {%elif reclamo.tiempo_estimado == 0%}
+                                Sin asignar
+                            {%else%}
+                                {{reclamo.tiempo_estimado}}
+                            {%endif%}
+                        </td>
+                        
+                    
                     </tr>
+                    {% endif %}
+                    {% endfor %}
                 </tbody>
             </table>
 
         </div>
-            <aside class="sidebar-reclamos">
-                <h3 class="titulo-seccion">IDs de Reclamos de tu Departamento</h3>
-                <ul class="lista-reclamos scrollable-list">
-                    {% for reclamo in reclamos %}
-                        {% if reclamo.departamento == dpto %}
-                            <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </aside>
     </main>
     <div class="mensaje-flash-centro">
         {% with messages = get_flashed_messages(with_categories=true) %}

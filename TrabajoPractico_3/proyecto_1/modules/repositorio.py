@@ -136,6 +136,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             usuario_id=reclamo.usuario_id,
             departamento=reclamo.departamento,
             clasificacion=reclamo.clasificacion,
+            tiempo_estimado=reclamo.tiempo_estimado,
             **kwargs
         )
 
@@ -150,7 +151,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             usuario_id=modelo.usuario_id,
             departamento=modelo.departamento,
             clasificacion=modelo.clasificacion,
-            cantidad_adherentes=modelo.cantidad_adherentes
+            cantidad_adherentes=modelo.cantidad_adherentes,
+            tiempo_estimado = modelo.tiempo_estimado
         )
 
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):
