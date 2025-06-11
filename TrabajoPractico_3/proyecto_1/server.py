@@ -5,7 +5,7 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclam
 from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
-from modules.BaseDeDatos import BaseDatos
+from modules.gestor_base_datos import BaseDatos
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError

@@ -1,4 +1,4 @@
-from modules.BaseDeDatos import BaseDatos
+from modules.gestor_base_datos import BaseDatos
 
 class Usuario:
     def __init__(self, nombre, apellido, email, nombre_de_usuario, contraseña, rol, claustro, id=None):
@@ -82,18 +82,6 @@ class Usuario:
     @property
     def id(self):
         return self.__id
-
-    def registrar(self, base_datos: BaseDatos):
-        pass
-
-    def iniciar_sesion(self, base_datos: BaseDatos):
-        pass
-    
-    def ver_reclamos(self, base_datos: BaseDatos):
-        pass
-
-    def adherirse_a_reclamo(self, base_datos: BaseDatos, reclamo_id):
-        pass
     
     def __dict__(self):
         return {

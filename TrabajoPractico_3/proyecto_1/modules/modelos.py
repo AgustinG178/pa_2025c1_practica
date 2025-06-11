@@ -7,8 +7,6 @@ relationship() crea una relación entre dos clases en SQLAlchemy, como por ejemp
 Permite acceder desde un objeto a los objetos relacionados en otra tabla, como `usuario.reclamos` o `reclamo.usuario`.
 """
 
-
-
 # Base de datos base para los modelos
 class Base(DeclarativeBase):
     """

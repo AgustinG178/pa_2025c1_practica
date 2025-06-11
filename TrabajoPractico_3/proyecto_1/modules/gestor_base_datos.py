@@ -7,7 +7,7 @@ from modules.reclamo import Reclamo
 
 """El método query de SQLAlchemy se utiliza para realizar consultas a la base de datos y obtener objetos de tus modelos (tablas) de manera sencilla y orientada a objetos."""
 
-class BaseDatos:
+class GestorBaseDatos:
     def __init__(self, url_bd):
         """
         Inicializa la conexión a la base de datos y crea las tablas si no existen.

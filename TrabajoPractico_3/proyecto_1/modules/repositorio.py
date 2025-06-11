@@ -73,7 +73,6 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             id=modelo.id
         )
 
-
     def _map_entidad_a_modelo(self, entidad: Usuario):
         return ModeloUsuario(
             nombre=entidad.nombre,
