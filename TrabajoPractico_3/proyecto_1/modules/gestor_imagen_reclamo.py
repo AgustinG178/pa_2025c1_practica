@@ -35,7 +35,7 @@ class GestorImagenReclamoPng(GestorImagenReclamo):
         
     def guardar_imagen(self,reclamo_id, imagen):
             """
-            Se guarda la imagen en formato PNG y el bombre es la id del reclamo
+            Se guarda la imagen en formato PNG y el nombre es la id del reclamo
             """
             if imagen:
                 

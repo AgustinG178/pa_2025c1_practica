@@ -20,6 +20,7 @@
                 <th class="col-clasificacion">Clasificación</th>
                 <th class="col-usuario">ID Usuario</th>
                 <th class="col-acciones">Acciones</th>
+                <th class = "col-imagen">Imagen Adjunta</th>
             </tr>
         </thead>
         <tbody>
@@ -28,10 +29,24 @@
                     <td class="col-id">{{ reclamo.id }}</td>
                     <td class="col-descripcion">{{ reclamo.contenido }}</td>
                     <td class="col-estado">{{ reclamo.estado }}</td>
-                    <td class="col-fecha">{{ reclamo.fecha_hora }}</td>
+                    <td class="col-fecha">{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M')}}</td>
                     <td class="col-departamento">{{ reclamo.departamento }}</td>
                     <td class="col-clasificacion">{{ reclamo.clasificacion }}</td>
                     <td class="col-usuario">{{ reclamo.usuario_id }}</td>
+                    <td class = "col-imagen">
+                    {% set imagen_path = 'static/Imagenes Reclamos/{}.png'.format(reclamo.id) %}
+                    {% if os.path.exists(imagen_path) %}
+                        <details>
+                            <summary>Ver imagen adjunta</summary>
+                            <img src = "{{ url_for('static',filename='Imagenes Reclamos/{}.png'.format(reclamo.id) )}}"
+                                 alt="Imagen adjunta del reclamo {{ reclamo.id }}"
+                                 style = "max-width: 100px; max-height:100px;"
+                                 onerror="this.style.display='none';">
+                        </details>
+                    {% else %}
+                        <span style="color: #888; font-size: 0.95em;">Sin imagen adjunta</span>
+                    {% endif %}
+                    </td>
                     <td class="col-acciones">
                         <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Editar</a>
                     </td>

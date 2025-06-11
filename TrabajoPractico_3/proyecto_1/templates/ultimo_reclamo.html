@@ -14,12 +14,17 @@
             <h2 class="titulo-flashcard-grande">Reclamo creado</h2>
             <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
             <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
-            <p>Imagen Adjuntada:{{imagen}}</p>
+            <p><strong>Imagen Adjunta:</strong></p>
+            {% if reclamo.id %}
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <img src="{{ url_for('static', filename='Imagenes Reclamos/{}.png'.format(reclamo.id)) }}"
+                         alt="Imagen del reclamo {{ reclamo.id }}"
+                         style="max-width:200px; max-height:200px; margin:10px 0;"
+                         onerror="this.style.display='none';">
+                </div>
+            {% endif %}
             <form method="post" action="{{ url_for('adherirse', reclamo_id=0) }}">
-                <input type="hidden" name="descripcion" value="{{ reclamo.contenido }}">
-                <input type="hidden" name="departamento" value="{{ reclamo.departamento }}">
-                <input type="hidden" name="clasificacion" value="{{ reclamo.clasificacion }}">
-                
+                <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
                 <div style="text-align: center;">
                     <button type="submit" name="accion" value="confirmar" class="botton">Confirmar Reclamo</button>
                 </div>
@@ -35,7 +40,8 @@
                     <div class="flashcard">
                         <p>{{ r.contenido }}</p>
                         <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
-                    
+                            <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
+                            <input type="hidden" name="reclamo_id_adherido" value="{{ r.id }}">
                             <div style="text-align: center;">
                                 <button type="submit" name="accion" value="adherir">Adherirse</button>
                             </div>
