@@ -10,8 +10,8 @@
     <header class="header-principal">
         <h1 class="titulo-principal">MANEJO RECLAMOS</h1>
         <div class="saludo">
-            Bienvenido {{ current_user.nombre_de_usuario }}, se mostrarán todos los reclamos relacionados al departamento 
-            <strong>{{ dpto }}</strong>. Ingrese la ID del reclamo que quiere resolver/eliminar, luego seleccione la acción a realizar y confirme.
+            Bienvenido {{ current_user.nombre_de_usuario }}, se mostrarán todos los reclamos pendientes según tu rol:
+            Ingrese la ID del reclamo que desea gestionar, seleccione la acción y confirme.
         </div>
     </header>
 
@@ -22,43 +22,13 @@
                 <div class="form-group">
                     <label for="reclamo_id">ID del Reclamo:</label>
                     <select id="reclamo_id" name="reclamo_id" required>
-                        <option value="" disabled selected>Seleccione un reclamo:</option>
-
-                        {% if current_user.rol == '2' %}
-                            {% for reclamo in reclamos %}
-                                {% if reclamo.departamento == dpto 
-                                      and reclamo.clasificacion == 'soporte informatico' 
-                                      and reclamo.estado != 'resuelto' %}
-                                    <option value="{{ reclamo.id }}">
-                                        {{ reclamo.id }} – {{ reclamo.estado }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-
-                        {% if current_user.rol == '3' %}
-                            {% for reclamo in reclamos %}
-                                {% if reclamo.departamento == dpto 
-                                      and reclamo.clasificacion == 'secretario tecnico' 
-                                      and reclamo.estado != 'resuelto' %}
-                                    <option value="{{ reclamo.id }}">
-                                        {{ reclamo.id }} - {{ reclamo.estado }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                        {% if current_user.rol == '4' %}
-                            {% for reclamo in reclamos %}
-                                {% if reclamo.departamento == 'maestranza' 
-                                      and reclamo.clasificacion == 'maestranza' 
-                                      and reclamo.estado != 'resuelto' %}
-                                    <option value="{{ reclamo.id }}">
-                                        {{ reclamo.id }} - {{ reclamo.estado }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-
+                        <!-- placeholder -->
+                        <option value="" disabled selected>Seleccione un reclamo pendiente:</option>
+                        {% for r in reclamos if r.estado == 'pendiente' %}
+                            <option value="{{ r.id }}" {% if selected_id and r.id|string == selected_id %}selected{% endif %}>
+                                {{ r.id }} — {{ r.titulo }} — {{ r.estado }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -75,6 +45,7 @@
                 <button type="submit">Confirmar</button>
             </form>
         </div>
+
         <!-- Tabla de reclamos -->
         <div>
             <table class="tabla-reclamos">
@@ -82,41 +53,38 @@
                     <tr>
                         <th>ID Reclamo</th>
                         <th>ID Usuario Creador</th>
-                        <th>IDS Usuarios Adheridos</th>
+                        <th>Usuarios Adheridos</th>
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
                         <th>Tiempo Estimado</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {%for reclamo in reclamos%}
-                    {%if reclamo.departamento == dpto%}
-                    <tr>
-                        <td>{{reclamo.id}}</td>
-                        <td>{{reclamo.usuario_id}}</td>
-
-                        <td>{%if reclamos.cantidad_adherentes == 1%}
-                                Sin adherentes
-                            {% else %}
-                                {%for usuario in reclamo.usuarios%}
-                                    {{usuario.id}}{% if not loop.last %}, {% endif %}
-                                {%endfor%}
-                            {%endif%}
-                        </td>
-
-                        <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
-                        <td>{{reclamo.estado}}</td>
-                        <td>
-                            {%if reclamo.estado == 'resuelto'%}
-                                    ---
-                            {%elif reclamo.tiempo_estimado == 0%}
-                                Sin asignar
-                            {%else%}
-                                {{reclamo.tiempo_estimado}}
-                            {%endif%}
-                        </td>
-                    </tr>
-                    {% endif %}
+                    {% for reclamo in reclamos if reclamo.estado == 'pendiente' %}
+                        <tr>
+                            <td>{{ reclamo.id }}</td>
+                            <td>{{ reclamo.usuario_id }}</td>
+                            <td>
+                                {% if reclamo.cantidad_adherentes == 1 %}
+                                    Sin adherentes
+                                {% else %}
+                                    {% for usuario in reclamo.usuarios %}
+                                        {{ usuario.id }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ reclamo.estado }}</td>
+                            <td>
+                                {% if reclamo.tiempo_estimado == 0 %}
+                                    Sin asignar
+                                {% else %}
+                                    {{ reclamo.tiempo_estimado }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6" style="text-align:center;">No hay reclamos pendientes.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -135,7 +103,6 @@
             {% endif %}
         {% endwith %}
     </div>
-
     <!-- Botón Volver -->
     <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
         <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>

@@ -149,17 +149,20 @@ if __name__ == "__main__":
         exit()
 
     # Crear reclamos
+    departamentos_posibles = ["maestranza", "Servicio Tecnico", "soporte informático"]
+
     for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
         try:
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
             estado = "pendiente"
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
+            departamento = choice(departamentos_posibles)  # Elegir aleatoriamente
 
             reclamo = gestor_reclamos.crear_reclamo(
                 usuario=usuario,
                 descripcion=desc,
-                departamento="General",
+                departamento=departamento,
                 clasificacion=clasificacion
             )
 
@@ -169,6 +172,7 @@ if __name__ == "__main__":
             modelo.cantidad_adherentes = randint(0, 20)
 
             repo_reclamos.guardar_registro(modelo)
-            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario}: {desc}")
+            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en {departamento}: {desc}")
         except Exception as e:
             print(f"✖ Error creando reclamo '{desc}': {e}")
+
