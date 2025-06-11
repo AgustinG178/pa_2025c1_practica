@@ -207,7 +207,7 @@ def listar_reclamos():
     """
     Muestra todos los reclamos registrados en el sistema.
     """
-    reclamos = repo_reclamos.obtener_todos_los_registros()
+    reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
     return render_template('listar_reclamos.html', reclamos=reclamos)
 
 @app.route("/analitica")
@@ -240,6 +240,39 @@ def analitica_reclamos():
         promedio_adherentes=promedio_adherentes,
         graficos=rutas
     )
+    
+@app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
+@login_required
+def editar_reclamo(reclamo_id):
+    print(f"[DEBUG] Entrando a /editar_reclamo con ID: {reclamo_id}")
+    modelo_reclamo = repo_reclamos.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
+    print(f"[DEBUG] Reclamo obtenido: {modelo_reclamo}")
+
+    if request.method == 'POST':
+        nuevo_contenido = request.form.get('descripcion')
+        print(f"[DEBUG] Contenido recibido del formulario: {nuevo_contenido}")
+
+        try:
+            nueva_clasificacion = clf.clasificar([nuevo_contenido])[0]
+            print(f"[DEBUG] Clasificación predicha: {nueva_clasificacion}")
+        except Exception as e:
+            print(f"[ERROR] Falló la clasificación: {e}")
+            flash(f"Error al clasificar el contenido: {e}", "danger")
+            return render_template("editar_reclamo.html", reclamo=modelo_reclamo)
+
+        # Actualizamos atributos directamente en la instancia ORM
+        modelo_reclamo.contenido = nuevo_contenido
+        modelo_reclamo.clasificacion = nueva_clasificacion
+
+        try:
+            repo_reclamos.modificar_registro_orm(repo_reclamos.mapear_reclamo_a_modelo(modelo_reclamo))
+            flash("Reclamo actualizado correctamente.", "success")
+            return redirect(url_for('mis_reclamos'))
+        except Exception as e:
+            print(f"[ERROR] Falló al guardar el reclamo: {e}")
+            flash(f"Error al actualizar el reclamo: {e}", "danger")
+
+    return render_template("editar_reclamo.html", reclamo=modelo_reclamo)
 
 @app.route("/manejar_reclamos",methods = ["GET","POST"])
 @login_required
