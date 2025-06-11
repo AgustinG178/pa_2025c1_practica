@@ -1,6 +1,7 @@
 from datetime import datetime
 
 class Reclamo:
+    """Clase para instanciar los reclamos echos por los usuarios"""
     def __init__(self, estado: str, fecha_hora: datetime, contenido: str, departamento: str, clasificacion: str, usuario_id: int = None, **kwargs):
         self.id = kwargs.get("id")  # se agrega solo si está presente
         self.estado = estado

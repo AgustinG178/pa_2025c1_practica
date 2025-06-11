@@ -9,9 +9,9 @@ class GestorUsuarios:
         """
         self.repositorio = repositorio_usuario
 
-    """
-    Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
-    """
+        """
+        Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
+        """
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
         if self.repositorio.obtener_registro_por_filtro("email", email):

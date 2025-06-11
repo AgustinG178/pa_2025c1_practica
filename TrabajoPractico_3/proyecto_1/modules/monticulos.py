@@ -10,10 +10,14 @@ Esto es útil para calcular estadísticas como la mediana, el máximo y el míni
 """
 
 class Estadisticas:
+    """Clase base para calcular estadísticas básicas sobre una lista de datos."""
+
     def __init__(self, datos):
+        """Inicializa la clase con una lista de datos."""
         self.datos = datos
 
     def obtener_mediana(self):
+        """Calcula y devuelve la mediana de los datos."""
         if not self.datos:
             return None
         datos_ordenados = sorted(self.datos)
@@ -25,22 +29,29 @@ class Estadisticas:
             return datos_ordenados[medio]
 
     def obtener_maximo(self):
+        """Devuelve el valor máximo de los datos."""
         if not self.datos:
             return None
         return max(self.datos)
 
     def obtener_minimo(self):
+        """Devuelve el valor mínimo de los datos."""
         if not self.datos:
             return None
         return min(self.datos)
 
     def obtener_promedio(self):
+        """Calcula y devuelve el promedio de los datos."""
         if not self.datos:
             return None
         return sum(self.datos) / len(self.datos)
 
+
 class MonticuloMediana(Estadisticas):
+    """Extiende Estadisticas para mantener la mediana usando montículos."""
+
     def __init__(self, datos):
+        """Inicializa los montículos y los construye a partir de los datos."""
         super().__init__(datos)
         self.min_heap = []  # heap de mayores
         self.max_heap = []  # heap de menores (como negativos)
@@ -48,10 +59,12 @@ class MonticuloMediana(Estadisticas):
         self._construir_monticulos()
 
     def _construir_monticulos(self):
+        """Construye los montículos insertando todos los datos."""
         for num in self.datos:
             self.insertar(num)
 
     def insertar(self, valor):
+        """Inserta un nuevo valor en los montículos y los balancea."""
         if not self.max_heap or valor <= -self.max_heap[0]:
             heapq.heappush(self.max_heap, -valor)
         else:
@@ -64,6 +77,7 @@ class MonticuloMediana(Estadisticas):
             heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))
 
     def obtener_mediana(self):
+        """Devuelve la mediana actual basada en los montículos."""
         if not self.datos:
             return None
         if len(self.max_heap) == len(self.min_heap):
@@ -71,30 +85,38 @@ class MonticuloMediana(Estadisticas):
         else:
             return -self.max_heap[0]
 
+
 class MonticuloBinario:
+    """Implementa un montículo binario mínimo o máximo."""
+
     def __init__(self, es_maximo=False):
+        """Inicializa un montículo como mínimo o máximo según el parámetro."""
         self.es_maximo = es_maximo
         self.heap = []
 
     def insertar(self, valor):
+        """Inserta un valor en el montículo."""
         if self.es_maximo:
             heapq.heappush(self.heap, -valor)
         else:
             heapq.heappush(self.heap, valor)
 
     def extraer(self):
+        """Extrae y devuelve el valor superior del montículo."""
         if self.es_maximo:
             return -heapq.heappop(self.heap)
         else:
             return heapq.heappop(self.heap)
 
     def top(self):
+        """Devuelve el valor superior del montículo sin extraerlo."""
         if self.es_maximo:
             return -self.heap[0]
         else:
             return self.heap[0]
 
     def __len__(self):
+        """Devuelve la cantidad de elementos en el montículo."""
         return len(self.heap)
 
 
