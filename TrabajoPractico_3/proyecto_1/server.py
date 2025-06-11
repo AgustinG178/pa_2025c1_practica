@@ -248,7 +248,7 @@ def manejo_reclamos():
     print("[DEBUG] Entrando a manejo_reclamos. Usuario actual:", current_user)
     #Pagina para el manejo de reclamos, es decir, resolver o eliminarlos.
     print(f"[DEBUG] Rol del usuario: {current_user.rol}")
-    if current_user.rol not in ["2", "3", "4"]:
+    if current_user.rol not in ["1","2", "3", "4"]:
         print("[DEBUG] Usuario sin permisos para manejo de reclamos.")
         flash("No tienes permisos para acceder a esta sección.","danger")
         return redirect(url_for('index'))
@@ -269,8 +269,6 @@ def manejo_reclamos():
             except Exception as e:
                 print(f"[ERROR] Error al resolver el reclamo: {e}")
                 flash(f"Error al resolver el reclamo: {e}", "danger")
-
-
 
         elif accion == "eliminar":
             try:

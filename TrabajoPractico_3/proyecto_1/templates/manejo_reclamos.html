@@ -41,19 +41,17 @@
                 <button type="submit">Confirmar</button>
             </form>
         </div>
-
-        <aside class="sidebar-reclamos">
-            <h3 class="titulo-seccion">IDs de Reclamos de tu Departamento</h3>
-            <ul class="lista-reclamos">
-                {% for reclamo in reclamos %}
-                    {% if reclamo.departamento == dpto %}
-                        <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </aside>
+            <aside class="sidebar-reclamos">
+                <h3 class="titulo-seccion">IDs de Reclamos de tu Departamento</h3>
+                <ul class="lista-reclamos scrollable-list">
+                    {% for reclamo in reclamos %}
+                        {% if reclamo.departamento == dpto %}
+                            <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </aside>
     </main>
-
     <div class="mensaje-flash-centro">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

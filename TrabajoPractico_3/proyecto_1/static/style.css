@@ -662,11 +662,12 @@ footer a:hover {
 
 /* Barra lateral de reclamos */
 .sidebar-reclamos {
-    flex: 1 1 300px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  max-height: 400px;     
+  overflow-y: auto;      
+  background-color: #fff;
+  padding: 1rem;
+  border: 0.5px solid #ccc;
+  border-radius: 0.5rem;
 }
 
 .lista-reclamos {
@@ -683,5 +684,29 @@ footer a:hover {
 .formulario-manejo select,
 .formulario-manejo label {
     margin-bottom: 10px;
+}
+
+.scrollable-list {
+  max-height: 300px;  
+  overflow-y: auto;
+  padding-right: 0.5rem;  
+}
+
+/* Título del aside */
+.sidebar-reclamos .titulo-seccion {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  color: #003366;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.sidebar-reclamos .lista-reclamos::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-reclamos .lista-reclamos::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 3px;
 }
 
