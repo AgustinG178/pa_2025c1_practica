@@ -7,3 +7,4 @@ scikit-learn
 nltk
 numpy
 pandas #lo pide para el clasificador por alguna razon
+Pillow

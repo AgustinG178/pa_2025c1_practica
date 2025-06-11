@@ -19,10 +19,12 @@
             <option value="Matematica">Matematica</option>
             <option value="Mesa Entrada">Mesa Entrada</option>
         </select>
-        
-        <label for="imagen">Adjuntar imagen (opcional)</label>
-        
-        <input type= "image" id ="imagen" name = "imagen" />
+       <br>
+       <br> 
+        <label for="imagen" class = "label-file">Adjuntar imagen (opcional)</label>
+        <input type= "file" id ="imagen" name = "imagen" accept="image/*" style="display: none;"/>
+        <br>
+        <br>
         <button type="submit">Crear Reclamo</button>
     </form>
 

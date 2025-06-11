@@ -14,7 +14,7 @@
             <h2 class="titulo-flashcard-grande">Reclamo creado</h2>
             <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
             <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
-            <p>Imagen:{{imagen}}</p>
+            <p>Imagen Adjuntada:{{imagen}}</p>
             <form method="post" action="{{ url_for('adherirse', reclamo_id=0) }}">
                 <input type="hidden" name="descripcion" value="{{ reclamo.contenido }}">
                 <input type="hidden" name="departamento" value="{{ reclamo.departamento }}">
