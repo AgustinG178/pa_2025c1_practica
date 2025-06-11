@@ -1,4 +1,4 @@
-from modules.BaseDeDatos import BaseDatos
+from modules.gestor_base_datos import BaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo

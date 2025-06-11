@@ -1,6 +1,6 @@
 from modules.usuarios import Usuario
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
-from modules.BaseDeDatos import BaseDatos
+from modules.gestor_base_datos import BaseDatos
 
 class GestorUsuarios:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
@@ -9,9 +9,9 @@ class GestorUsuarios:
         """
         self.repositorio = repositorio_usuario
 
-    """
-    Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
-    """
+        """
+        Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
+        """
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
         if self.repositorio.obtener_registro_por_filtro("email", email):

@@ -10,9 +10,6 @@ engine, Session = crear_engine()
 session = Session()
 
 """func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de tus consultas ORM."""
-from sqlalchemy import func
-from datetime import datetime, timedelta
-
 class GeneradorReportes:
     def __init__(self, repositorio_reclamos: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamos = repositorio_reclamos

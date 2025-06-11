@@ -2,7 +2,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask import abort
 from functools import wraps
 from modules.gestor_usuario import GestorUsuarios
-from modules.BaseDeDatos import BaseDatos
+from modules.gestor_base_datos import BaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
 
 class FlaskLoginUser:
@@ -108,9 +108,6 @@ class GestorLogin:
     def se_requiere_login(self, func):
         return login_required(func)
 
-    def es_admin(self):
-        return current_user.is_authenticated and current_user.id in self.__admin_list
-    
 if __name__ == "__main__":
     # Configuración de la base de datos y repositorio
     base_datos = BaseDatos("sqlite:///data/base_datos.db")
