@@ -149,6 +149,7 @@ def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
         departamento = request.form.get('departamento')
+        imagen = request.files.get('imagen')
         try:
             clasificacion_predicha = clf.clasificar([descripcion])[0]
             reclamo = gestor_reclamos.crear_reclamo(
@@ -159,7 +160,7 @@ def crear_reclamos():
             )
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
             reclamos_similares = repo_reclamos.buscar_similares(str(clasificacion_predicha), modelo.id)
-            return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
+            return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares,imagen=imagen)
         except Exception as e:
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
