@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +8,40 @@
 </head>
 <body>
     <h1>Mis reclamos</h1>
+
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-                <th>Fecha de creación</th>
-                <th>Departamento</th>
-                <th>Clasificación</th>
-                <th>ID Usuario</th>
+                <th class="col-id">ID</th>
+                <th class="col-descripcion">Descripción</th>
+                <th class="col-estado">Estado</th>
+                <th class="col-fecha">Fecha de creación</th>
+                <th class="col-departamento">Departamento</th>
+                <th class="col-clasificacion">Clasificación</th>
+                <th class="col-usuario">ID Usuario</th>
+                <th class="col-acciones">Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for reclamo in reclamos %}
-            <tr>
-                <td>{{ reclamo.id }}</td>
-                <td>{{ reclamo.contenido }}</td>
-                <td>{{ reclamo.estado }}</td>
-                <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y') }}</td>
-                <td>{{ reclamo.departamento }}</td>
-                <td>{{ reclamo.clasificacion }}</td>
-                <td>{{ reclamo.usuario_id }}</td>
-            </tr>
+                <tr>
+                    <td class="col-id">{{ reclamo.id }}</td>
+                    <td class="col-descripcion">{{ reclamo.contenido }}</td>
+                    <td class="col-estado">{{ reclamo.estado }}</td>
+                    <td class="col-fecha">{{ reclamo.fecha_hora }}</td>
+                    <td class="col-departamento">{{ reclamo.departamento }}</td>
+                    <td class="col-clasificacion">{{ reclamo.clasificacion }}</td>
+                    <td class="col-usuario">{{ reclamo.usuario_id }}</td>
+                    <td class="col-acciones">
+                        <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Editar</a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div style="text-align:center;">
-        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+
+    <div style="text-align:center; margin-top: 20px;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
     </div>
 </body>
 </html>

@@ -710,3 +710,29 @@ footer a:hover {
   border-radius: 3px;
 }
 
+/* Ajustes específicos de ancho por columna en "mis_reclamos.html" */
+.col-id, .col-usuario {
+    width: 6%;
+    white-space: nowrap;
+}
+.col-estado {
+    width: 10%;
+    white-space: nowrap;
+}
+.col-fecha {
+    width: 15%;
+    white-space: nowrap;
+}
+.col-departamento, .col-clasificacion {
+    width: 12%;
+    white-space: nowrap;
+}
+.col-descripcion {
+    width: auto;
+    max-width: 300px;
+    word-wrap: break-word;
+}
+.col-acciones {
+    width: 8%;
+    text-align: center;
+}

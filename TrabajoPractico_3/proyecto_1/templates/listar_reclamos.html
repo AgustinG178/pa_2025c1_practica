@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>RECLAMOS UNER</title>
 </head>
 <body>
     <h1>Lista de Reclamos</h1>
-    <table>
+    <table border="1">
         <thead>
             <tr>
-                <th>ID</tr>
-                <th>Descripción</tr>
-                <th>Estado</tr>
-                <th>Fecha de craeción</tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Fecha de creación</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -23,9 +25,13 @@
                 <td>{{ reclamo.descripcion }}</td>
                 <td>{{ reclamo.estado }}</td>
                 <td>{{ reclamo.fecha_creacion }}</td>
+                <td>
+                    <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}">Editar</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
+    </table>
     <p><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></p>
 </body>
 </html>

@@ -167,7 +167,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         return self.__session.query(ModeloReclamo).filter_by(usuario_id=usuario_id).all()
 
     def modificar_registro(self, reclamo_a_modificar: Reclamo):
-        """Modifica un reclamo existente en la base de datos."""
         if not isinstance(reclamo_a_modificar, Reclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")
 
@@ -177,6 +176,24 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
         reclamo_db.estado = reclamo_a_modificar.estado
         reclamo_db.contenido = reclamo_a_modificar.contenido
+        reclamo_db.clasificacion = reclamo_a_modificar.clasificacion
+        reclamo_db.departamento = reclamo_a_modificar.departamento
+        # etc., actualizá todos los campos que necesites
+
+        self.__session.commit()
+
+    def modificar_registro_orm(self, modelo_reclamo: ModeloReclamo):
+        if not isinstance(modelo_reclamo, ModeloReclamo):
+            raise ValueError("El parámetro debe ser un ModeloReclamo")
+
+        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=modelo_reclamo.id).first()
+        if not reclamo_db:
+            raise ValueError(f"No se encontró un reclamo con ID {modelo_reclamo.id}")
+
+        reclamo_db.estado = modelo_reclamo.estado
+        reclamo_db.contenido = modelo_reclamo.contenido
+        reclamo_db.clasificacion = modelo_reclamo.clasificacion
+        # actualizar otros campos si hace falta
 
         self.__session.commit()
 
