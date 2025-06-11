@@ -736,3 +736,16 @@ footer a:hover {
     width: 8%;
     text-align: center;
 }
+
+.label-file {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.label-file:hover {
+    background-color: #0056b3;
+}

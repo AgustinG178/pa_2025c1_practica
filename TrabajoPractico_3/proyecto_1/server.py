@@ -11,7 +11,8 @@ from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
 from modules.reportes import GeneradorReportes
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
-
+from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
+import os
 # Inicialización de componentes del sistema
 
 """ Conexión con la base de datos """
@@ -27,7 +28,7 @@ repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
 gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
-
+gestor_imagenes_reclamos = GestorImagenReclamoPng()
 """Procesamiento del archivo JSON y entrenamiento del clasificador"""
 procesador = ProcesadorArchivo("data/frases.json")
 X, y = procesador.datosEntrenamiento
@@ -137,7 +138,7 @@ def mis_reclamos():
     Muestra todos los reclamos realizados por el usuario actual.
     """
     reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
-    return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos)
+    return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos,os=os)
 
 @app.route('/crear_reclamos', methods=['GET', 'POST'])
 @login_required
@@ -149,7 +150,7 @@ def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
         departamento = request.form.get('departamento')
-        imagen = request.files.get('imagen')
+        
         try:
             clasificacion_predicha = clf.clasificar([descripcion])[0]
             reclamo = gestor_reclamos.crear_reclamo(
@@ -159,8 +160,21 @@ def crear_reclamos():
                 clasificacion=str(clasificacion_predicha)
             )
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+            #Provisoriamente guardamos el reclamo en la bd, si posteriormente se adhiere a otro el usuario, lo borramos, lo mismo con la imagen si es que se adjunta una
+            repo_reclamos.guardar_registro(modelo)
+            
+            sqlalchemy_session.refresh(modelo)
+            imagen = request.files.get('imagen')
             reclamos_similares = repo_reclamos.buscar_similares(str(clasificacion_predicha), modelo.id)
-            return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares,imagen=imagen)
+
+            if imagen and imagen.filename:
+
+                gestor_imagenes_reclamos.guardar_imagen(reclamo_id=modelo.id,imagen=imagen)
+
+                return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
+            
+
+            return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
         except Exception as e:
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
@@ -173,30 +187,38 @@ def adherirse(reclamo_id):
     Permite al usuario confirmar o adherirse a un reclamo existente.
     """
     usuario_actual = current_user
+    print(f"[DEBUG] Entrando a adherirse con reclamo_id: {reclamo_id}")
+    print(f"[DEBUG] Usuario actual: {usuario_actual}")
+    print(f"[DEBUG] Form data: {request.form}")
     accion = request.form.get('accion')
-    descripcion = request.form.get('descripcion')
-    departamento = request.form.get('departamento')
-    clasificacion = request.form.get('clasificacion')
+    print(f"[DEBUG] Acción seleccionada: {accion}")
+
+    #Ids de los reclamos, tanto el creado como el adherido (si es que se adhirio a uno)
+    reclamo_id_adherido = reclamo_id
+    reclamo_id_creado = request.form.get('reclamo_id_creado')
+    print(f"[DEBUG] reclamo_id_adherido: {reclamo_id_adherido}, reclamo_id_creado: {reclamo_id_creado}")
 
     if accion == "confirmar":
-        reclamo = gestor_reclamos.crear_reclamo(
-            usuario=usuario_actual,
-            descripcion=descripcion,
-            departamento=departamento,
-            clasificacion=clasificacion
-        )
-        modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-        repo_reclamos.guardar_registro(modelo)
+        print("[DEBUG] Confirmando reclamo, no se elimina nada.")
         flash("Reclamo creado exitosamente.", "success")
     elif accion == "adherir":
+        print("[DEBUG] Adhiriendo a reclamo existente. Ejecutando lógica de adhesión...")
         try:
             gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
+            print(f"[DEBUG] Adherente agregado a reclamo {reclamo_id}")
+            gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=reclamo_id_creado)
+            print(f"[DEBUG] Imagen eliminada para reclamo creado {reclamo_id_creado}")
+            repo_reclamos.eliminar_registro_por_id(id=reclamo_id_creado)
+            print(f"[DEBUG] Reclamo creado {reclamo_id_creado} eliminado de la base de datos")
             flash("Te adheriste al reclamo correctamente.", "success")
         except ValueError as e:
+            print(f"[DEBUG] ValueError: {e}")
             flash(str(e), "warning")
         except Exception as e:
+            print(f"[DEBUG] Exception: {e}")
             flash(f"Ocurrió un error inesperado: {e}", "danger")
         except IntegrityError:
+            print("[DEBUG] IntegrityError: Ya estás adherido a este reclamo.")
             flash("Ya estás adherido a este reclamo.", "warning")
             sqlalchemy_session.rollback()
 
@@ -315,6 +337,7 @@ def manejo_reclamos():
         elif accion == "eliminar":
             try:
                 gestor_reclamos.invalidar_reclamo(usuario=current_user,reclamo_id=reclamo_id)
+                gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=reclamo_id)
                 print(f"[DEBUG] Reclamo {reclamo_id} eliminado por usuario {current_user.nombre_de_usuario}")
                 flash("Reclamo eliminado exitosamente.", "success")
             except Exception as e:

@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Crear Reclamo</h1>
-    <form action="{{ url_for('crear_reclamos') }}" method="POST">
+    <form action="{{ url_for('crear_reclamos') }}" method="POST" enctype="multipart/form-data">
         <label for="descripcion">Descripción:</label>
         <input type="text" id="descripcion" name="descripcion" required />
         <label for="departamento">Departamento:</label>
@@ -19,10 +19,13 @@
             <option value="Matematica">Matematica</option>
             <option value="Mesa Entrada">Mesa Entrada</option>
         </select>
-        
-        <label for="imagen">Adjuntar imagen (opcional)</label>
-        
-        <input type= "image" id ="imagen" name = "imagen" />
+       <br>
+       <br> 
+        <label for="imagen" class = "label-file">Adjuntar imagen (opcional)</label>
+        <input type= "file" id ="imagen" name = "imagen" accept="image/*" style="display: none;"/>
+        <br>
+        <img id="preview" src="#" alt="Vista previa" style="display:none; max-width:200px; margin-top:10px;" />
+        <br>
         <button type="submit">Crear Reclamo</button>
     </form>
 
@@ -34,5 +37,17 @@
         <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
     </div>
 </footer>
+<script>
+document.getElementById("imagen").addEventListener("change", function(event) {
+    const [file] = event.target.files;
+    const preview = document.getElementById("preview");
+    if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+    } else {
+        preview.style.display = "none";
+    }
+});
+</script>
 </body>
 </html>
