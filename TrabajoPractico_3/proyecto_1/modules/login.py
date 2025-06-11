@@ -110,7 +110,7 @@ class GestorLogin:
 
 if __name__ == "__main__":
     # Configuración de la base de datos y repositorio
-    base_datos = BaseDatos("sqlite:///data/base_datos.db")
+    base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
     base_datos.conectar()
     sqlalchemy_session = base_datos.session
 

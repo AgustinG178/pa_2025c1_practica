@@ -5,7 +5,7 @@ from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.classifier import Clasificador
 from modules.modelos import ModeloUsuario, ModeloReclamo
-
+import random
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -54,7 +54,7 @@ class GestorReclamo:
 
         raise TypeError("El usuario no es una instancia de la clase Usuario")
 
-    def actualizar_estado_reclamo(self, usuario: Usuario, reclamo: Reclamo):
+    def actualizar_estado_reclamo(self, usuario: Usuario, reclamo: Reclamo,accion:str):
 
         """
         Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
@@ -63,21 +63,30 @@ class GestorReclamo:
         if int(usuario.rol) in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
             try:
                 reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
-                reclamo_a_modificar.estado = "resuelto"
-                self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
-                print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
-                return
+
+                if accion == "resolver":
+                    reclamo_a_modificar.estado = "resuelto"
+                    self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
+                    print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
+                    return
+                
+                elif accion == "actualizar":
+                    reclamo_a_modificar.estado = "en proceso"
+                    reclamo_a_modificar.tiempo_estimado = random.randint(1,15) #Tiempo aleatorio estimado entre 1 y 15 días desde la fecha en que se creo
+                    self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
+                    print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
+                    return
             except AttributeError:
                 print(f"[DEBUG] El reclamo con id {reclamo.id} no existe o no es correcto")
                 return
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
 
-    def eliminar_reclamo(self, usuario: Usuario, reclamo_id: int):
+    def invalidar_reclamo(self, usuario: Usuario, reclamo_id: int):
         """
         Se elimina un reclamo (accediendo a este con su id) asociado a un usuario, realizando sus  pertinentes verificaciones.
         """
-        if usuario.rol in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
+        if int(usuario.rol) in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
 
             try:
 
@@ -101,6 +110,7 @@ class GestorReclamo:
         reclamo_a_adherir.cantidad_adherentes += 1
         self.repositorio_reclamo.commit()
     
+
 if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine

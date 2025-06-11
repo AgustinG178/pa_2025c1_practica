@@ -1,4 +1,4 @@
-from modules.gestor_base_datos import BaseDatos
+from modules.gestor_base_datos import GestorBaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo
@@ -7,6 +7,7 @@ from modules.preprocesamiento import ProcesadorArchivo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
+import sqlite3
 """
 poblar_base.py
 
@@ -25,7 +26,7 @@ Solo para uso en entorno de desarrollo.
 """
 
 # ─── Conexión ───────────────────────────────────────────────────────────────────
-base_datos = BaseDatos("sqlite:///data/base_datos.db")
+base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
 engine, Session = crear_engine()
 session = Session()
@@ -106,8 +107,22 @@ reclamos_info = [
 ]
 
 
+
+
 # ─── Script Principal ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    conn = sqlite3.connect("data/base_datos.db")
+    cursor = conn.cursor()
+    cursor.execute("PRAGMA foreign_keys = OFF;")
+    try:
+        cursor.execute("DELETE FROM usuarios_reclamos;")
+    except Exception as e:
+        print("No se pudo borrar usuarios_reclamos:", e)
+    cursor.execute("DELETE FROM reclamos;")
+    cursor.execute("DELETE FROM usuarios;")
+    conn.commit()
+    conn.close()
+    print("Base de datos limpiada.")
     # Crear usuarios
     for u in usuarios_info:
         try:
@@ -138,7 +153,7 @@ if __name__ == "__main__":
         try:
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
-            estado = choice(["pendiente", "resuelto"])
+            estado = "pendiente"
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
 
             reclamo = gestor_reclamos.crear_reclamo(
