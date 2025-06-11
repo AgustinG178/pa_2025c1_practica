@@ -5,7 +5,7 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclam
 from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
-from modules.gestor_base_datos import BaseDatos
+from modules.gestor_base_datos import GestorBaseDatos
 from modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
@@ -15,7 +15,7 @@ from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistogram
 # Inicialización de componentes del sistema
 
 """ Conexión con la base de datos """
-base_datos = BaseDatos("sqlite:///data/base_datos.db")
+base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
 
 """ Configuración de SQLAlchemy """
@@ -244,6 +244,7 @@ def analitica_reclamos():
 @app.route("/manejar_reclamos",methods = ["GET","POST"])
 @login_required
 def manejo_reclamos():
+    """"""
     print("[DEBUG] Entrando a manejo_reclamos. Usuario actual:", current_user)
     #Pagina para el manejo de reclamos, es decir, resolver o eliminarlos.
     print(f"[DEBUG] Rol del usuario: {current_user.rol}")

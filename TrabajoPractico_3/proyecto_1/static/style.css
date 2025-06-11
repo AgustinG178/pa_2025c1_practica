@@ -637,5 +637,51 @@ footer a:hover {
     bottom: -100px;
 }
 
+/* Estilo específico para esta página */
+.pagina-manejo-reclamos {
+    padding: 0;
+    background-color: #f5f7fa;
+}
 
+/* Contenedor principal del cuerpo */
+.contenedor-manejo {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Formulario centrado */
+.formulario-contenedor {
+    flex: 1 1 400px;
+    min-width: 350px;
+}
+
+/* Barra lateral de reclamos */
+.sidebar-reclamos {
+    flex: 1 1 300px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.lista-reclamos {
+    list-style: none;
+    padding-left: 0;
+}
+
+.lista-reclamos li {
+    margin-bottom: 8px;
+    color: #003366;
+    font-weight: 500;
+}
+
+.formulario-manejo select,
+.formulario-manejo label {
+    margin-bottom: 10px;
+}
 

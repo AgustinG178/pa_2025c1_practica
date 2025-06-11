@@ -1,66 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manejo Reclamos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <header>
-        <h1>MANEJO RECLAMOS</h1>
-        <h2 style = "text-align: center;">Bienvenido {{current_user.nombre_de_usuario}}, se mostrarán todos los reclamos relacionados al departamento {{dpto}}; ingrese la id del reclamo que quiere resolver/eliminar, a 
-        continuacion seleccione la accion a realizar y confirme.
-        <br>
-        </h2>
-    
+<body class="pagina-manejo-reclamos">
+    <header class="header-principal">
+        <h1 class="titulo-principal">MANEJO RECLAMOS</h1>
+        <div class="saludo">
+            Bienvenido {{ current_user.nombre_de_usuario }}, se mostrarán todos los reclamos relacionados al departamento <strong>{{ dpto }}</strong>. Ingrese la ID del reclamo que quiere resolver/eliminar, luego seleccione la acción a realizar y confirme.
+        </div>
     </header>
-    <div class="contenedor-principal" style="text-align: center;">
-    <form class="formulario-reclamos" action="{{ url_for('manejo_reclamos') }}" method="POST">
-        <label for="reclamo_id">ID del Reclamo:</label>
-        <select id="reclamo_id" name="reclamo_id" required>
-            <option value="" disabled selected>Seleccione un reclamo:</option>
-            {% for reclamo in reclamos %}
 
-                    {% if reclamo.estado != 'resuelto'%}
-                        <option value="{{ reclamo.id }}">{{ reclamo.id }} - {{ reclamo.estado }}</option>
+    <main class="contenedor-manejo">
+        <div class="formulario-contenedor">
+            <form class="formulario-manejo" action="{{ url_for('manejo_reclamos') }}" method="POST">
+                <div class="form-group">
+                    <label for="reclamo_id">ID del Reclamo:</label>
+                    <select id="reclamo_id" name="reclamo_id" required>
+                        <option value="" disabled selected>Seleccione un reclamo:</option>
+                        {% for reclamo in reclamos %}
+                            {% if reclamo.estado != 'resuelto' %}
+                                <option value="{{ reclamo.id }}">{{ reclamo.id }} - {{ reclamo.estado }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="accion">Acción:</label>
+                    <select id="accion" name="accion" required>
+                        <option value="" disabled selected>Seleccione una acción:</option>
+                        <option value="eliminar">Eliminar</option>
+                        <option value="resolver">Resolver</option>
+                    </select>
+                </div>
+
+                <button type="submit">Confirmar</button>
+            </form>
+        </div>
+
+        <aside class="sidebar-reclamos">
+            <h3 class="titulo-seccion">IDs de Reclamos de tu Departamento</h3>
+            <ul class="lista-reclamos">
+                {% for reclamo in reclamos %}
+                    {% if reclamo.departamento == dpto %}
+                        <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
                     {% endif %}
-            {% endfor %}
-        </select>        
-        <label for="accion">Acción:</label>
-        <select id="accion" name="accion" required>
-            <option value="" disabled selected>Seleccione una acción:</option>
-            <option value="eliminar">Eliminar</option>
-            <option value="resolver">Resolver</option>
-        </select>
-        <button type="submit">Confirmar</button>
-    </form>
+                {% endfor %}
+            </ul>
+        </aside>
+    </main>
 
-    
-    <div class="sidebar-ids">
-        <h3>IDs de Reclamos de tu Departamento</h3>
-        <ul>
-            {% for reclamo in reclamos %}
-                {% if reclamo.departamento == dpto%}
-                    <li>{{ reclamo.id }} / {{ reclamo.estado }}</li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-<div class="mensaje-flash-centro">
-
+    <div class="mensaje-flash-centro">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
                     {% if category == 'success' %}
                         <div class="flash-{{ category }}">{{ message }}</div>
                     {% endif %}
-                {% endfor %}    
+                {% endfor %}
             {% endif %}
         {% endwith %}
-    </div>  
+    </div>
 
-<a href="{{ url_for('inicio') }}" class="button-center">Volver</a>
+    <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
+    </div>
 </body>
 </html>

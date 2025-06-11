@@ -1,6 +1,6 @@
 from modules.usuarios import Usuario
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
-from modules.gestor_base_datos import BaseDatos
+from modules.gestor_base_datos import GestorBaseDatos
 
 class GestorUsuarios:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
