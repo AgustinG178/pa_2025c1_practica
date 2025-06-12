@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Reporte de Reclamos</title>
+</head>
+<body>
+    <h1>Reporte de Reclamos</h1>
+
+    <section>
+        <h2>Resumen general</h2>
+        <p>Total de reclamos: {{ total }}</p>
+        <p>Promedio de adherentes por reclamo: {{ promedio }}</p>
+    </section>
+
+    <section>
+        <h2>Cantidad por estado</h2>
+        <ul>
+            {% for estado, cantidad in reclamos_por_estado.items() %}
+            <li>{{ estado }}: {{ cantidad }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Cantidad por departamento</h2>
+        <ul>
+            {% for depto, cantidad in reclamos_por_departamento.items() %}
+            <li>{{ depto }}: {{ cantidad }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Cantidad por clasificación</h2>
+        <ul>
+            {% for clasificacion, cantidad in reclamos_por_clasificacion.items() %}
+            <li>{{ clasificacion }}: {{ cantidad }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Reclamos recientes (últimos 7 días)</h2>
+        <ul>
+            {% for reclamo in reclamos_recientes %}
+            <li>ID {{ reclamo.id }} - {{ reclamo.contenido or 'Sin título' }} ({{ reclamo.estado or 'Sin estado' }})</li>
+            {% else %}
+            <li>No hay reclamos recientes.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+</body>
+</html>
