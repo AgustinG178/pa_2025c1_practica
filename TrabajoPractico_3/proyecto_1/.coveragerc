@@ -3,6 +3,8 @@ source = modules
 
 [report]
 omit = 
+    modules\clasificador_de_reclamos\modules\classifier.py
+    modules\clasificador_de_reclamos\modules\preprocesamiento.py
     .tests/*
     templates/*
     .venv/*

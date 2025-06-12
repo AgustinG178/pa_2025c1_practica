@@ -13,7 +13,7 @@ from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistogram
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
 import datetime as date
-import io
+from modules.monticulos import Estadisticas, MonticuloBinario, MonticuloMediana
 
 base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
@@ -170,7 +170,6 @@ def adherirse(reclamo_id):
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
     return render_template('listar_reclamos.html', reclamos=reclamos)
-
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():
@@ -226,7 +225,6 @@ def analitica_reclamos():
         graficos=rutas,# Diccionario con claves como 'torta' y 'histograma'
         mediana = monticulo.obtener_mediana()
     )
-
 
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
