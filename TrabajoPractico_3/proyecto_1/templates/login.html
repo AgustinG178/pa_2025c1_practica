@@ -8,6 +8,19 @@
 </head>
 <body>
     <h1>Iniciar Sesión</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <center>{{message}}</center>
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+    <main>
     <form action="{{ url_for('iniciar_sesion') }}" method="POST" style="max-width:400px;margin:auto;", name="password">
         <div class="form-group">
             <label for="nombre_de_usuario">nombre de usuario:</label>
@@ -27,5 +40,6 @@
         <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agustin.gru@fiuner.edu.ar">agugrio17@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a></p>
     </div>
 </footer>
+</main>
 </body>
 </html>

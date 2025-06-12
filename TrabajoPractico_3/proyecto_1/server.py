@@ -112,7 +112,7 @@ def iniciar_sesion():
             login_user(FlaskLoginUser(usuario))
             return redirect(url_for('index'))
         except Exception as e:
-            flash(str(e))
+            flash(str(e), 'danger')
     return render_template('login.html')
 
 @app.route('/logout')
@@ -275,6 +275,7 @@ def editar_reclamo(reclamo_id):
 
     if request.method == 'POST':
         nuevo_contenido = request.form.get('descripcion')
+        imagen = request.files.get('imagen')
         print(f"[DEBUG] Contenido recibido del formulario: {nuevo_contenido}")
 
         try:
@@ -285,14 +286,25 @@ def editar_reclamo(reclamo_id):
             flash(f"Error al clasificar el contenido: {e}", "danger")
             return render_template("editar_reclamo.html", reclamo=modelo_reclamo)
 
-        # Actualizamos atributos directamente en la instancia ORM
+        # Actualizamos el reclamo
         modelo_reclamo.contenido = nuevo_contenido
         modelo_reclamo.clasificacion = nueva_clasificacion
 
         try:
             repo_reclamos.modificar_registro_orm(repo_reclamos.mapear_reclamo_a_modelo(modelo_reclamo))
+
+            # Manejo de imagen
+            if imagen and imagen.filename:
+                try:
+                    gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_id, imagen=imagen, reemplazar=True)
+                    print(f"[DEBUG] Imagen reemplazada exitosamente.")
+                except Exception as e:
+                    print(f"[ERROR] Falló al guardar la imagen: {e}")
+                    flash(f"Error al guardar la imagen: {e}", "warning")
+
             flash("Reclamo actualizado correctamente.", "success")
             return redirect(url_for('mis_reclamos'))
+
         except Exception as e:
             print(f"[ERROR] Falló al guardar el reclamo: {e}")
             flash(f"Error al actualizar el reclamo: {e}", "danger")
