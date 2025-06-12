@@ -111,6 +111,7 @@ reclamos_info = [
 
 # ─── Script Principal ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    """
     conn = sqlite3.connect("data/base_datos.db")
     cursor = conn.cursor()
     cursor.execute("PRAGMA foreign_keys = OFF;")
@@ -123,6 +124,7 @@ if __name__ == "__main__":
     conn.commit()
     conn.close()
     print("Base de datos limpiada.")
+"""
     # Crear usuarios
     for u in usuarios_info:
         try:

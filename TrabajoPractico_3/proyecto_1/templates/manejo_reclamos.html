@@ -23,8 +23,8 @@
                     <label for="reclamo_id">ID del Reclamo:</label>
                     <select id="reclamo_id" name="reclamo_id" required>
                         <!-- placeholder -->
-                        <option value="" disabled selected>Seleccione un reclamo pendiente:</option>
-                        {% for r in reclamos if r.estado == 'pendiente' %}
+                        <option value="" disabled selected>Seleccione un reclamo del departamento:</option>
+                        {% for r in reclamos if r.estado != 'resuelto' %}
                             <option value="{{ r.id }}" {% if selected_id and r.id|string == selected_id %}selected{% endif %}>
                                 {{ r.id }} — {{ r.titulo }} — {{ r.estado }}
                             </option>
@@ -38,7 +38,7 @@
                         <option value="" disabled selected>Seleccione una acción:</option>
                         <option value="invalidar">Invalidar</option>
                         <option value="resolver">Resolver</option>
-                        <option value="actualizar">Actualizar (en proceso)</option>
+                        <option value="actualizar">Actualizar (pendiente -> en proceso)</option>
                     </select>
                 </div>
 
@@ -57,10 +57,11 @@
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
                         <th>Tiempo Estimado</th>
+                        <th>Tiempo hasta resolver (dias)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for reclamo in reclamos if reclamo.estado == 'pendiente' %}
+                    {% for reclamo in reclamos if reclamo.estado != 'invalido' %}
                         <tr>
                             <td>{{ reclamo.id }}</td>
                             <td>{{ reclamo.usuario_id }}</td>
@@ -68,19 +69,29 @@
                                 {% if reclamo.cantidad_adherentes == 1 %}
                                     Sin adherentes
                                 {% else %}
-                                    {% for usuario in reclamo.usuarios %}
-                                        {{ usuario.id }}{% if not loop.last %}, {% endif %}
+                                    {% for id_usuario in reclamo.adherentes_ids %}
+                                        {{ id_usuario }}{% if not loop.last %}, {% endif %}
                                     {% endfor %}
                                 {% endif %}
                             </td>
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>{{ reclamo.estado }}</td>
                             <td>
-                                {% if reclamo.tiempo_estimado == 0 %}
+                                {% if reclamo.estado == 'resuelto' %}
+                                    ######
+                                {% elif reclamo.tiempo_estimado == 0 %}
                                     Sin asignar
+                                
                                 {% else %}
                                     {{ reclamo.tiempo_estimado }}
                                 {% endif %}
+                            </td>
+                            <td>
+                                {%if reclamo.estado == 'resuelto'%}
+                                    {{reclamo.resuelto_en}}
+                                {%else%}
+                                    Sin resolver
+                                {%endif%}
                             </td>
                         </tr>
                     {% else %}

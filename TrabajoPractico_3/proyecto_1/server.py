@@ -13,6 +13,7 @@ from modules.reportes import GeneradorReportes
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
+from datetime import date
 # Inicialización de componentes del sistema
 
 """ Conexión con la base de datos """
@@ -186,7 +187,8 @@ def adherirse(reclamo_id):
     """
     Permite al usuario confirmar o adherirse a un reclamo existente.
     """
-    usuario_actual = current_user
+    # Obtener la instancia ORM del usuario
+    usuario_actual = repo_usuarios.obtener_modelo_por_id(current_user.id)
     print(f"[DEBUG] Entrando a adherirse con reclamo_id: {reclamo_id}")
     print(f"[DEBUG] Usuario actual: {usuario_actual}")
     print(f"[DEBUG] Form data: {request.form}")
@@ -317,6 +319,10 @@ def manejo_reclamos():
             if accion == "resolver":
                 gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="resolver")
                 flash("Reclamo resuelto exitosamente.","success")
+
+                dias = (date.today() - reclamo.fecha_hora.date()).days
+                print(f"[DEBUG] el reclamo se resolvió en: {dias} días")
+                
             elif accion == "actualizar":
                 gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="actualizar")
                 flash("Reclamo actualizado exitosamente.","success")
@@ -334,7 +340,8 @@ def manejo_reclamos():
         'manejo_reclamos.html',
         reclamos=reclamos,
         usuario=current_user,
-        selected_id=selected_id
+        selected_id=selected_id,
+        date=date
     )
 
 @login_manager.user_loader

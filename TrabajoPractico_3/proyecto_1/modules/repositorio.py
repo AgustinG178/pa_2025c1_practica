@@ -129,6 +129,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         kwargs = {}
         if hasattr(reclamo, 'id') and reclamo.id is not None:
             kwargs['id'] = reclamo.id
+        if hasattr(reclamo, 'resuelto_en') and reclamo.resuelto_en is not None:
+            kwargs['resuelto_en'] = reclamo.resuelto_en
         return ModeloReclamo(
             estado=reclamo.estado,
             fecha_hora=reclamo.fecha_hora,
@@ -152,7 +154,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             departamento=modelo.departamento,
             clasificacion=modelo.clasificacion,
             cantidad_adherentes=modelo.cantidad_adherentes,
-            tiempo_estimado = modelo.tiempo_estimado
+            tiempo_estimado = modelo.tiempo_estimado,
+            resuelto_en = modelo.resuelto_en
         )
 
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):

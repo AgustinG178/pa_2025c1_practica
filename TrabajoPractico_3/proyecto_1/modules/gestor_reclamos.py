@@ -6,6 +6,7 @@ from datetime import datetime, UTC
 from modules.classifier import Clasificador
 from modules.modelos import ModeloUsuario, ModeloReclamo
 import random
+from datetime import date
 
 session = crear_engine()
 repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -66,7 +67,12 @@ class GestorReclamo:
 
                 if accion == "resolver":
                     reclamo_a_modificar.estado = "resuelto"
+
+                    dias = (date.today() - reclamo.fecha_hora.date()).days
+
+                    reclamo_a_modificar.resuelto_en = dias
                     self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
+
                     print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
                     return
                 
@@ -108,6 +114,7 @@ class GestorReclamo:
         if usuario in reclamo_a_adherir.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.")
         reclamo_a_adherir.cantidad_adherentes += 1
+        reclamo_a_adherir.usuarios.append(usuario)
         self.repositorio_reclamo.commit()
     
 
