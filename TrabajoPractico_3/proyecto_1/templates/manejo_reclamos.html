@@ -33,11 +33,10 @@
                 <div class="form-group">
                     <label for="reclamo_id">ID del Reclamo:</label>
                     <select id="reclamo_id" name="reclamo_id" required>
-                        <!-- placeholder -->
                         <option value="" disabled selected>Seleccione un reclamo del departamento:</option>
                         {% for r in reclamos if r.estado != 'resuelto' %}
                             <option value="{{ r.id }}" {% if selected_id and r.id|string == selected_id %}selected{% endif %}>
-                                {{ r.id }} — {{ r.titulo }} — {{ r.estado }}
+                                {{ r.id }} — {{ r.contenido }} — {{ r.estado }}
                             </option>
                         {% endfor %}
                     </select>

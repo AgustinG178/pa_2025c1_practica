@@ -17,6 +17,9 @@
             <div class="flashcard">
                 <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
             </div>
+            <div class ="flashcard"> 
+                <p>mediana = {{mediana}}</p>
+            </div>
         </div>
     </section>
 
@@ -70,6 +73,10 @@
             </div>
             {% endif %}
     </section>
+    
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
 </main>
 
 

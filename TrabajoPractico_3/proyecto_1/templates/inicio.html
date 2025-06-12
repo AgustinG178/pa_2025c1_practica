@@ -20,6 +20,7 @@
                 {%endif%}
                 {% if current_user.rol in ['1','2', '3', '4'] %}
                     <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
+                    <li><a href="{{ url_for('manejo_reclamos') }}">Manejo Reclamos</a></li>
                 {% endif %}
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
             {% else %}

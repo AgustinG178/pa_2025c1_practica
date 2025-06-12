@@ -157,7 +157,7 @@ if __name__ == "__main__":
         try:
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
-            estado = "pendiente"
+            estado = choice(["pendiente", "resuelto"])
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
             departamento = choice(departamentos_posibles)  # Elegir aleatoriamente
 
@@ -172,6 +172,10 @@ if __name__ == "__main__":
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
             modelo.cantidad_adherentes = randint(0, 20)
+            if estado == "resuelto":
+                modelo.resuelto_en = randint(5, 15)
+            else:
+                modelo.resuelto_en = "no resuelto"
 
             repo_reclamos.guardar_registro(modelo)
             print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en {departamento}: {desc}")

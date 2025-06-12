@@ -127,6 +127,8 @@ class GeneradorReportes:
             4: 'maestranza'
         }
         return mapa_roles.get(rol_int)
+    
+        
 
 
     def obtener_datos_para_torta(self, rol):

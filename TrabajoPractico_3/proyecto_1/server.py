@@ -14,7 +14,7 @@ from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistogram
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
 import datetime as date
-import io
+from modules.monticulos import Estadisticas, MonticuloBinario, MonticuloMediana
 
 base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
@@ -169,7 +169,6 @@ def adherirse(reclamo_id):
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
     return render_template('listar_reclamos.html', reclamos=reclamos)
-
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():
@@ -182,7 +181,8 @@ def analitica_reclamos():
     rol_usuario = current_user.rol
     clasificacion_usuario = clasificacion_map.get(rol_usuario)
     es_secretario = (rol_usuario == "1")
-
+    reclamos = repo_reclamos.obtener_registros_por_filtro(filtro='estado', valor='resuelto')
+    
     generador = GeneradorReportes(repo_reclamos)
     graficadora = Graficadora(
         generador_reportes=generador,
@@ -197,15 +197,25 @@ def analitica_reclamos():
 
     cantidad_total = generador.cantidad_total_reclamos()
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
+    
+    tiempo_resolucion = []
+    
+    for reclamo in reclamos:
+        
+        tiempo_resolucion.append(reclamo.resuelto_en)
+        
+    monticulo = MonticuloMediana(tiempo_resolucion)
+    mediana_resolucion = monticulo.obtener_mediana()
 
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas  # Diccionario con claves como 'torta' y 'histograma'
+        mediana_resolucion=mediana_resolucion,
+        graficos=rutas,
+        mediana = mediana_resolucion
     )
-
 
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
