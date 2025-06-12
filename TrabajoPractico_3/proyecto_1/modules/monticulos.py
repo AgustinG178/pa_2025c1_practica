@@ -1,4 +1,3 @@
-import heapq
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.reportes import GeneradorReportes
 from modules.config import crear_engine
@@ -46,79 +45,101 @@ class Estadisticas:
             return None
         return sum(self.datos) / len(self.datos)
 
+class MonticuloBinario:
+    """Implementa un montículo binario mínimo o máximo sin usar 'heapq'."""
 
-class MonticuloMediana(Estadisticas):
-    """Extiende Estadisticas para mantener la mediana usando montículos."""
+    def __init__(self, es_maximo=False):
+        self.heap = []
+        self.es_maximo = es_maximo
+
+    def insertar(self, valor):
+        """Inserta un valor y mantiene la propiedad del montículo."""
+        if self.es_maximo:
+            valor = -valor
+        self.heap.append(valor)
+        self._subir(len(self.heap) - 1)
+
+    def extraer(self):
+        """Extrae el valor raíz del montículo y reordena."""
+        if not self.heap:
+            return None
+        raiz = self.heap[0]
+        ultimo = self.heap.pop()
+        if self.heap:
+            self.heap[0] = ultimo
+            self._bajar(0)
+        return -raiz if self.es_maximo else raiz
+
+    def top(self):
+        """Devuelve el valor raíz del montículo sin extraerlo."""
+        if not self.heap:
+            return None
+        return -self.heap[0] if self.es_maximo else self.heap[0]
+
+    def _subir(self, i):
+        """Mantiene la propiedad del montículo al subir un nodo."""
+        while i > 0:
+            padre = (i - 1) // 2
+            if self.heap[i] < self.heap[padre]:
+                self.heap[i], self.heap[padre] = self.heap[padre], self.heap[i]
+                i = padre
+            else:
+                break
+
+    def _bajar(self, i):
+        """Mantiene la propiedad del montículo al bajar un nodo."""
+        n = len(self.heap)
+        while True:
+            izq = 2 * i + 1
+            der = 2 * i + 2
+            menor = i
+
+            if izq < n and self.heap[izq] < self.heap[menor]:
+                menor = izq
+            if der < n and self.heap[der] < self.heap[menor]:
+                menor = der
+
+            if menor == i:
+                break
+            self.heap[i], self.heap[menor] = self.heap[menor], self.heap[i]
+            i = menor
+
+    def __len__(self):
+        return len(self.heap)
+    
+class MonticuloMediana():
+    """Extiende Estadisticas para mantener la mediana usando montículos personalizados."""
 
     def __init__(self, datos):
-        """Inicializa los montículos y los construye a partir de los datos."""
         super().__init__(datos)
-        self.min_heap = []  # heap de mayores
-        self.max_heap = []  # heap de menores (como negativos)
+        self.min_heap = MonticuloBinario(es_maximo=False)  # mayores
+        self.max_heap = MonticuloBinario(es_maximo=True)   # menores
 
         self._construir_monticulos()
 
     def _construir_monticulos(self):
-        """Construye los montículos insertando todos los datos."""
         for num in self.datos:
             self.insertar(num)
 
     def insertar(self, valor):
-        """Inserta un nuevo valor en los montículos y los balancea."""
-        if not self.max_heap or valor <= -self.max_heap[0]:
-            heapq.heappush(self.max_heap, -valor)
+        if len(self.max_heap) == 0 or valor <= self.max_heap.top():
+            self.max_heap.insertar(valor)
         else:
-            heapq.heappush(self.min_heap, valor)
+            self.min_heap.insertar(valor)
 
-        # Balanceo
+        # Balancear
         if len(self.max_heap) > len(self.min_heap) + 1:
-            heapq.heappush(self.min_heap, -heapq.heappop(self.max_heap))
+            self.min_heap.insertar(self.max_heap.extraer())
         elif len(self.min_heap) > len(self.max_heap):
-            heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))
+            self.max_heap.insertar(self.min_heap.extraer())
 
     def obtener_mediana(self):
-        """Devuelve la mediana actual basada en los montículos."""
-        if not self.datos:
+        if not self.datos and len(self.max_heap) == 0:
             return None
         if len(self.max_heap) == len(self.min_heap):
-            return (-self.max_heap[0] + self.min_heap[0]) / 2
+            return (self.max_heap.top() + self.min_heap.top()) / 2
         else:
-            return -self.max_heap[0]
-
-
-class MonticuloBinario:
-    """Implementa un montículo binario mínimo o máximo."""
-
-    def __init__(self, es_maximo=False):
-        """Inicializa un montículo como mínimo o máximo según el parámetro."""
-        self.es_maximo = es_maximo
-        self.heap = []
-
-    def insertar(self, valor):
-        """Inserta un valor en el montículo."""
-        if self.es_maximo:
-            heapq.heappush(self.heap, -valor)
-        else:
-            heapq.heappush(self.heap, valor)
-
-    def extraer(self):
-        """Extrae y devuelve el valor superior del montículo."""
-        if self.es_maximo:
-            return -heapq.heappop(self.heap)
-        else:
-            return heapq.heappop(self.heap)
-
-    def top(self):
-        """Devuelve el valor superior del montículo sin extraerlo."""
-        if self.es_maximo:
-            return -self.heap[0]
-        else:
-            return self.heap[0]
-
-    def __len__(self):
-        """Devuelve la cantidad de elementos en el montículo."""
-        return len(self.heap)
-
+            return self.max_heap.top()
 
 if __name__ == "__main__":
     enigne, Session = crear_engine()

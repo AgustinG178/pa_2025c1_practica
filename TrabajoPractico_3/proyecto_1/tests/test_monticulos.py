@@ -9,9 +9,13 @@ class TestEstadisticas(unittest.TestCase):
 
     def test_obtener_mediana_par(self):
         """Mediana de lista con cantidad par de elementos."""
+        #arrange
         datos = [10, 2, 14, 4]
         stats = Estadisticas(datos)
-        self.assertEqual(stats.obtener_mediana(), (4 + 10) / 2)
+        #act
+        result = stats.obtener_mediana()
+        #assert
+        self.assertEqual(result, (4 + 10) / 2)
 
     def test_obtener_mediana_impar(self):
         """Mediana de lista con cantidad impar de elementos."""

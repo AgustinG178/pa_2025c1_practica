@@ -2,7 +2,7 @@ from modules.gestor_base_datos import GestorBaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo
-from modules.classifier import Clasificador
+from modules.clasificador_de_reclamos.modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from modules.config import crear_engine
 from random import choice, randint

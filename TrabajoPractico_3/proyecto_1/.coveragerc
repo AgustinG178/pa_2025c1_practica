@@ -1,9 +1,9 @@
 [run]
-source = tests
+source = modules
 
 [report]
 omit = 
-    modules/*
+    .tests/*
     templates/*
     .venv/*
     .vscode/*

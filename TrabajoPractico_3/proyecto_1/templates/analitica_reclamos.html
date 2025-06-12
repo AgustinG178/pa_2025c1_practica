@@ -1,107 +1,69 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Análisis de Reclamos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Análisis de Reclamos</h1>
-            <nav>
-                <ul class="menu-principal">
-                    <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                    <li><a href="{{ url_for('crear_reclamos')}}">Crear Reclamo</a></li>
-                    <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
-                </ul>
-            </nav>
-    </header>
-    <main>    
-        <section class="contenedor-flashcards">
-            <h2 class="titulo-seccion">Resumen General</h2>
-            <div class="flashcards-grid">
-                <div class="flashcard">
-                    <p><strong>Cantidad Total de Reclamos:</strong> {{ cantidad_total }}</p>
-                </div>
-                <div class="flashcard">
-                    <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
-                </div>
+    <h1>Analiticas Reclamos</h1>
+    <section class="contenedor-flashcards">
+        <h2 class="titulo-seccion">Resumen General</h2>
+        <div class="flashcards-grid">
+            <div class="flashcard">
+                <p><strong>Cantidad Total de Reclamos:</strong> {{ cantidad_total }}</p>
             </div>
-        </section>
-
-        <hr />
-
-                <section class="contenedor-flashcards">
-            <h2 class="titulo-seccion">Vista Personalizada</h2>
-            {% if current_user.rol == '1' %}
-                <div>
-                    <h3 style="text-align:center;">Panel de maestranza</h3>
-                    <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-                </div>
-                    <div class="flashcard">
-                        <h3>Torta</h3>
-                        <img src="{{ url_for('static', filename='graficos/general/torta.png') }}" alt="Gráfico de torta">
-                    </div>
-                    <div class="flashcard">
-                        <h3>Histograma</h3>
-                        <img src="{{ url_for('static', filename='graficos/general/histograma.png') }}" alt="Gráfico de histograma" />
-                    </div>
-            {% endif %}
-            {% if current_user.rol == '2' %}
-                <div>
-                    <h3>Panel de Soporte Informatico</h3>
-                    <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-                    <div class="flashcard">
-                        <h3>Torta</h3>
-                        <img src="{{ url_for('static', filename='graficos/tortas/soporte_informatico.png') }}" alt="Gráfico de torta">
-                    </div>
-                    <div class="flashcard">
-                        <h3>Histograma</h3>
-                        <img src="{{ url_for('static', filename='graficos/histogramas/soporte_informatico.png') }}" alt="Gráfico de histograma" />
-                    </div>
-                </div>
-            {% endif%}
-            {% if current_user.rol == '3' %}
-                <div>
-                    <h3 style="text-align:center;">Panel del Secretario Técnico</h3>
-                    <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-                </div>
-
-                <div class="flashcard">
-                    <h3>Torta</h3>
-                    <img src="{{ url_for('static', filename='graficos/tortas/secretario_tecnico.png') }}" alt="Gráfico de torta">
-                </div>
-                <div class="flashcard">
-                    <h3>Histograma</h3>
-                    <img src="{{ url_for('static', filename='graficos/histogramas/secretario_tecnico.png') }}" alt="Gráfico de histograma" />
-                </div>
-            {% endif %}
-            {% if current_user.rol == '4' %}
-                <div>
-                    <h3 style="text-align:center;">Panel de maestranza</h3>
-                    <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-                </div>
-                    <div class="flashcard">
-                        <h3>Torta</h3>
-                        <img src="{{ url_for('static', filename='graficos/tortas/maestranza.png') }}" alt="Gráfico de torta">
-                    </div>
-                    <div class="flashcard">
-                        <h3>Histograma</h3>
-                        <img src="{{ url_for('static', filename='graficos/histogramas/maestranza.png') }}" alt="Gráfico de histograma" />
-                    </div>
-            {% else %}
-                <div class="flashcard">
-                    <p>No tenés permisos especiales para esta vista.</p>
-                </div>
-            {% endif %}
-        </section>
-    </main>
-    <footer class="pie-de-pagina">
-        <div class="contenedor-footer">
-            <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+            <div class="flashcard">
+                <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
+            </div>
         </div>
-    </footer>
+    </section>
+
+    <hr />
+
+    <section class="contenedor-flashcards">
+        <h2 class="titulo-seccion">Vista Personalizada</h2>
+        {% if current_user.rol == '1' %}
+            <div>
+                <h3 style="text-align:center;">Panel de maestranza</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+            </div>
+        {% elif current_user.rol == '2' %}
+            <div>
+                <h3>Panel de Soporte Informático</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+            </div>
+        {% elif current_user.rol == '3' %}
+            <div>
+                <h3 style="text-align:center;">Panel del Secretario Técnico</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+            </div>
+        {% elif current_user.rol == '4' %}
+            <div>
+                <h3 style="text-align:center;">Panel de Maestranza</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+            </div>
+        {% endif %}
+
+        {% if graficos %}
+            <div class="flashcard">
+                <h3>Torta</h3>
+                <img src="data:image/png;base64,{{ graficos['torta'] }}" alt="Gráfico de torta">
+            </div>
+            <div class="flashcard">
+                <h3>Histograma</h3>
+                <img src="data:image/png;base64,{{ graficos['histograma'] }}" alt="Gráfico de histograma">
+            </div>
+        {% else %}
+            <div class="flashcard">
+                <p>No tenés permisos especiales para esta vista.</p>
+            </div>
+        {% endif %}
+    </section>
+</main>
+
+
 </body>
 </html>
-
+<main>    

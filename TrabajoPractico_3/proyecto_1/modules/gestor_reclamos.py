@@ -3,7 +3,7 @@ from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
-from modules.classifier import Clasificador
+from modules.clasificador_de_reclamos.modules.classifier import Clasificador
 from modules.modelos import ModeloUsuario, ModeloReclamo
 import random
 from datetime import date

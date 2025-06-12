@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, redirect, url_for
+from flask import render_template, flash, request, redirect, url_for, send_file
 from flask_login import login_required, logout_user, current_user, login_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
@@ -6,13 +6,15 @@ from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
 from modules.gestor_base_datos import GestorBaseDatos
-from modules.classifier import Clasificador
+from modules.clasificador_de_reclamos.modules.classifier import Clasificador
 from modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
-from modules.reportes import GeneradorReportes
+from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
+import datetime as date
+import io
 
 base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
@@ -188,6 +190,33 @@ def analitica_reclamos():
     cantidad_total = generador.cantidad_total_reclamos()
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
 
+    # Capturamos el parámetro GET 'formato'
+    formato = request.args.get('formato', '').lower()
+
+    if formato == 'pdf':
+        # Generar PDF en memoria y devolverlo
+        reporte_pdf = ReportePDF(generador)
+        buffer = io.BytesIO()
+        reporte_pdf.generarPDF(ruta_salida=buffer)
+        buffer.seek(0)
+        return send_file(
+            buffer,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name='reporte_reclamos.pdf'
+        )
+
+    elif formato == 'html':
+        # Generar los datos para el reporte HTML y renderizar template específico para reporte
+        reporte_html = ReporteHTML(generador)
+        datos_reporte = reporte_html.obtener_datos_reporte()
+        return render_template(
+            "reporte_analitica.html",  # Plantilla para mostrar reporte en HTML
+            current_user=current_user,
+            reporte=datos_reporte
+        )
+
+    # Caso por defecto: renderizar vista con gráficos y estadísticas generales
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
