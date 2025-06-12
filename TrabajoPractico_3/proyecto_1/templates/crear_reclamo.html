@@ -8,6 +8,19 @@
 </head>
 <body>
     <h1>Crear Reclamo</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+            <center>{{message}}</center>
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+    <main>
     <form action="{{ url_for('crear_reclamos') }}" method="POST" enctype="multipart/form-data">
         <label for="descripcion">Descripción:</label>
         <input type="text" id="descripcion" name="descripcion" required />
@@ -49,5 +62,6 @@ document.getElementById("imagen").addEventListener("change", function(event) {
     }
 });
 </script>
+</main>
 </body>
 </html>

@@ -8,6 +8,19 @@
 </head>
 <body>
     <h1>Registro de Usuario</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                <center>{{message}}</center>
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+    <main>
     <form action="{{ url_for('registrarse') }}" method="POST" style="max-width:400px;margin:auto;">
         <div class="form-group">
             <label for="nombre">Nombre:</label>
@@ -42,5 +55,6 @@
     <p style="text-align:center;margin-top:20px;">
         ¿Ya tienes una cuenta? <a href="{{ url_for('iniciar_sesion')}}">Iniciar sesión</a>
     </p>
+</main>
 </body>
 </html>

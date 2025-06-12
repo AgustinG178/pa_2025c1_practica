@@ -14,7 +14,18 @@
             Ingrese la ID del reclamo que desea gestionar, seleccione la acción y confirme.
         </div>
     </header>
-
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+            <center>{{message}}</center>
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
     <main class="contenedor-manejo">
         <!-- Formulario de selección de reclamo y acción -->
         <div class="formulario-contenedor">

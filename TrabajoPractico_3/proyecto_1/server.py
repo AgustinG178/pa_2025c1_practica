@@ -111,7 +111,7 @@ def iniciar_sesion():
             login_user(FlaskLoginUser(usuario))
             return redirect(url_for('index'))
         except Exception as e:
-            flash(str(e))
+            flash(str(e), 'danger')
     return render_template('login.html')
 
 @app.route('/logout')
