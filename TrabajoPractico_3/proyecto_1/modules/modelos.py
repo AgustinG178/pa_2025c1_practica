@@ -61,7 +61,6 @@ class ModeloReclamo(Base):
     fecha_hora = Column(DateTime, default=datetime.utcnow)
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
-    departamento = Column(String)  
     clasificacion = Column(String)
     cantidad_adherentes = Column(Integer, default=1) #Se contabiliza como adherente el usuario que crea el reclamo
     tiempo_estimado = Column(Integer,default=0) #Solo se cambia cuando el reclamo pasa de pendiente -->en proceso

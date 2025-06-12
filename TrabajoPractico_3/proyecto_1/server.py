@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, redirect, url_for, send_file
+from flask import render_template, flash, request, redirect, url_for, send_file, send_from_directory
 from flask_login import login_required, logout_user, current_user, login_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
@@ -6,9 +6,8 @@ from modules.gestor_usuario import GestorUsuarios
 from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
 from modules.gestor_base_datos import GestorBaseDatos
-from modules.clasificador_de_reclamos.modules.classifier import Clasificador
-from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
+from modules.monticulos import MonticuloMediana
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
@@ -28,12 +27,16 @@ gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
 gestor_imagenes_reclamos = GestorImagenReclamoPng()
 
-procesador = ProcesadorArchivo("data/frases.json")
-X, y = procesador.datosEntrenamiento
-clf = Clasificador(X, y)
-clf._entrenar_clasificador()
+import pickle
 
-gestor_reclamos = GestorReclamo(repo_reclamos, clf)
+with open('./data/claims_clf.pkl', 'rb') as archivo:
+  
+  clf  = pickle.load(archivo)
+
+
+gestor_reclamos = GestorReclamo(repo_reclamos)
+
+
 
 @app.route('/')
 def index():
@@ -112,14 +115,12 @@ def mis_reclamos():
 def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
-        departamento = request.form.get('departamento')
         
         try:
             clasificacion_predicha = clf.clasificar([descripcion])[0]
             reclamo = gestor_reclamos.crear_reclamo(
                 usuario=current_user,
                 descripcion=descripcion,
-                departamento=departamento,
                 clasificacion=str(clasificacion_predicha)
             )
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
@@ -183,7 +184,7 @@ def analitica_reclamos():
     clasificacion_usuario = clasificacion_map.get(rol_usuario)
     es_secretario = (rol_usuario == "1")
 
-    generador = GeneradorReportes(repo_reclamos)
+    generador = GeneradorReportes(repo_reclamos,usuario=current_user)
     graficadora = Graficadora(
         generador_reportes=generador,
         graficadora_torta=GraficadoraTorta(),
@@ -191,19 +192,39 @@ def analitica_reclamos():
     )
 
     rutas = graficadora.graficar_todo(
-        clasificacion=clasificacion_usuario,
+        clasificacion=clasificacion_usuario, 
         es_secretario_tecnico=es_secretario
     )
 
+    generador_reporte_pdf = ReportePDF (generador=generador) #Se pasa como parametro un generador de los datos a plasmar allí.
+
+    generador_reporte_pdf.generarPDF(ruta_salida=f"analitica_{current_user.rol_to_dpto()}")
+
     cantidad_total = generador.cantidad_total_reclamos()
+
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
+
+    
+    #pequeña logica para la mediana
+    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado",valor="resuelto")
+
+    tiempo_reclamos = []
+
+    for reclamo in reclamos_resueltos:
+        
+        if reclamo.clasificacion == clasificacion_usuario:
+            tiempo_reclamos.append(reclamo.resuelto_en)
+
+    monticulo = MonticuloMediana(tiempo_reclamos)
+
 
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas  # Diccionario con claves como 'torta' y 'histograma'
+        graficos=rutas,# Diccionario con claves como 'torta' y 'histograma'
+        mediana = monticulo.obtener_mediana()
     )
 
 
@@ -230,7 +251,7 @@ def editar_reclamo(reclamo_id):
 
             if imagen and imagen.filename:
                 try:
-                    gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_id, imagen=imagen, reemplazar=True)
+                    gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_id, imagen=imagen)
                 except Exception as e:
                     flash(f"Error al guardar la imagen: {e}", "warning")
 
@@ -279,6 +300,14 @@ def manejo_reclamos():
         usuario=current_user,
         selected_id=selected_id,
         date=date
+    )
+
+@app.route("/descargar_reporte_pdf")
+def descargar_pdf():
+    return send_from_directory(
+        directory='data',
+        path="salida_reporte_pdf",
+        as_attachment=True
     )
 
 @login_manager.user_loader

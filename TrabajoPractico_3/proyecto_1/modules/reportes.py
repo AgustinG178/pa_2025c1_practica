@@ -4,21 +4,21 @@ from sqlalchemy import func
 from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from collections import Counter
-
+from modules.login import FlaskLoginUser
 engine, Session = crear_engine()
 
 session = Session()
 
 """func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de tus consultas ORM."""
 class GeneradorReportes:
-    def __init__(self, repositorio_reclamos: RepositorioReclamosSQLAlchemy):
+    def __init__(self, repositorio_reclamos: RepositorioReclamosSQLAlchemy,usuario:FlaskLoginUser):
         self.repositorio_reclamos = repositorio_reclamos
-
+        self.dpto = usuario.rol_to_dpto()
     def cantidad_total_reclamos(self):
         """
-        Se devuelve el total de reclamos en la base de datos como un numero.
+        Se devuelve el total de reclamos (asociado a dicho dpto o lo que corresponda) en la base de datos como un numero.
         """
-        return self.repositorio_reclamos.session.query(ModeloReclamo).count()
+        return self.repositorio_reclamos.session.query(ModeloReclamo).filter(ModeloReclamo.clasificacion == self.dpto).count()
 
     def cantidad_reclamos_por_estado(self):
         """
@@ -27,7 +27,8 @@ class GeneradorReportes:
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado, 
             func.count(ModeloReclamo.id)
-        ).group_by(ModeloReclamo.estado).all()
+        ).filter(ModeloReclamo.clasificacion == self.dpto).group_by(ModeloReclamo.estado).all()
+
         return dict(query)
 
     def cantidad_reclamos_por_departamento(self):
@@ -56,7 +57,7 @@ class GeneradorReportes:
         """
         query = self.repositorio_reclamos.session.query(
             func.avg(ModeloReclamo.cantidad_adherentes)
-        ).scalar()
+        ).filter(ModeloReclamo.clasificacion == self.dpto).scalar()
         return query or 0
 
     def reclamos_recientes(self, dias=7):
@@ -65,7 +66,7 @@ class GeneradorReportes:
         """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
-            ModeloReclamo.fecha_hora >= fecha_limite
+            ModeloReclamo.fecha_hora >= fecha_limite, ModeloReclamo.clasificacion == self.dpto
         ).all()
         return reclamos
 
@@ -122,9 +123,9 @@ class GeneradorReportes:
             return None
 
         mapa_roles = {
-            2: 'soporte informático',
-            3: 'secretaría técnica',
-            4: 'maestranza'
+            1: 'soporte informático',
+            2: 'secretaría técnica',
+            3: 'maestranza'
         }
         return mapa_roles.get(rol_int)
 
@@ -185,10 +186,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 
 class ReportePDF:
-    def __init__(self, generador):
+    def __init__(self, generador:GeneradorReportes):
         self.generador = generador
         
-    def generarPDF(self, ruta_salida='reporte.pdf'):
+    def generarPDF(self, ruta_salida='.data/reporte.pdf'):
         from reportlab.lib import colors
 
         c = canvas.Canvas(ruta_salida, pagesize=A4)
@@ -292,7 +293,7 @@ if __name__ == '__main__':  # pragma: no cover
 
     # Reporte en PDF
     reporte_pdf = ReportePDF(generador)
-    reporte_pdf.generarPDF("salida_reporte.pdf")
+    reporte_pdf.generarPDF("data/salida_reporte.pdf")
     
     reporte_html = ReporteHTML(generador)
 

@@ -2,8 +2,6 @@ from modules.gestor_base_datos import GestorBaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo
-from modules.clasificador_de_reclamos.modules.classifier import Clasificador
-from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
@@ -35,28 +33,27 @@ repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(session)
 
 gestor_usuarios = GestorUsuarios(repo_usuarios)
-procesador = ProcesadorArchivo("data/frases.json")
-X, y = procesador.datosEntrenamiento
 
-clf = Clasificador(X, y)
-clf._entrenar_clasificador()
+gestor_reclamos = GestorReclamo(repo_reclamos)
 
-gestor_reclamos = GestorReclamo(repo_reclamos, clf)
+import pickle
+
+with open('./data/claims_clf.pkl', 'rb') as archivo:
+  
+  clf  = pickle.load(archivo)
 
 # ─── Precarga ──────────────────────────────────────────────────────────────────
 usuarios_info = [
-    {"nombre": "Ana", "apellido": "García", "email": "ana@example.com", "usuario": "ana", },
-    {"nombre": "Juan", "apellido": "Pérez", "email": "juan@example.com", "usuario": "juan"},
-    {"nombre": "Laura", "apellido": "López", "email": "laura@example.com", "usuario": "laura"},
-    {"nombre": "Carlos", "apellido": "Martínez", "email": "carlos@example.com", "usuario": "carlos"},
-]
-
-# Jefes y secretario técnico
-usuarios_info += [
-{"nombre": "Jefa", "apellido": "Informática", "email": "soporte@fiuner.edu.ar", "usuario": "jefe_soporte", "rol": 2, "claustro": "JefeDeSoporte"},
-{"nombre": "Jefa", "apellido": "Maestranza", "email": "maestranza@fiuner.edu.ar", "usuario": "jefe_maestranza", "rol": 4, "claustro": "JefeDeMaestranza"},
-{"nombre": "Secretaria", "apellido": "Técnica", "email": "secretaria@fiuner.edu.ar", "usuario": "secretario", "rol": 3, "claustro": "JefeDeSecretariaTecnica"},
-{"nombre": "Tecnico", "apellido": "Ayudante", "email": "tecnico@fiuner.edu.ar", "usuario": "tecnico", "rol": 1, "claustro": "SecretariaTecnica"}
+    # Usuario 1: Estudiante
+    {"nombre": "Esteban", "apellido": "Gómez", "email": "esteban@example.com", "usuario": "esteban", "rol": 0, "claustro": "Estudiante"},
+    # Usuario 2: Soporte Informático (Docente)
+    {"nombre": "Soledad", "apellido": "Ruiz", "email": "soporte@fiuner.edu.ar", "usuario": "soporte", "rol": 2, "claustro": "Docente"},
+    # Usuario 3: Secretaría Técnica (Docente)
+    {"nombre": "Sergio", "apellido": "Tech", "email": "secretaria@fiuner.edu.ar", "usuario": "secretaria", "rol": 3, "claustro": "Docente"},
+    # Usuario 4: Maestranza (Docente)
+    {"nombre": "Marta", "apellido": "Limpieza", "email": "maestranza@fiuner.edu.ar", "usuario": "maestranza", "rol": 4, "claustro": "Docente"},
+    # Usuario 5: Sec. Técnico (PAYS)
+    {"nombre": "Pablo", "apellido": "Ayudante", "email": "pays@fiuner.edu.ar", "usuario": "pays", "rol": 1, "claustro": "PAYS"},
 ]
 
 reclamos_info = [
@@ -151,20 +148,19 @@ if __name__ == "__main__":
         exit()
 
     # Crear reclamos
-    departamentos_posibles = ["maestranza", "Servicio Tecnico", "soporte informático"]
 
     for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
         try:
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
-            estado = "pendiente"
+            # Generar resuelto_en aleatorio o None
+            resuelto_en = randint(1, 30) if randint(0, 1) else None
+            estado = "resuelto" if resuelto_en is not None else "pendiente"
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
-            departamento = choice(departamentos_posibles)  # Elegir aleatoriamente
 
             reclamo = gestor_reclamos.crear_reclamo(
                 usuario=usuario,
                 descripcion=desc,
-                departamento=departamento,
                 clasificacion=clasificacion
             )
 
@@ -172,9 +168,10 @@ if __name__ == "__main__":
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
             modelo.cantidad_adherentes = randint(0, 20)
+            modelo.resuelto_en = resuelto_en
 
             repo_reclamos.guardar_registro(modelo)
-            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en {departamento}: {desc}")
+            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en departamento: {desc}")
         except Exception as e:
             print(f"✖ Error creando reclamo '{desc}': {e}")
 

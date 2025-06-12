@@ -3,7 +3,6 @@ from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
-from modules.clasificador_de_reclamos.modules.classifier import Clasificador
 from modules.modelos import ModeloUsuario, ModeloReclamo
 import random
 from datetime import date
@@ -19,20 +18,18 @@ class GestorReclamo:
     Sus metodos son practicamente los mismos que los del repositorio.
     """
 
-    def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy, clasificador: Clasificador):
+    def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamo = repositorio_reclamo
-        self.clasificador = clasificador
 
-    def crear_reclamo(self, usuario, descripcion: str, departamento: str, clasificacion: str):
+    def crear_reclamo(self, usuario, descripcion: str, clasificacion: str):
         # acepta cualquier objeto con atributo id, por ejemplo
-        if not hasattr(usuario, 'id') or not descripcion or not departamento:
+        if not hasattr(usuario, 'id') or not descripcion:
             raise ValueError("Verificar que los datos ingresados sean correctos")
         p_reclamo = Reclamo(
             estado="pendiente",
             fecha_hora=datetime.now(),
             usuario_id=usuario.id,
             contenido=descripcion,
-            departamento=departamento,
             clasificacion=clasificacion
         )
         return p_reclamo
@@ -121,7 +118,6 @@ if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
     from modules.modelos import ModeloUsuario, ModeloReclamo
-    from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 
     # 1. Crear engine y session (usa tu configuración real o una in-memory SQLite)
     engine, Session = crear_engine()  
@@ -129,12 +125,9 @@ if __name__ == "__main__": #pragma: no cover
 
     # 2. Crear repositorio y gestor
     repositorio = RepositorioReclamosSQLAlchemy(session)
-    procesador = ProcesadorArchivo("modules/clasificador_de_reclamos/data/frases.json")
-    X, y = procesador.datosEntrenamiento
-    clasificador = Clasificador(X, y)
-    clasificador._entrenar_clasificador()
+    
 
-    gestor = GestorReclamo(repositorio, clasificador)
+    #gestor = GestorReclamo(repositorio, clasificador)
     repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
     repositorio_reclamos = RepositorioReclamosSQLAlchemy(session)
 
@@ -160,8 +153,8 @@ if __name__ == "__main__": #pragma: no cover
     print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id) #pragma: no cover 
 
     # 4. Probar agregar adherente
-    resultado = gestor.agregar_adherente(modelo_r.id, usuario)
-    print(resultado)
+    #resultado = gestor.agregar_adherente(modelo_r.id, usuario)
+    #print(resultado)
 
     # Opcional: verificar si el usuario está adherido realmente
     reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()

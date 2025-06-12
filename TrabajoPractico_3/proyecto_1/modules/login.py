@@ -52,10 +52,9 @@ class FlaskLoginUser:
         """
 
         relacion_roles_dpto = {
-            1:"Servicio Tecnico",
-            2:"Mesa Entrada",
-            3:"Informatica",
-            4:"Matematica"
+            2:"soporte informático",
+            3:"secretaría técnica",
+            4:"maestranza",
         }
 
         return relacion_roles_dpto[int(self.rol)] #devuelve el dpto asociado al rol del usuario
