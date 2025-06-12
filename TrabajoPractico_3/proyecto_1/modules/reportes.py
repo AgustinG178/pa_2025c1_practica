@@ -179,9 +179,130 @@ class GeneradorReportes:
         reclamos = query.all()
         # Filtramos y devolvemos solo las cantidades de adherentes que no sean None
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
+        
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
 
+class ReportePDF:
+    def __init__(self, generador):
+        self.generador = generador
+        
+    def generarPDF(self, ruta_salida='reporte.pdf'):
+        from reportlab.lib import colors
 
-if __name__ == '__main__': #pragma: no cover
+        c = canvas.Canvas(ruta_salida, pagesize=A4)
+        ancho, alto = A4
+        x = 2 * cm
+        y = alto - 2 * cm
+        salto = 1 * cm
+
+        def salto_de_pagina():
+            nonlocal y
+            if y < 2.5 * cm:
+                c.showPage()
+                y = alto - 2 * cm
+                c.setFont("Helvetica-Bold", 14)
+                c.setFillColor(colors.darkblue)
+                c.drawString(x, y, "Reporte de Reclamos (continuación)")
+                c.setFillColor(colors.black)
+                y -= salto
+
+        # Título
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColor(colors.darkblue)
+        c.drawCentredString(ancho / 2, y, "Reporte de Reclamos")
+        c.setFillColor(colors.black)
+        y -= 2 * salto
+
+        # Total y promedio
+        c.setFont("Helvetica", 12)
+        c.drawString(x, y, f"Total de reclamos: {self.generador.cantidad_total_reclamos()}")
+        y -= salto
+        salto_de_pagina()
+
+        c.drawString(x, y, f"Promedio de adherentes por reclamo: {self.generador.cantidad_promedio_adherentes():.2f}")
+        y -= 2 * salto
+        salto_de_pagina()
+
+        def seccion(titulo):
+            nonlocal y
+            c.setFillColorRGB(0.9, 0.9, 0.9)
+            c.rect(x - 0.2*cm, y - 0.3*cm, ancho - 4*cm, salto + 0.2*cm, fill=True, stroke=False)
+            c.setFillColor(colors.black)
+            c.setFont("Helvetica-Bold", 14)
+            c.drawString(x, y, titulo)
+            y -= salto
+            salto_de_pagina()
+            c.setFont("Helvetica", 11)
+
+        # Por estado
+        seccion("Cantidad de reclamos por estado:")
+        for estado, cantidad in self.generador.cantidad_reclamos_por_estado().items():
+            c.drawString(x + 0.5 * cm, y, f"• {estado}: {cantidad}")
+            y -= salto
+            salto_de_pagina()
+
+        # Por departamento
+        seccion("Cantidad de reclamos por departamento:")
+        for depto, cantidad in self.generador.cantidad_reclamos_por_departamento().items():
+            c.drawString(x + 0.5 * cm, y, f"• {depto}: {cantidad}")
+            y -= salto
+            salto_de_pagina()
+
+        # Por clasificación
+        seccion("Cantidad de reclamos por clasificación:")
+        for clasificacion, cantidad in self.generador.cantidad_reclamos_por_clasificacion().items():
+            c.drawString(x + 0.5 * cm, y, f"• {clasificacion}: {cantidad}")
+            y -= salto
+            salto_de_pagina()
+
+        # Reclamos recientes
+        seccion("Reclamos recientes (últimos 7 días):")
+        recientes = self.generador.reclamos_recientes()
+        c.setFont("Helvetica-Oblique", 10)
+        for reclamo in recientes:
+            texto = f"• ID {reclamo.id} - {reclamo.contenido or 'Sin título'} ({reclamo.estado or 'Sin estado'})"
+            c.drawString(x + 0.5 * cm, y, texto)
+            y -= salto
+            salto_de_pagina()
+
+        c.save()
+        print(f"Reporte PDF generado en: {ruta_salida}")
+
+class ReporteHTML:
+    def __init__(self, generador_reportes):
+        self.generador = generador_reportes
+
+    def obtener_datos_reporte(self):
+        return {
+            "total": self.generador.cantidad_total_reclamos(),
+            "promedio": f"{self.generador.cantidad_promedio_adherentes():.2f}",
+            "reclamos_por_estado": self.generador.cantidad_reclamos_por_estado(),
+            "reclamos_por_departamento": self.generador.cantidad_reclamos_por_departamento(),
+            "reclamos_por_clasificacion": self.generador.cantidad_reclamos_por_clasificacion(),
+            "reclamos_recientes": self.generador.reclamos_recientes(),
+            # Puedes agregar más datos según necesites
+        }
+
+if __name__ == '__main__':  # pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
     generador = GeneradorReportes(repo_reclamos)
     print("Cantidad total de reclamos:", generador.cantidad_total_reclamos())
+
+    # Reporte en PDF
+    reporte_pdf = ReportePDF(generador)
+    reporte_pdf.generarPDF("salida_reporte.pdf")
+    
+    reporte_html = ReporteHTML(generador)
+
+    # Obtener los datos para el reporte
+    datos = reporte_html.obtener_datos_reporte()
+
+    # Mostrar en consola (solo para testear)
+    import pprint
+    pprint.pprint(datos)
+    
+    for reclamo in datos["reclamos_recientes"]:
+        print(f"ID {reclamo.id} - {reclamo.contenido or 'Sin título'} - Estado: {reclamo.estado or 'Sin estado'}")
+
