@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
     """
     pass
 
-# Tabla intermedia para la relación muchos a muchos
+# Tabla intermedia para la relación muchos a muchos entre reclamos y usuarios
 usuarios_reclamos = Table(
     'usuarios_reclamos', Base.metadata,
     Column('usuario_id', Integer, ForeignKey('usuarios.id')),
@@ -65,6 +65,7 @@ class ModeloReclamo(Base):
     clasificacion = Column(String)
     cantidad_adherentes = Column(Integer, default=1) #Se contabiliza como adherente el usuario que crea el reclamo
     tiempo_estimado = Column(Integer,default=0) #Solo se cambia cuando el reclamo pasa de pendiente -->en proceso
+    resuelto_en = Column(Integer,default=None) #Representa la cantidad de días que se tardó en resolver un reclamo
     # Relación muchos a muchos con Usuario
     usuarios = relationship(
         "ModeloUsuario",
@@ -72,6 +73,11 @@ class ModeloReclamo(Base):
         back_populates="reclamos"
     )
     usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
+
+    @property
+    def adherentes_ids(self):
+        """Devuelve una lista de IDs de los usuarios adherentes a este reclamo."""
+        return [usuario.id for usuario in self.usuarios]
 
     # @property
     # def departamento(self):

@@ -266,7 +266,8 @@ def manejo_reclamos():
         'manejo_reclamos.html',
         reclamos=reclamos,
         usuario=current_user,
-        selected_id=selected_id
+        selected_id=selected_id,
+        date=date
     )
 
 @login_manager.user_loader

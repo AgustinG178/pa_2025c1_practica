@@ -12,6 +12,8 @@ class Reclamo:
         self.usuario_id = usuario_id
         self.cantidad_adherentes = kwargs.get("cantidad_adherentes")
         self.tiempo_estimado = kwargs.get("tiempo_estimado")
+        self.resuelto_en = kwargs.get("resuelto_en")
+
 
     def __repr__(self):
         return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, departamento={self.departamento}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"
