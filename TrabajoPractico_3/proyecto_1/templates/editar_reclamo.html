@@ -21,30 +21,54 @@
     {% endwith %}
     <main class="contenedor-principal">
         <form method="POST" enctype="multipart/form-data" class="formulario-reclamos">
-            <div class="form-group">
-                <label for="descripcion">Descripción</label>
-                <textarea name="descripcion" id="descripcion" class="form-usuario" rows="4" required>{{ reclamo.descripcion }}</textarea>
-            </div>
+            {% if current_user.rol == '1' %}
+                <div class="form-group">
+                    <p><strong>Descripción del reclamo:</strong> {{ reclamo.contenido }}</p>
+                </div>
+                <div class="form-group">
+                    <p><strong>Departamento actual:</strong> {{ reclamo.clasificacion }}</p>
+                    <label for="departamento_nuevo"><strong>Seleccione el nuevo departamento</strong></label>
+                    <select id="departamento_nuevo" name="departamento_nuevo" required>
+                        <option value="" disabled selected>Seleccione el nuevo departamento</option>
+                        <option value="maestranza">Maestranza</option>
+                        <option value="secretaria tecnica">Secretaria Tecnica</option>
+                        <option value="soporte informatico">Soporte Informatico</option>
+                    </select>
+                    
+                    {% if reclamo.imagen_url %}
+                        <div style="margin-top: 10px;">
+                            <p>Imagen actual:</p>
+                            <img src="{{ url_for('static', filename='imagenes_reclamos/' ~ reclamo.imagen_url) }}" alt="Imagen del reclamo" style="max-width: 300px; display: block; margin-bottom: 10px;">
+                            <label><input type="checkbox" name="eliminar_imagen"> Eliminar imagen actual</label>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
 
-            <div class="form-group">
-                <label for="imagen" class="label-boton-imagenes">Seleccionar imagen</label>
-                <input type="file" name="imagen" id="imagen" class="boton-imagenes" accept="image/*">
 
-                {% if reclamo.imagen_url %}
-                    <div style="margin-top: 10px;">
-                        <p>Imagen actual:</p>
-                        <img src="{{ url_for('static', filename='imagenes_reclamos/' ~ reclamo.imagen_url) }}" alt="Imagen del reclamo" style="max-width: 300px; display: block; margin-bottom: 10px;">
-                        <label><input type="checkbox" name="eliminar_imagen"> Eliminar imagen actual</label>
-                    </div>
-                {% endif %}
-            </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea name="descripcion" id="descripcion" class="form-usuario" rows="4" required>{{ reclamo.descripcion }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="imagen" class="label-boton-imagenes">Seleccionar imagen</label>
+                    <input type="file" name="imagen" id="imagen" class="boton-imagenes" accept="image/*">
+                    {% if reclamo.imagen_url %}
+                        <div style="margin-top: 10px;">
+                            <p>Imagen actual:</p>
+                            <img src="{{ url_for('static', filename='imagenes_reclamos/' ~ reclamo.imagen_url) }}" alt="Imagen del reclamo" style="max-width: 300px; display: block; margin-bottom: 10px;">
+                            <label><input type="checkbox" name="eliminar_imagen"> Eliminar imagen actual</label>
+                        </div>
+                    {% endif %}
 
+                </div>
+            {% endif %}
             <button type="submit" class="button-center">Guardar Cambios</button>
         </form>
     </main>
-
+            
     <p style="text-align:center; margin-top: 30px;">
-        <a href="{{ url_for('listar_reclamos') }}" class="enlace-boton">Volver a la Lista de Reclamos</a>
+        <a href="{{ url_for('mis_reclamos') }}" class="enlace-boton">Volver a la Lista de Reclamos</a>
     </p>
 </body>
 </html>

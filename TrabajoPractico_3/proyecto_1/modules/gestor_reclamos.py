@@ -106,7 +106,7 @@ class GestorReclamo:
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
 
-    def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
+    def agregar_adherente(self, reclamo_id, usuario: Usuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id, mapeado=False)
         if reclamo_a_adherir is None:
@@ -114,10 +114,9 @@ class GestorReclamo:
         if usuario in reclamo_a_adherir.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.")
         reclamo_a_adherir.cantidad_adherentes += 1
-        reclamo_a_adherir.usuarios.append(usuario)
+        reclamo_a_adherir.usuarios.append(usuario.id)
         self.repositorio_reclamo.commit()
     
-
 if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
