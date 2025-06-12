@@ -13,12 +13,14 @@
         <ul>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
-                <li><a href="{{ url_for('mis_reclamos') }}">Mis Reclamos</a></li>
-                {% if current_user.rol in ['1', '2', '3', '4'] %}
+                {%if current_user.rol == '1'%}
+                    <li><a href="{{ url_for('mis_reclamos') }}">RECLAMO FIUNER</a></li>
+                {%else%}
+                    <li><a href="{{ url_for('mis_reclamos') }}">Mis reclamos</a></li>
+                {%endif%}
+                {% if current_user.rol in ['1','2', '3', '4'] %}
                     <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
-                    <li><a href="{{ url_for('manejo_reclamos') }}">Manejo de Reclamos</a></li>
                 {% endif %}
-                
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
             {% else %}
                 <li><a href="{{ url_for('registrarse') }}">Registrarse</a></li>
