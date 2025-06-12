@@ -121,7 +121,7 @@ if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
     from modules.modelos import ModeloUsuario, ModeloReclamo
-    from modules.preprocesamiento import ProcesadorArchivo
+    from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 
     # 1. Crear engine y session (usa tu configuración real o una in-memory SQLite)
     engine, Session = crear_engine()  

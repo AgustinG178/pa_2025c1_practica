@@ -33,33 +33,42 @@
             <div>
                 <h3>Panel de Soporte Informático</h3>
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            </div>
-        {% elif current_user.rol == '3' %}
-            <div>
-                <h3 style="text-align:center;">Panel del Secretario Técnico</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            </div>
-        {% elif current_user.rol == '4' %}
-            <div>
-                <h3 style="text-align:center;">Panel de Maestranza</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            </div>
-        {% endif %}
-
-        {% if graficos %}
             <div class="flashcard">
                 <h3>Torta</h3>
-                <img src="data:image/png;base64,{{ graficos['torta'] }}" alt="Gráfico de torta">
+                <img src="static\graficos\tortas\soporte_informatico.png" alt="Gráfico de torta">
             </div>
             <div class="flashcard">
                 <h3>Histograma</h3>
-                <img src="data:image/png;base64,{{ graficos['histograma'] }}" alt="Gráfico de histograma">
+                <img src="static\graficos\histogramas\soporte_informatico.png" alt="Gráfico de histograma">
             </div>
-        {% else %}
+            </div>
+        {% elif current_user.rol == '3' %}
+            <div>
+                <h3>Panel de Soporte Informático</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
             <div class="flashcard">
-                <p>No tenés permisos especiales para esta vista.</p>
+                <h3>Torta</h3>
+                <img src="static\graficos\tortas\secretario_tecnico.png" alt="Gráfico de torta">
             </div>
-        {% endif %}
+            <div class="flashcard">
+                <h3>Histograma</h3>
+                <img src="static\graficos\histogramas\secretario_tecnico.png" alt="Gráfico de histograma">
+            </div>
+            </div>
+            {% elif current_user.rol == '4' %}
+            <div>
+                <h3>Panel de Soporte Informático</h3>
+                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+            <div class="flashcard">
+                <h3>Torta</h3>
+                <img src="static\graficos\tortas\maestranza.png" alt="Gráfico de torta">
+            </div>
+            <div class="flashcard">
+                <h3>Histograma</h3>
+                <img src="static\graficos\histogramas\maestranza.png" alt="Gráfico de histograma">
+            </div>
+            </div>
+            {% endif %}
     </section>
 </main>
 

@@ -3,7 +3,7 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclam
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo
 from modules.clasificador_de_reclamos.modules.classifier import Clasificador
-from modules.preprocesamiento import ProcesadorArchivo
+from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta

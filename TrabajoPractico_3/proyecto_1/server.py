@@ -7,7 +7,7 @@ from modules.login import GestorLogin, FlaskLoginUser
 from modules.gestor_reclamos import GestorReclamo 
 from modules.gestor_base_datos import GestorBaseDatos
 from modules.clasificador_de_reclamos.modules.classifier import Clasificador
-from modules.preprocesamiento import ProcesadorArchivo
+from modules.clasificador_de_reclamos.modules.preprocesamiento import ProcesadorArchivo
 from sqlalchemy.exc import IntegrityError
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
@@ -184,46 +184,28 @@ def analitica_reclamos():
     es_secretario = (rol_usuario == "1")
 
     generador = GeneradorReportes(repo_reclamos)
-    graficadora = Graficadora(generador, GraficadoraTorta(), GraficadoraHistograma())
-    rutas = graficadora.graficar_todo(clasificacion=clasificacion_usuario, es_secretario_tecnico=es_secretario)
+    graficadora = Graficadora(
+        generador_reportes=generador,
+        graficadora_torta=GraficadoraTorta(),
+        graficadora_histograma=GraficadoraHistograma()
+    )
+
+    rutas = graficadora.graficar_todo(
+        clasificacion=clasificacion_usuario,
+        es_secretario_tecnico=es_secretario
+    )
 
     cantidad_total = generador.cantidad_total_reclamos()
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
 
-    # Capturamos el parámetro GET 'formato'
-    formato = request.args.get('formato', '').lower()
-
-    if formato == 'pdf':
-        # Generar PDF en memoria y devolverlo
-        reporte_pdf = ReportePDF(generador)
-        buffer = io.BytesIO()
-        reporte_pdf.generarPDF(ruta_salida=buffer)
-        buffer.seek(0)
-        return send_file(
-            buffer,
-            mimetype='application/pdf',
-            as_attachment=True,
-            download_name='reporte_reclamos.pdf'
-        )
-
-    elif formato == 'html':
-        # Generar los datos para el reporte HTML y renderizar template específico para reporte
-        reporte_html = ReporteHTML(generador)
-        datos_reporte = reporte_html.obtener_datos_reporte()
-        return render_template(
-            "reporte_analitica.html",  # Plantilla para mostrar reporte en HTML
-            current_user=current_user,
-            reporte=datos_reporte
-        )
-
-    # Caso por defecto: renderizar vista con gráficos y estadísticas generales
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas
+        graficos=rutas  # Diccionario con claves como 'torta' y 'histograma'
     )
+
 
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
