@@ -2,6 +2,7 @@ from modules.usuarios import Usuario
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
 from modules.gestor_base_datos import GestorBaseDatos
 
+
 class GestorUsuarios:
     def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
         """
@@ -12,6 +13,7 @@ class GestorUsuarios:
         """
         Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
         """
+
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
         if self.repositorio.obtener_registro_por_filtro("email", email):
@@ -87,7 +89,7 @@ class GestorUsuarios:
             raise ValueError("Usuario no encontrado")
         return usuario
 if __name__ == "__main__":
-    session = BaseDatos("sqlite:///data/base_datos.db")
+    session = GestorBaseDatos("sqlite:///data/base_datos.db")
     session.conectar()
     repo = RepositorioUsuariosSQLAlchemy(session=session.session)
     gestor = GestorUsuarios(repo)
@@ -121,7 +123,7 @@ if __name__ == "__main__":
     #Intentamos actualizar el usuario
     try:
         usuario_modificado = Usuario(
-            id=usuario['id'],  # Asegúrate de que el ID esté presente
+            id=usuario_autenticado['id'],  # Asegúrate de que el ID esté presente
             nombre="nicolas",
             apellido="Ramírez",
             email="ramirezn@gmail.com",

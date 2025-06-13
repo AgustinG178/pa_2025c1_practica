@@ -6,16 +6,16 @@ from modules.repositorio_ABC import Repositorio
 from sqlalchemy.orm import Session as SessionSQL
 
 engine, Session = crear_engine()  # Session es sessionmaker
-
+"""
 def crear_repositorio():
-    """Crea y devuelve dos repositorios separados para reclamos y usuarios."""
+    Crea y devuelve dos repositorios separados para reclamos y usuarios.
     session1 = SessionSQL()  # crea una sesión activa
     session2 = SessionSQL()  # otra sesión independiente
     repo_reclamos = RepositorioReclamosSQLAlchemy(session1)
     repo_usuario = RepositorioUsuariosSQLAlchemy(session2)
     return repo_reclamos, repo_usuario
 
-
+"""
 class RepositorioUsuariosSQLAlchemy(Repositorio):
     """Repositorio para gestionar registros de usuarios con SQLAlchemy."""
 
@@ -107,6 +107,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
 
 
 class RepositorioReclamosSQLAlchemy(Repositorio):
+
     """Repositorio para gestionar reclamos en la base de datos."""
 
     def __init__(self, session: SessionSQL):
@@ -168,7 +169,9 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         return self.__session.query(ModeloReclamo).filter_by(usuario_id=usuario_id).all()
 
     def obtener_todos_los_reclamos_base(self):
-
+        """
+        Se devuelven todos los reclamos de la base de datos
+        """
         return self.__session.query(ModeloReclamo).all()
 
     def modificar_registro(self, reclamo_a_modificar: Reclamo):
@@ -228,6 +231,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
     def obtener_ultimos_reclamos(self, limit=4):
         """Devuelve los últimos reclamos ordenados por fecha de creación."""
+        print("[DEBUG] Tipo de self.__session:", type(self.__session))
+        print("[DEBUG] Contenido de self.__session:", self.__session)
         return (
             self.__session.query(ModeloReclamo)
             .order_by(ModeloReclamo.fecha_hora.desc())
@@ -236,16 +241,19 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         )
 
     def obtener_por_id(self, id_reclamo):
+
         """Obtiene un reclamo según su ID."""
+
         return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
 
-    def obtener_registros_por_filtros(self, filtro,valor):
+    def obtener_registros_por_filtro(self, filtro,valor):
         
         """
         Obtiene todos los registros que coinciden con un filtro específico.
         """
         modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
+
 
 if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
