@@ -49,7 +49,8 @@ class GestorImagenReclamoPng(GestorImagenReclamo):
                     
                     print(f"Error al guardar la imagen: {e}")
                     return None
-                
+            
+            
             raise ValueError(f"La imagen  asociada al reclamo {reclamo_id} no se guardo.")
 
     def eliminar_imagen(self, reclamo_id):

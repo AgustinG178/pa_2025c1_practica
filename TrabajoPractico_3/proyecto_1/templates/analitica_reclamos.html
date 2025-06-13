@@ -17,8 +17,9 @@
             <div class="flashcard">
                 <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
             </div>
-            <div class ="flashcard"> 
-                <p>mediana = {{mediana}}</p>
+            <div class = "flashcard">
+
+                <p><strong>Mediana de tiempo en resolver reclamos (dias): </strong> {{mediana}}</p>
             </div>
         </div>
     </section>
@@ -73,9 +74,13 @@
             </div>
             {% endif %}
     </section>
-    
-    <div style="text-align:center;">
-        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+
+    <div>
+        <a href = "{{ url_for ('descargar_pdf') }}" download=>Descargar informe formato PDF</a>
+    </div>
+    <div class ="volver-contenedor" style="text-align: center; margin: 30px 0;">
+        <a href = "{{ url_for ('inicio')}}" class = "enlace-boton">Volver</a>
+
     </div>
 </main>
 

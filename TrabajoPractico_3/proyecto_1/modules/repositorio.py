@@ -136,7 +136,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             fecha_hora=reclamo.fecha_hora,
             contenido=reclamo.contenido,
             usuario_id=reclamo.usuario_id,
-            departamento=reclamo.departamento,
             clasificacion=reclamo.clasificacion,
             tiempo_estimado=reclamo.tiempo_estimado,
             **kwargs
@@ -151,7 +150,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             fecha_hora=modelo.fecha_hora,
             contenido=modelo.contenido,
             usuario_id=modelo.usuario_id,
-            departamento=modelo.departamento,
             clasificacion=modelo.clasificacion,
             cantidad_adherentes=modelo.cantidad_adherentes,
             tiempo_estimado = modelo.tiempo_estimado,
@@ -240,7 +238,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """Obtiene un reclamo según su ID."""
         return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
 
-    def obtener_registros_por_filtro(self, filtro,valor):
+    def obtener_registros_por_filtros(self, filtro,valor):
         
         """
         Obtiene todos los registros que coinciden con un filtro específico.

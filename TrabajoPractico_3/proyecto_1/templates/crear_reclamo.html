@@ -24,14 +24,6 @@
     <form action="{{ url_for('crear_reclamos') }}" method="POST" enctype="multipart/form-data">
         <label for="descripcion">Descripción:</label>
         <input type="text" id="descripcion" name="descripcion" required />
-        <label for="departamento">Departamento:</label>
-        <select id="departamento" name="departamento" required>
-            <option value="" disabled selected>Seleccione un departamento</option>
-            <option value="Informatica">Informatica</option>
-            <option value="Servicio Tecnico">Servicio Tecnico</option>
-            <option value="Matematica">Matematica</option>
-            <option value="Mesa Entrada">Mesa Entrada</option>
-        </select>
        <br>
        <br> 
         <label for="imagen" class = "label-file">Adjuntar imagen (opcional)</label>

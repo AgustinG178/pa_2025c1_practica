@@ -12,15 +12,14 @@
     <table>
         <thead>
             <tr>
-                <th class="col-id">ID</th>
+                <th class="col-id">ID RECLAMO</th>
                 <th class="col-descripcion">Descripción</th>
                 <th class="col-estado">Estado</th>
                 <th class="col-fecha">Fecha de creación</th>
-                <th class="col-departamento">Departamento</th>
                 <th class="col-clasificacion">Clasificación</th>
                 <th class="col-usuario">ID Usuario</th>
-                <th class="col-acciones">Acciones</th>
                 <th class = "col-imagen">Imagen Adjunta</th>
+                <th class="col-acciones">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -30,9 +29,9 @@
                     <td class="col-descripcion">{{ reclamo.contenido }}</td>
                     <td class="col-estado">{{ reclamo.estado }}</td>
                     <td class="col-fecha">{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M')}}</td>
-                    <td class="col-departamento">{{ reclamo.departamento }}</td>
                     <td class="col-clasificacion">{{ reclamo.clasificacion }}</td>
                     <td class="col-usuario">{{ reclamo.usuario_id }}</td>
+
                     <td class = "col-imagen">
                     {% set imagen_path = 'static/Imagenes Reclamos/{}.png'.format(reclamo.id) %}
                     {% if os.path.exists(imagen_path) %}

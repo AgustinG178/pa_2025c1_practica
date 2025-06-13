@@ -20,7 +20,7 @@
                 {%endif%}
                 {% if current_user.rol in ['1','2', '3', '4'] %}
                     <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
-                    <li><a href="{{ url_for('manejo_reclamos') }}">Manejo Reclamos</a></li>
+                    <li><a href="{{ url_for ('manejo_reclamos' )}}">Manejo Reclamos</a></li>
                 {% endif %}
                 <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
             {% else %}
@@ -44,6 +44,27 @@
         <p class="saludo">
             Bienvenido {{ current_user.nombre_de_usuario }} al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.
         </p>
+<<<<<<< HEAD
+=======
+        {% if ultimos_reclamos %}
+            {%if current_user.rol == '0' %}
+            <section class="contenedor-flashcards">
+                <h2 class="titulo-seccion">Últimos Reclamos Realizados</h2>
+                <div class="flashcards-grid">
+                    {% for reclamo in ultimos_reclamos %}
+                        <div class="flashcard">
+                            <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
+                            <p><strong>Fecha:</strong> {{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+                            <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {%endif%}
+            </section>
+        {% endif %}
+    
+    {% else %}
+>>>>>>> f4163d49884ec4e7ac121f595cdd9354c04db99d
         <div class="home-container">
             <div class="flashcard-big">
                 <h2 class="titulo-flashcard-grande">¿De qué se trata este sistema?</h2>
