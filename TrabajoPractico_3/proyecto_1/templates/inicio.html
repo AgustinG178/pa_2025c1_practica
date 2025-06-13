@@ -18,7 +18,7 @@
                 {%else%}
                     <li><a href="{{ url_for('mis_reclamos') }}">Mis reclamos</a></li>
                 {%endif%}
-                {% if current_user.rol in ['1','2', '3', '4'] %}
+                {% if current_user.rol in ['2', '3', '4'] %}
                     <li><a href="{{ url_for('analitica_reclamos') }}">Analíticas</a></li>
                     <li><a href="{{ url_for ('manejo_reclamos' )}}">Manejo Reclamos</a></li>
                 {% endif %}
@@ -47,7 +47,7 @@
 <<<<<<< HEAD
 =======
         {% if ultimos_reclamos %}
-            {%if current_user.rol == '0' %}
+            {%if current_user.rol in ['0','1'] %}
             <section class="contenedor-flashcards">
                 <h2 class="titulo-seccion">Últimos Reclamos Realizados</h2>
                 <div class="flashcards-grid">
