@@ -17,13 +17,6 @@ class Base(DeclarativeBase):
     """
     pass
 
-# Tabla intermedia para la relación muchos a muchos entre reclamos y usuarios
-usuarios_reclamos = Table(
-    'usuarios_reclamos', Base.metadata,
-    Column('usuario_id', Integer, ForeignKey('usuarios.id')),
-    Column('reclamo_id', Integer, ForeignKey('reclamos.id'))
-)
-
 class ModeloUsuario(Base):
     __tablename__ = 'usuarios'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -37,7 +30,6 @@ class ModeloUsuario(Base):
 
     reclamos = relationship(
         "ModeloReclamo",
-        secondary=usuarios_reclamos,
         back_populates="usuarios"
     )
     
@@ -74,7 +66,6 @@ class ModeloReclamo(Base):
 
     usuarios = relationship(
         "ModeloUsuario",
-        secondary=usuarios_reclamos,
         back_populates="reclamos"
     )
     usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
