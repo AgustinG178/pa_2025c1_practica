@@ -27,15 +27,25 @@
                 </div>
                 <div class="form-group">
                     <p><strong>Departamento actual:</strong> {{ reclamo.clasificacion }}</p>
-                    <label for="departamento_nuevo"><strong>Seleccione el nuevo departamento</strong></label>
-                    <select id="departamento_nuevo" name="departamento_nuevo" required>
+
+                    <label for="nuevo_dpto"><strong>Seleccione el nuevo departamento</strong></label>
+                    <select id="nuevo_dpto" name="nuevo_dpto" required>
                         <option value="" disabled selected>Seleccione el nuevo departamento</option>
-                        <option value="maestranza">Maestranza</option>
-                        <option value="secretaria tecnica">Secretaria Tecnica</option>
-                        <option value="soporte informatico">Soporte Informatico</option>
+        
+                        {% for clasificacion in ['maestranza','secretaria tecnica','soporte informatico'] %}
+
+                            {% if clasificacion != reclamo.clasificacion %}
+                                <option value="{{clasificacion}}">{{clasificacion}}</option>
+                            {% else %}
+                                <option value = "" disabled>{{clasificacion}} (Departamento actual)</option>
+                            {% endif %}
+
+                        {% endfor %}
+
                     </select>
                 </div>
-            {% endif %}
+            {% else %}
+
             <div class="form-group">
                 <label for="descripcion">Descripción</label>
                 <textarea name="descripcion" id="descripcion" class="form-usuario" rows="4" required>{{ reclamo.descripcion }}</textarea>
@@ -52,6 +62,8 @@
                     </div>
                 {% endif %}
             </div>
+            {%endif%}
+
             <button type="submit" class="button-center">Guardar Cambios</button>
         </form>
     </main>

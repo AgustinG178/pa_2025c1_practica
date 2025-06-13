@@ -8,7 +8,17 @@
 </head>
 <body>
     <h1>Mis reclamos</h1>
-
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                    <center>{{message}}</center>
+                    <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
+                    </div>
+                {% endfor %}
+            {%endif%}
+            {%endwith%}
     <table>
         <thead>
             <tr>
@@ -47,12 +57,17 @@
                     {% endif %}
                     </td>
                     <td class="col-acciones">
-                        <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Editar</a>
+                        {%if current_user.rol == '1'%}
+                            <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Derivar Reclamo</a>
+                        {%else%}
+                            <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Derivar Reclamo</a>
+                        {%endif%}
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
 
     <div style="text-align:center; margin-top: 20px;">
         <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>

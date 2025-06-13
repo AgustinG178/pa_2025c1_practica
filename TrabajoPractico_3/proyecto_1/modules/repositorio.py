@@ -167,6 +167,10 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """Devuelve todos los reclamos asociados a un usuario."""
         return self.__session.query(ModeloReclamo).filter_by(usuario_id=usuario_id).all()
 
+    def obtener_todos_los_reclamos_base(self):
+
+        return self.__session.query(ModeloReclamo).all()
+
     def modificar_registro(self, reclamo_a_modificar: Reclamo):
         if not isinstance(reclamo_a_modificar, Reclamo):
             raise ValueError("El parámetro no es una instancia de la clase Reclamo")

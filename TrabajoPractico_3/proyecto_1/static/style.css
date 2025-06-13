@@ -603,6 +603,8 @@ footer a:hover {
     border-radius: 4px;
 }
 
+
+
 .contenedor-principal {
     display: flex;
     flex-direction: column;
@@ -830,7 +832,8 @@ input[type="file"].boton-imagenes {
 .flash-container {
   position: relative;
   margin: 20px auto;
-  max-width: 800px;
+  max-width: 100%; 
+  width: 100%;
   padding: 0 15px;
 }
 

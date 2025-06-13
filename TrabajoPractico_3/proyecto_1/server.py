@@ -107,7 +107,11 @@ def inicio_usuario():
 @app.route('/mis_reclamos')
 @login_required
 def mis_reclamos():
-    reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
+    if current_user.rol == '1':
+        reclamos = repo_reclamos.obtener_todos_los_reclamos_base()
+    else:
+        reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
+        
     return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos, os=os)
 
 @app.route('/crear_reclamos', methods=['GET', 'POST'])
@@ -169,6 +173,7 @@ def adherirse(reclamo_id):
 @login_required
 def listar_reclamos():
     reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
+
     return render_template('listar_reclamos.html', reclamos=reclamos)
 @app.route("/analitica")
 @login_required
@@ -230,11 +235,22 @@ def analitica_reclamos():
 @login_required
 def editar_reclamo(reclamo_id):
     modelo_reclamo = repo_reclamos.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
-
+    accion = request.form.get("accion")
     if request.method == 'POST':
+
+        nuevo_dpto = request.form.get("nuevo_dpto")
         nuevo_contenido = request.form.get('descripcion')
         imagen = request.files.get('imagen')
 
+        if nuevo_dpto:
+
+            modelo_reclamo.clasificacion = nuevo_dpto.lower()
+
+            repo_reclamos.actualizar_reclamo(modelo_reclamo)
+
+            flash('Reclamo derivado correctamente','success')
+
+            return redirect(url_for('mis_reclamos'))
         try:
             nueva_clasificacion = clf.clasificar([nuevo_contenido])[0]
         except Exception as e:
@@ -290,7 +306,9 @@ def manejo_reclamos():
         except Exception as e:
             flash(f"Error al procesar el reclamo: {e}", "danger")
 
-        reclamos = repo_reclamos.obtener_todos_los_registros(usuario_id=current_user.id)
+        dpto = current_user.rol_to_dpto
+
+        reclamos = repo_reclamos.obtener_registros_por_filtros(filtro="clasificacion",valor=dpto)
 
     return render_template(
         'manejo_reclamos.html',
