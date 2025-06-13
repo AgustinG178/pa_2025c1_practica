@@ -221,6 +221,7 @@ def analitica_reclamos():
         mediana=monticulo.obtener_mediana()
     )
 
+
 @app.route("/descargar_reporte")
 @login_required
 def descargar_reporte():
@@ -230,19 +231,41 @@ def descargar_reporte():
 
     generador = GeneradorReportes(repo_reclamos)
 
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    carpeta_temp = os.path.join(BASE_DIR, "temp_reportes")
+    os.makedirs(carpeta_temp, exist_ok=True)
+
     if formato == "pdf":
+        nombre_archivo = f"reporte.pdf"
+        ruta_archivo = "temp_reportes"
         reporte_pdf = ReportePDF(generador)
-        ruta_pdf = f"reporte_{current_user.id}.pdf"
-        reporte_pdf.generarPDF(ruta_pdf)
-        return send_file(ruta_pdf, as_attachment=True, download_name="reporte.pdf")
-    
-    else:  # formato == "html"
+        reporte_pdf.generarPDF(ruta_archivo)
+        ruta_pdf = os.path.join(ruta_archivo, nombre_archivo)
+
+
+        if not os.path.exists(ruta_archivo):
+            abort(500, description="No se generó el PDF.")
+
+        return send_file(
+            ruta_pdf,
+            as_attachment=True,
+            download_name=nombre_archivo,
+            mimetype="application/pdf"
+        )
+
+    else:
+        nombre_archivo = f"reporte_{current_user.id}.html"
+        ruta_archivo = os.path.join(carpeta_temp, nombre_archivo)
         reporte_html = ReporteHTML(generador)
-        ruta_html = f"temp_reporte_{current_user.id}.html"
-        reporte_html.exportar_html(nombre_archivo=ruta_html)
-        return send_file(ruta_html, as_attachment=True, download_name="reporte.html")
+        reporte_html.exportar_html(nombre_archivo=ruta_archivo)
 
-
+        return send_file(
+            ruta_archivo,
+            as_attachment=True,
+            download_name=nombre_archivo,
+            mimetype="text/html"
+        )
+                
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
 def editar_reclamo(reclamo_id):
