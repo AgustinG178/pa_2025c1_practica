@@ -4,7 +4,7 @@ from sqlalchemy import func
 from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from collections import Counter
-from modules.login import FlaskLoginUser
+from jinja2 import Environment, FileSystemLoader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
@@ -13,7 +13,7 @@ engine, Session = crear_engine()
 
 session = Session()
 
-"""func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de tus consultas ORM."""
+"""func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de consultas ORM."""
 
 class GeneradorReportes:
     def __init__(self, repositorio_reclamos):
@@ -240,8 +240,6 @@ class ReportePDF:
 
         c.save()
         print(f"Reporte PDF generado en: {ruta_salida}")
-
-from jinja2 import Environment, FileSystemLoader
 
 class ReporteHTML:
     def __init__(self, generador_reportes):

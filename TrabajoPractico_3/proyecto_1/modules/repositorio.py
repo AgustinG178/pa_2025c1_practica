@@ -182,8 +182,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         reclamo_db.estado = reclamo_a_modificar.estado
         reclamo_db.contenido = reclamo_a_modificar.contenido
         reclamo_db.clasificacion = reclamo_a_modificar.clasificacion
-        reclamo_db.departamento = reclamo_a_modificar.departamento
-        # etc., actualizá todos los campos que necesites
 
         self.__session.commit()
 
@@ -198,7 +196,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         reclamo_db.estado = modelo_reclamo.estado
         reclamo_db.contenido = modelo_reclamo.contenido
         reclamo_db.clasificacion = modelo_reclamo.clasificacion
-        # actualizar otros campos si hace falta
 
         self.__session.commit()
 

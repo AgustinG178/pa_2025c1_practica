@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, redirect, url_for, send_file, send_from_directory
+from flask import render_template, flash, request, redirect, url_for, send_file, send_from_directory, abort
 from flask_login import login_required, logout_user, current_user, login_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
@@ -185,7 +185,7 @@ def analitica_reclamos():
     clasificacion_usuario = clasificacion_map.get(rol_usuario)
     es_secretario = (rol_usuario == "1")
 
-    generador = GeneradorReportes(repo_reclamos,usuario=current_user)
+    generador = GeneradorReportes(repo_reclamos)
     graficadora = Graficadora(
         generador_reportes=generador,
         graficadora_torta=GraficadoraTorta(),
@@ -197,35 +197,51 @@ def analitica_reclamos():
         es_secretario_tecnico=es_secretario
     )
 
-    generador_reporte_pdf = ReportePDF (generador=generador) #Se pasa como parametro un generador de los datos a plasmar allí.
-
-    generador_reporte_pdf.generarPDF(ruta_salida=f"analitica_{current_user.rol_to_dpto()}")
-
     cantidad_total = generador.cantidad_total_reclamos()
-
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
+
+    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtros(filtro="estado", valor="resuelto")
+
+    tiempo_reclamos = [
+        reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
+    ]
     
-    #pequeña logica para la mediana
-    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado",valor="resuelto")
-
-    tiempo_reclamos = []
-
-    for reclamo in reclamos_resueltos:
-        
-        if reclamo.clasificacion == clasificacion_usuario:
-            tiempo_reclamos.append(reclamo.resuelto_en)
+    tiempo_reclamos = [
+        reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
+    ]
 
     monticulo = MonticuloMediana(tiempo_reclamos)
-
 
     return render_template(
         "analitica_reclamos.html",
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas,# Diccionario con claves como 'torta' y 'histograma'
-        mediana = monticulo.obtener_mediana()
+        graficos=rutas,
+        mediana=monticulo.obtener_mediana()
     )
+
+@app.route("/descargar_reporte")
+@login_required
+def descargar_reporte():
+    formato = request.args.get("formato", "pdf").lower()
+    if formato not in ["pdf", "html"]:
+        abort(400, description="Formato no válido")
+
+    generador = GeneradorReportes(repo_reclamos)
+
+    if formato == "pdf":
+        reporte_pdf = ReportePDF(generador)
+        ruta_pdf = f"reporte_{current_user.id}.pdf"
+        reporte_pdf.generarPDF(ruta_pdf)
+        return send_file(ruta_pdf, as_attachment=True, download_name="reporte.pdf")
+    
+    else:  # formato == "html"
+        reporte_html = ReporteHTML(generador)
+        ruta_html = f"temp_reporte_{current_user.id}.html"
+        reporte_html.exportar_html(nombre_archivo=ruta_html)
+        return send_file(ruta_html, as_attachment=True, download_name="reporte.html")
+
 
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
