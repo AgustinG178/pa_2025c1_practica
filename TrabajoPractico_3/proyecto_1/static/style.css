@@ -871,3 +871,23 @@ input[type="file"].boton-imagenes {
     transform: translateY(0);
   }
 }
+
+.texto-reclamo {
+    flex-grow: 1;  /* para que tome el máximo espacio posible dentro del flex padre */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Georgia', serif;
+    font-size: 1.3rem;
+    color: #2c3e50;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+    height: -500px;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+
+
+

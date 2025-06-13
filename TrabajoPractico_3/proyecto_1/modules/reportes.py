@@ -129,9 +129,6 @@ class GeneradorReportes:
         }
         return mapa_roles.get(rol_int)
     
-        
-
-
     def obtener_datos_para_torta(self, rol):
         """
         Se obtieen los datos necesarios para generar un gráfico de torta, filtrados por rol.
