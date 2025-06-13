@@ -44,8 +44,6 @@
         <p class="saludo">
             Bienvenido {{ current_user.nombre_de_usuario }} al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.
         </p>
-<<<<<<< HEAD
-=======
         {% if ultimos_reclamos %}
             {%if current_user.rol in ['0','1'] %}
             <section class="contenedor-flashcards">
@@ -64,7 +62,6 @@
         {% endif %}
     
     {% else %}
->>>>>>> f4163d49884ec4e7ac121f595cdd9354c04db99d
         <div class="home-container">
             <div class="flashcard-big">
                 <h2 class="titulo-flashcard-grande">¿De qué se trata este sistema?</h2>

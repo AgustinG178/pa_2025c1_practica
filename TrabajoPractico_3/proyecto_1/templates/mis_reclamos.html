@@ -37,7 +37,7 @@
                 <tr>
                     <td class="col-id">{{ reclamo.id }}</td>
                     <td class="col-descripcion">{{ reclamo.contenido }}</td>
-                    <td class="col-estado">{{ reclamo.estado }}</td>
+                    <td class="col-estado">{{reclamo.estado}}</td>
                     <td class="col-fecha">{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M')}}</td>
                     <td class="col-clasificacion">{{ reclamo.clasificacion }}</td>
                     <td class="col-usuario">{{ reclamo.usuario_id }}</td>
@@ -60,7 +60,12 @@
                         {%if current_user.rol == '1'%}
                             <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Derivar Reclamo</a>
                         {%else%}
-                            <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Derivar Reclamo</a>
+                            {% if reclamo.estado != "resuelto" %}
+                                <a href="{{ url_for('editar_reclamo', reclamo_id=reclamo.id) }}" class="enlace-boton">Editar Reclamo</a>
+                            {% else %}
+                                Reclamo resuelto en {{ reclamo.resuelto_en }} días
+                            {% endif %}
+
                         {%endif%}
                     </td>
                 </tr>

@@ -31,16 +31,6 @@ class GeneradorReportes:
 
         return dict(query)
 
-    def cantidad_reclamos_por_departamento(self):
-        """
-        Se devuelve un diccionario con la cantidad de reclamos agrupados por departamento.
-        """
-        query = self.repositorio_reclamos.session.query(
-            ModeloReclamo.departamento,
-            func.count(ModeloReclamo.id)
-        ).group_by(ModeloReclamo.departamento).all()
-        return dict(query)
-
     def cantidad_reclamos_por_clasificacion(self):
         """
         Se devuelve un diccionario con la cantidad de reclamos agrupados por clasificación.
@@ -246,13 +236,6 @@ class ReportePDF:
             y -= salto
             salto_de_pagina()
 
-        # Por departamento
-        seccion("Cantidad de reclamos por departamento:")
-        for depto, cantidad in self.generador.cantidad_reclamos_por_departamento().items():
-            c.drawString(x + 0.5 * cm, y, f"• {depto}: {cantidad}")
-            y -= salto
-            salto_de_pagina()
-
         # Por clasificación
         seccion("Cantidad de reclamos por clasificación:")
         for clasificacion, cantidad in self.generador.cantidad_reclamos_por_clasificacion().items():
@@ -282,7 +265,6 @@ class ReporteHTML:
             "total": self.generador.cantidad_total_reclamos(),
             "promedio": f"{self.generador.cantidad_promedio_adherentes():.2f}",
             "reclamos_por_estado": self.generador.cantidad_reclamos_por_estado(),
-            "reclamos_por_departamento": self.generador.cantidad_reclamos_por_departamento(),
             "reclamos_por_clasificacion": self.generador.cantidad_reclamos_por_clasificacion(),
             "reclamos_recientes": self.generador.reclamos_recientes(),
             # Puedes agregar más datos según necesites
