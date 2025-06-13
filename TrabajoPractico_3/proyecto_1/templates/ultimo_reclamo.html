@@ -38,7 +38,7 @@
             <div class="flashcards-grid">
                 {% for r in similares %}
                     <div class="flashcard">
-                        <p>{{ r.contenido }}</p>
+                        <p class="texto-reclamo">{{ r.contenido }}</p>
                         <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
                             <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
                             <input type="hidden" name="reclamo_id_adherido" value="{{ r.id }}">

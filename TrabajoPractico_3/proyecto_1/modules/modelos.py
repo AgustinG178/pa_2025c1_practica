@@ -17,13 +17,6 @@ class Base(DeclarativeBase):
     """
     pass
 
-# Tabla intermedia para la relación muchos a muchos entre reclamos y usuarios
-usuarios_reclamos = Table(
-    'usuarios_reclamos', Base.metadata,
-    Column('usuario_id', Integer, ForeignKey('usuarios.id')),
-    Column('reclamo_id', Integer, ForeignKey('reclamos.id'))
-)
-
 class ModeloUsuario(Base):
     __tablename__ = 'usuarios'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -37,7 +30,6 @@ class ModeloUsuario(Base):
 
     reclamos = relationship(
         "ModeloReclamo",
-        secondary=usuarios_reclamos,
         back_populates="usuarios"
     )
     
@@ -65,10 +57,15 @@ class ModeloReclamo(Base):
     cantidad_adherentes = Column(Integer, default=1) #Se contabiliza como adherente el usuario que crea el reclamo
     tiempo_estimado = Column(Integer,default=0) #Solo se cambia cuando el reclamo pasa de pendiente -->en proceso
     resuelto_en = Column(Integer,default=None) #Representa la cantidad de días que se tardó en resolver un reclamo
-    # Relación muchos a muchos con Usuario
+    
+    ''' Relación muchos a muchos con Usuario
+    Una relación muchos a muchos en SQL permite que múltiples registros de una tabla se asocien con múltiples registros de otra tabla. 
+    Esto se implementa mediante una tabla intermedia que contiene claves foráneas de ambas tablas relacionadas. 
+    Esta estructura facilita modelar relaciones complejas, como estudiantes inscritos en varios cursos o productos en múltiples órdenes. 
+    '''
+
     usuarios = relationship(
         "ModeloUsuario",
-        secondary=usuarios_reclamos,
         back_populates="reclamos"
     )
     usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
