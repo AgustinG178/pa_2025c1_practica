@@ -5,45 +5,39 @@ from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from collections import Counter
 from modules.login import FlaskLoginUser
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+
 engine, Session = crear_engine()
 
 session = Session()
 
 """func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de tus consultas ORM."""
+
 class GeneradorReportes:
-    def __init__(self, repositorio_reclamos: RepositorioReclamosSQLAlchemy,usuario:FlaskLoginUser):
+    def __init__(self, repositorio_reclamos):
         self.repositorio_reclamos = repositorio_reclamos
-        self.dpto = usuario.rol_to_dpto()
+
     def cantidad_total_reclamos(self):
         """
-        Se devuelve el total de reclamos (asociado a dicho dpto o lo que corresponda) en la base de datos como un numero.
+        Devuelve el total de reclamos en la base de datos.
         """
-        return self.repositorio_reclamos.session.query(ModeloReclamo).filter(ModeloReclamo.clasificacion == self.dpto).count()
+        return self.repositorio_reclamos.session.query(ModeloReclamo).count()
 
     def cantidad_reclamos_por_estado(self):
         """
-        Se devuelve un diccionario con la cantidad de reclamos agrupados por estado.
+        Devuelve un diccionario con la cantidad de reclamos agrupados por estado.
         """
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado, 
             func.count(ModeloReclamo.id)
-        ).filter(ModeloReclamo.clasificacion == self.dpto).group_by(ModeloReclamo.estado).all()
-
-        return dict(query)
-
-    def cantidad_reclamos_por_departamento(self):
-        """
-        Se devuelve un diccionario con la cantidad de reclamos agrupados por departamento.
-        """
-        query = self.repositorio_reclamos.session.query(
-            ModeloReclamo.departamento,
-            func.count(ModeloReclamo.id)
-        ).group_by(ModeloReclamo.departamento).all()
+        ).group_by(ModeloReclamo.estado).all()
         return dict(query)
 
     def cantidad_reclamos_por_clasificacion(self):
         """
-        Se devuelve un diccionario con la cantidad de reclamos agrupados por clasificación.
+        Devuelve un diccionario con la cantidad de reclamos agrupados por clasificación.
         """
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion,
@@ -53,26 +47,26 @@ class GeneradorReportes:
 
     def cantidad_promedio_adherentes(self):
         """
-        Se devuelve el promedio de adherentes por reclamo. En caso de que no haya reclamos se devuelve 0.
+        Devuelve el promedio de adherentes por reclamo. En caso de que no haya reclamos se devuelve 0.
         """
         query = self.repositorio_reclamos.session.query(
             func.avg(ModeloReclamo.cantidad_adherentes)
-        ).filter(ModeloReclamo.clasificacion == self.dpto).scalar()
+        ).scalar()
         return query or 0
 
     def reclamos_recientes(self, dias=7):
         """
-        Se devuelve una lista de los reclamos creados en los últimos 7 días.
+        Devuelve una lista de los reclamos creados en los últimos `dias` días.
         """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
-            ModeloReclamo.fecha_hora >= fecha_limite, ModeloReclamo.clasificacion == self.dpto
+            ModeloReclamo.fecha_hora >= fecha_limite
         ).all()
         return reclamos
 
     def reclamos_por_usuario(self, usuario_id):
         """
-        Se devuelve una lista de reclamos creados por un usuario específico.
+        Devuelve una lista de reclamos creados por un usuario específico.
         """
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
             usuario_id=usuario_id
@@ -80,8 +74,8 @@ class GeneradorReportes:
         return reclamos
     
     def cantidad_reclamos_por_estado_filtrado(self, clasificacion):   
-        """"
-        Se devuelve un diccionario con la cantidad de reclamos agrupados por estado, filtrados por clasificación.
+        """
+        Devuelve un diccionario con la cantidad de reclamos agrupados por estado, filtrados por clasificación.
         """ 
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado,
@@ -91,7 +85,7 @@ class GeneradorReportes:
 
     def reclamos_recientes_filtrado(self, clasificacion, dias=7):
         """
-        Se devuelve una lista de reclamos recientes filtrados por clasificación.
+        Devuelve una lista de reclamos recientes filtrados por clasificación.
         """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
@@ -101,22 +95,17 @@ class GeneradorReportes:
         
     def listar_clasificaciones_unicas(self):
         """
-        Se devuelve una lista de clasificaciones únicas de reclamos en la base de datos.
+        Devuelve una lista de clasificaciones únicas de reclamos en la base de datos.
         """
         clasificaciones = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion
         ).distinct().all()
-        # devuelve lista de tuplas, pasamos a lista simple
-        lista = [c[0] for c in clasificaciones]
-        print("Clasificaciones únicas en la base:", lista)
-        return lista
-
+        return [c[0] for c in clasificaciones]
 
     def clasificacion_por_rol(self, rol):
         """
-        Se devuelve la la clasificacion  de un rol especifico (el string asociado al rol en numero)
+        Devuelve la clasificación asociada a un rol específico.
         """
-        # convertimos rol a int por si viene como string
         try:
             rol_int = int(rol)
         except ValueError:
@@ -131,14 +120,11 @@ class GeneradorReportes:
     
     def obtener_datos_para_torta(self, rol):
         """
-        Se obtieen los datos necesarios para generar un gráfico de torta, filtrados por rol.
-        Si el rol no tiene una clasificación asociada, se devuelve un diccionario vacío (esto ocurriría si un estudiante intenta pedir un grafico de torta).
+        Obtiene los datos necesarios para generar un gráfico de torta, filtrados por rol.
         """
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
-
-        from sqlalchemy import func
 
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado,
@@ -147,17 +133,14 @@ class GeneradorReportes:
 
         return dict(query)
 
-
     def obtener_datos_para_histograma(self, rol):
         """
-        Se obtienen los datos necesarios para generar un histograma, filtrados por rol.
-        Si el rol no tiene una clasificación asociada, se devuelve un diccionario vacío (esto ocurriría si un estudiante intenta pedir un grafico de histograma).
+        Obtiene los datos necesarios para generar un histograma, filtrados por rol.
         """
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
 
-        from sqlalchemy import func
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()
         ).all()
@@ -167,7 +150,7 @@ class GeneradorReportes:
     
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
         """
-        Se obtienen las cantidades de adherentes de los reclamos creados en los últimos '365' días.
+        Obtiene las cantidades de adherentes de los reclamos creados en los últimos `dias` días.
         Si se especifica una clasificación, se filtran los reclamos por esa clasificación.
         """
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
@@ -177,13 +160,8 @@ class GeneradorReportes:
         if clasificacion:
             query = query.filter(ModeloReclamo.clasificacion == clasificacion)
         reclamos = query.all()
-        # Filtramos y devolvemos solo las cantidades de adherentes que no sean None
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
         
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import cm
-
 class ReportePDF:
     def __init__(self, generador:GeneradorReportes):
         self.generador = generador
@@ -243,13 +221,6 @@ class ReportePDF:
             y -= salto
             salto_de_pagina()
 
-        # Por departamento
-        seccion("Cantidad de reclamos por departamento:")
-        for depto, cantidad in self.generador.cantidad_reclamos_por_departamento().items():
-            c.drawString(x + 0.5 * cm, y, f"• {depto}: {cantidad}")
-            y -= salto
-            salto_de_pagina()
-
         # Por clasificación
         seccion("Cantidad de reclamos por clasificación:")
         for clasificacion, cantidad in self.generador.cantidad_reclamos_por_clasificacion().items():
@@ -270,6 +241,8 @@ class ReportePDF:
         c.save()
         print(f"Reporte PDF generado en: {ruta_salida}")
 
+from jinja2 import Environment, FileSystemLoader
+
 class ReporteHTML:
     def __init__(self, generador_reportes):
         self.generador = generador_reportes
@@ -279,11 +252,30 @@ class ReporteHTML:
             "total": self.generador.cantidad_total_reclamos(),
             "promedio": f"{self.generador.cantidad_promedio_adherentes():.2f}",
             "reclamos_por_estado": self.generador.cantidad_reclamos_por_estado(),
-            "reclamos_por_departamento": self.generador.cantidad_reclamos_por_departamento(),
             "reclamos_por_clasificacion": self.generador.cantidad_reclamos_por_clasificacion(),
             "reclamos_recientes": self.generador.reclamos_recientes(),
-            # Puedes agregar más datos según necesites
         }
+
+    def exportar_html(self, nombre_archivo="reporte.html"):
+        datos = self.obtener_datos_reporte()
+
+        # Cargar el entorno de plantillas desde la carpeta templates/
+        env = Environment(loader=FileSystemLoader("templates"))
+        template = env.get_template("reporte.html")
+
+        # Renderizar el HTML con los datos
+        html = template.render(**datos)
+
+        # Guardar el resultado en un archivo
+        with open(nombre_archivo, "w", encoding="utf-8") as f:
+            f.write(html)
+        
+        import webbrowser
+        import os
+
+        ruta_absoluta = os.path.abspath(nombre_archivo)
+        webbrowser.open(f"file://{ruta_absoluta}")
+
 
 if __name__ == '__main__':  # pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
@@ -296,13 +288,15 @@ if __name__ == '__main__':  # pragma: no cover
     
     reporte_html = ReporteHTML(generador)
 
-    # Obtener los datos para el reporte
-    datos = reporte_html.obtener_datos_reporte()
+    # Exportar el reporte HTML a archivo y abrirlo en navegador
+    reporte_html.exportar_html("templates/reporte.html")
 
-    # Mostrar en consola (solo para testear)
+    # Obtener datos para testeo e imprimir en consola
+    datos = reporte_html.obtener_datos_reporte()
     import pprint
     pprint.pprint(datos)
     
     for reclamo in datos["reclamos_recientes"]:
         print(f"ID {reclamo.id} - {reclamo.contenido or 'Sin título'} - Estado: {reclamo.estado or 'Sin estado'}")
+
 

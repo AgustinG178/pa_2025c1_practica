@@ -14,6 +14,7 @@ from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
 import datetime as date
 from modules.monticulos import MonticuloMediana
+import pickle
 
 base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
 base_datos.conectar()
@@ -27,16 +28,11 @@ gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
 gestor_imagenes_reclamos = GestorImagenReclamoPng()
 
-import pickle
-
 with open('./data/claims_clf.pkl', 'rb') as archivo:
   
   clf  = pickle.load(archivo)
 
-
 gestor_reclamos = GestorReclamo(repo_reclamos)
-
-
 
 @app.route('/')
 def index():
@@ -208,7 +204,6 @@ def analitica_reclamos():
     cantidad_total = generador.cantidad_total_reclamos()
 
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
-
     
     #pequeña logica para la mediana
     reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado",valor="resuelto")
