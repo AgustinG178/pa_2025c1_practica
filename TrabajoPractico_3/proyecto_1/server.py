@@ -41,7 +41,7 @@ gestor_reclamos = GestorReclamo(repo_reclamos)
 @app.route('/')
 def index():
     ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
-    return render_template('inicio.html', ultimos_reclamos=ultimos, current_user=current_user)
+    return render_template('inicio.html')
 
 @app.route('/inicio')
 def inicio():
