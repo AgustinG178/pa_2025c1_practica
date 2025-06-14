@@ -5,7 +5,7 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
-import sqlite3
+
 """
 poblar_base.py
 
@@ -102,9 +102,6 @@ reclamos_info = [
     "No hay formularios disponibles en ventanilla",
     "Los horarios publicados en la cartelera están desactualizados",
 ]
-
-
-
 
 # ─── Script Principal ───────────────────────────────────────────────────────────
 if __name__ == "__main__":

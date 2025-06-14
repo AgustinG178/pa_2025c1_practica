@@ -180,9 +180,12 @@ def analitica_reclamos():
         "3": "secretario tecnico",
         "4": "maestranza"
     }
-
     rol_usuario = current_user.rol
     clasificacion_usuario = clasificacion_map.get(rol_usuario)
+    
+    generador = GeneradorReportes(repo_reclamos)
+    mediana_tiempo = generador.mediana_tiempo_resolucion()
+
     es_secretario = (rol_usuario == "1")
 
     generador = GeneradorReportes(repo_reclamos)
@@ -209,6 +212,11 @@ def analitica_reclamos():
     tiempo_reclamos = [
         reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
     ]
+    
+    # Solo los reclamos del departamento del usuario
+    reclamos_departamento = repo_reclamos.obtener_registros_por_filtro(
+        filtro="clasificacion", valor=clasificacion_usuario
+    )
 
     monticulo = MonticuloMediana(tiempo_reclamos)
 
@@ -217,54 +225,60 @@ def analitica_reclamos():
         current_user=current_user,
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
+        reclamos_departamento=reclamos_departamento,
+        mediana_tiempo=mediana_tiempo,
         graficos=rutas,
         mediana=monticulo.obtener_mediana()
     )
 
-@app.route("/descargar_reporte")
+@app.route('/descargar_reporte/<formato>')
 @login_required
-def descargar_reporte():
-    formato = request.args.get("formato", "pdf").lower()
-    if formato not in ["pdf", "html"]:
-        abort(400, description="Formato no válido")
+def descargar_reporte(formato):
+    """
+    Endpoint para descargar reportes en formato PDF o HTML.
+    Filtra los reclamos según la clasificación del usuario.
+    """
+    # Mapeo de roles a clasificaciones
+    clasificacion_map = {
+        "2": "soporte informático",
+        "3": "secretaría técnica",
+        "4": "maestranza"
+    }
 
+    # Obtener el rol del usuario actual
+    rol_usuario = current_user.rol
+    clasificacion_usuario = clasificacion_map.get(rol_usuario)
+
+    # Verificar si el usuario tiene una clasificación válida
+    if not clasificacion_usuario:
+        abort(403)  # Prohibido si el rol no está mapeado
+
+    # Crear el generador de reportes
     generador = GeneradorReportes(repo_reclamos)
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    carpeta_temp = os.path.join(BASE_DIR, "temp_reportes")
-    os.makedirs(carpeta_temp, exist_ok=True)
-
-    if formato == "pdf":
-        nombre_archivo = f"reporte.pdf"
-        ruta_archivo = "temp_reportes"
+    # Lógica para generar y enviar el reporte
+    if formato == 'pdf':
+        # Ruta para guardar el PDF
+        ruta_pdf = 'static/reporte_departamento.pdf'
         reporte_pdf = ReportePDF(generador)
-        reporte_pdf.generarPDF(ruta_archivo)
-        ruta_pdf = os.path.join(ruta_archivo, nombre_archivo)
+        # Generar el PDF filtrado por clasificación
+        reporte_pdf.generarPDF(ruta_pdf, clasificacion_usuario)
+        # Enviar el archivo PDF como descarga
+        return send_file(ruta_pdf, as_attachment=True)
 
-
-        if not os.path.exists(ruta_archivo):
-            abort(500, description="No se generó el PDF.")
-
-        return send_file(
-            ruta_pdf,
-            as_attachment=True,
-            download_name=nombre_archivo,
-            mimetype="application/pdf"
-        )
+    elif formato == 'html':
+        # Ruta para guardar el HTML
+        ruta_html = 'static/reporte_departamento.html'
+        reporte_html = ReporteHTML(generador)
+        # Generar el HTML filtrado por clasificación
+        reporte_html.exportar_html(ruta_html, clasificacion_usuario)
+        # Enviar el archivo HTML como descarga
+        return send_file(ruta_html, as_attachment=True)
 
     else:
-        nombre_archivo = f"reporte_{current_user.id}.html"
-        ruta_archivo = os.path.join(carpeta_temp, nombre_archivo)
-        reporte_html = ReporteHTML(generador)
-        reporte_html.exportar_html(nombre_archivo=ruta_archivo)
+        # Si el formato no es válido, devolver un error 404
+        abort(404)
 
-        return send_file(
-            ruta_archivo,
-            as_attachment=True,
-            download_name=nombre_archivo,
-            mimetype="text/html"
-        )
-                
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
 def editar_reclamo(reclamo_id):

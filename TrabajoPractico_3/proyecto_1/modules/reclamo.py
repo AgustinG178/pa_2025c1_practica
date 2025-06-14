@@ -15,8 +15,8 @@ class Reclamo:
 
 
     def __repr__(self):
-        return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, departamento={self.departamento}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"
+        return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"
 
     def __str__(self):
-        return f"Reclamo: {self.contenido} | Estado: {self.estado} | Fecha: {self.fecha_hora} | Departamento: {self.departamento} | Clasificación: {self.clasificacion} | Usuario ID: {self.usuario_id}"
+        return f"Reclamo: {self.contenido} | Estado: {self.estado} | Fecha: {self.fecha_hora} | Clasificación: {self.clasificacion} | Usuario ID: {self.usuario_id}"
     
