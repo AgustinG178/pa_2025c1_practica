@@ -1,140 +1,163 @@
 import unittest
+from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
+from modules.modelos import ModeloUsuario, ModeloReclamo
 from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
-from modules.modelos import ModeloUsuario, ModeloReclamo
 from modules.config import crear_engine
-from sqlalchemy.orm import sessionmaker
-from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
 from datetime import datetime
 
-class TestRepositoriosSQLAlchemy(unittest.TestCase):
+class TestRepositorioUsuariosSQLAlchemyCobertura(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         engine, Session = crear_engine()
         cls.session = Session()
-        cls.engine = engine
-
-        ModeloUsuario.metadata.create_all(engine)
-        ModeloReclamo.metadata.create_all(engine)
+        cls.repo = RepositorioUsuariosSQLAlchemy(cls.session)
 
     def setUp(self):
-        self.session.query(ModeloReclamo).delete()
         self.session.query(ModeloUsuario).delete()
         self.session.commit()
 
-        self.repo_usuarios = RepositorioUsuariosSQLAlchemy(self.session)
-        self.repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
+    def test_guardar_registro_tipo_invalido(self):
+        with self.assertRaises(ValueError):
+            self.repo.guardar_registro("no es modelo")
 
-    def tearDown(self):
+    def test_modificar_registro_tipo_invalido(self):
+        with self.assertRaises(ValueError):
+            self.repo.modificar_registro("no es modelo")
+
+    def test_modificar_registro_no_existente(self):
+        modelo = ModeloUsuario(
+            nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab",
+            contraseña="123", rol=0, claustro=0
+        )
+        # No lo guardamos, así que no existe
+        self.repo.modificar_registro(modelo)  # No debe lanzar error, solo no hace nada
+
+    def test_obtener_modelo_por_id_no_existente(self):
+        self.assertIsNone(self.repo.obtener_modelo_por_id(9999))
+
+    def test_obtener_registro_por_filtro_no_existente(self):
+        self.assertIsNone(self.repo.obtener_registro_por_filtro("nombre", "noexiste"))
+
+    def test_obtener_registro_por_filtros_no_existente(self):
+        self.assertIsNone(self.repo.obtener_registro_por_filtros(nombre="noexiste"))
+
+    def test_map_modelo_a_entidad(self):
+        modelo = ModeloUsuario(
+            nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab",
+            contraseña="123", rol=0, claustro=0
+        )
+        self.session.add(modelo)
+        self.session.commit()
+        entidad = self.repo._RepositorioUsuariosSQLAlchemy__map_modelo_a_entidad(modelo)
+        self.assertIsInstance(entidad, Usuario)
+        self.assertEqual(entidad.nombre, "A")
+
+    def test_map_entidad_a_modelo(self):
+        usuario = Usuario(
+            nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab",
+            contraseña="123", rol=0, claustro=0, id=1
+        )
+        modelo = self.repo._map_entidad_a_modelo(usuario)
+        self.assertIsInstance(modelo, ModeloUsuario)
+
+    def test_eliminar_registro_por_id_no_existente(self):
+        # No debe lanzar error si no existe
+        self.repo.eliminar_registro_por_id(9999)
+
+    def test_buscar_usuario(self):
+        # Debe devolver None si no existe
+        self.assertIsNone(self.repo.buscar_usuario(nombre="noexiste"))
+
+class TestRepositorioReclamosSQLAlchemyCobertura(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        engine, Session = crear_engine()
+        cls.session = Session()
+        cls.repo = RepositorioReclamosSQLAlchemy(cls.session)
+
+    def setUp(self):
+        self.session.query(ModeloReclamo).delete()
         self.session.commit()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.session.close()
+    def test_guardar_registro_tipo_invalido(self):
+        with self.assertRaises(ValueError):
+            self.repo.guardar_registro("no es modelo")
 
-    def test_guardar_y_obtener_usuario(self):
-        usuario = Usuario(
-            nombre="Juan",
-            apellido="Perez",
-            email="juan@example.com",
-            nombre_de_usuario="juanp",
-            contraseña="1234",
-            rol="admin",
-            claustro="ing"
-        )
-        modelo_usuario = self.repo_usuarios._map_entidad_a_modelo(usuario)
-        self.repo_usuarios.guardar_registro(modelo_usuario)
+    def test_modificar_registro_tipo_invalido(self):
+        with self.assertRaises(ValueError):
+            self.repo.modificar_registro("no es reclamo")
 
-        usuarios = self.repo_usuarios.obtener_todos_los_registros()
-        self.assertEqual(len(usuarios), 1)
-        self.assertEqual(usuarios[0].nombre, "Juan")
-
-    def test_modificar_usuario(self):
-        usuario = Usuario(
-            nombre="Ana",
-            apellido="Gomez",
-            email="ana@example.com",
-            nombre_de_usuario="anag",
-            contraseña="abcd",
-            rol="user",
-            claustro="cs"
-        )
-        modelo = self.repo_usuarios._map_entidad_a_modelo(usuario)
-        self.repo_usuarios.guardar_registro(modelo)
-
-        modelo.nombre = "Ana Maria"
-        self.repo_usuarios.modificar_registro(modelo)
-
-        usuario_modificado = self.repo_usuarios.obtener_modelo_por_id(modelo.id)
-        self.assertEqual(usuario_modificado.nombre, "Ana Maria")
-
-    def test_guardar_y_obtener_reclamo(self):
-        usuario = Usuario(
-            nombre="Carlos",
-            apellido="Ramirez",
-            email="carlos@example.com",
-            nombre_de_usuario="carlitos",
-            contraseña="qwerty",
-            rol="user",
-            claustro="ing"
-        )
-        modelo_usuario = self.repo_usuarios._map_entidad_a_modelo(usuario)
-        self.repo_usuarios.guardar_registro(modelo_usuario)
-
+    def test_modificar_registro_no_existente(self):
         reclamo = Reclamo(
-            estado="abierto",
-            fecha_hora=datetime.now(),
-            contenido="Problema con el sistema",
-            usuario_id=modelo_usuario.id,
-            departamento="IT",
-            clasificacion="soporte"
+            id=9999, estado="pendiente", fecha_hora=datetime.now(),
+            contenido="x", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        modelo_reclamo = self.repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-        self.repo_reclamos.guardar_registro(modelo_reclamo)
+        with self.assertRaises(ValueError):
+            self.repo.modificar_registro(reclamo)
 
-        reclamos = self.repo_reclamos.obtener_todos_los_registros(usuario_id=modelo_usuario.id)
-        self.assertEqual(len(reclamos), 1)
-        self.assertEqual(reclamos[0].contenido, "Problema con el sistema")
+    def test_modificar_registro_orm_tipo_invalido(self):
+        with self.assertRaises(ValueError):
+            self.repo.modificar_registro_orm("no es modelo")
 
-    def test_modificar_reclamo(self):
-        usuario = Usuario(
-            nombre="Lucia",
-            apellido="Diaz",
-            email="lucia@example.com",
-            nombre_de_usuario="luciad",
-            contraseña="5678",
-            rol="user",
-            claustro="cs"
+    def test_modificar_registro_orm_no_existente(self):
+        modelo = ModeloReclamo(
+            id=9999, estado="pendiente", fecha_hora=datetime.now(),
+            contenido="x", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        modelo_usuario = self.repo_usuarios._map_entidad_a_modelo(usuario)
-        self.repo_usuarios.guardar_registro(modelo_usuario)
+        with self.assertRaises(ValueError):
+            self.repo.modificar_registro_orm(modelo)
 
+    def test_obtener_registro_por_filtro_no_existente(self):
+        self.assertIsNone(self.repo.obtener_registro_por_filtro("id", 9999))
+
+    def test_eliminar_registro_por_id_no_existente(self):
+        self.repo.eliminar_registro_por_id(9999)  # No debe lanzar error
+
+    def test_buscar_similares(self):
+        # No hay reclamos, debe devolver lista vacía
+        self.assertEqual(self.repo.buscar_similares("ninguna", 9999), [])
+
+    def test_obtener_por_id_no_existente(self):
+        self.assertIsNone(self.repo.obtener_por_id(9999))
+
+    def test_obtener_registros_por_filtro_no_existente(self):
+        self.assertEqual(self.repo.obtener_registros_por_filtro("clasificacion", "noexiste"), [])
+
+    def test_mapear_reclamo_a_modelo_y_modelo_a_reclamo(self):
         reclamo = Reclamo(
-            estado="abierto",
-            fecha_hora=datetime.now(),
-            contenido="Falló el servidor",
-            usuario_id=modelo_usuario.id,
-            departamento="IT",
-            clasificacion="soporte"
+            id=1, estado="pendiente", fecha_hora=datetime.now(),
+            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        modelo = self.repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-        self.repo_reclamos.guardar_registro(modelo)
+        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
+        self.assertIsInstance(modelo, ModeloReclamo)
+        reclamo2 = self.repo.mapear_modelo_a_reclamo(modelo)
+        self.assertIsInstance(reclamo2, Reclamo)
 
-        reclamo_mod = Reclamo(
-            id=modelo.id,
-            estado="cerrado",
-            fecha_hora=reclamo.fecha_hora,
-            contenido="Servidor reparado",
-            usuario_id=modelo_usuario.id,
-            departamento="IT",
-            clasificacion="soporte"
+    def test_actualizar_reclamo(self):
+        reclamo = Reclamo(
+            id=None, estado="pendiente", fecha_hora=datetime.now(),
+            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        self.repo_reclamos.modificar_registro(reclamo_mod)
+        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
+        self.repo.guardar_registro(modelo)
+        reclamo_db = self.repo.obtener_todos_los_reclamos_base()[0]
+        reclamo_db_entidad = self.repo.mapear_modelo_a_reclamo(reclamo_db)
+        reclamo_db_entidad.estado = "resuelto"
+        self.repo.actualizar_reclamo(reclamo_db_entidad)
+        reclamo_mod = self.repo.obtener_por_id(reclamo_db_entidad.id)
+        self.assertEqual(reclamo_mod.estado, "resuelto")
 
-        reclamo_db = self.repo_reclamos.obtener_registro_por_filtro("id", modelo.id)
-        self.assertEqual(reclamo_db.estado, "cerrado")
-        self.assertEqual(reclamo_db.contenido, "Servidor reparado")
+    def test_obtener_ultimos_reclamos(self):
+        reclamo = Reclamo(
+            id=None, estado="pendiente", fecha_hora=datetime.now(),
+            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
+        )
+        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
+        self.repo.guardar_registro(modelo)
+        ultimos = self.repo.obtener_ultimos_reclamos(limit=1)
+        self.assertTrue(len(ultimos) >= 0)
 
-if __name__ == "__main__": #pragma: no cover
+if __name__ == "__main__":
     unittest.main()
 

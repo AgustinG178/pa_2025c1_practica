@@ -221,7 +221,6 @@ def analitica_reclamos():
         mediana=monticulo.obtener_mediana()
     )
 
-
 @app.route("/descargar_reporte")
 @login_required
 def descargar_reporte():
