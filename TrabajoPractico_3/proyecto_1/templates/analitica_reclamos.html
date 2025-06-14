@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .analitica-panel p {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <h1>Analiticas Reclamos</h1>
-    <section class="contenedor-flashcards">
+    <section class="contenedor-flashcards analitica-panel">
         <h2 class="titulo-seccion">Resumen General</h2>
         <div class="flashcards-grid">
             <div class="flashcard">
@@ -30,13 +35,13 @@
         <h2 class="titulo-seccion">Vista Personalizada</h2>
         {% if current_user.rol == '1' %}
             <div>
-                <h3 style="text-align:center;">Panel de maestranza</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+                <h3 style="text-align:center;">Panel de  PAYS</h3>
+                <p style="text-align: center;">Resumen administrativo y reclamos pendientes del departamento.</p>
             </div>
         {% elif current_user.rol == '2' %}
             <div>
-                <h3>Panel de Soporte Informático</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+                <h3>Panel de Soporte Informatico</h3>
+                <p style="text-align: center;">Resumen administrativo y reclamos pendientes del departamento.</p>
             <div class="flashcard">
                 <h3>Torta</h3>
                 <img src="static\graficos\tortas\soporte_informatico.png" alt="Gráfico de torta">
@@ -48,8 +53,8 @@
             </div>
         {% elif current_user.rol == '3' %}
             <div>
-                <h3>Panel de Soporte Informático</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+                <h3>Panel de Secretaria Tecnica</h3>
+                <p style="text-align: center;">Resumen administrativo y reclamos pendientes del departamento.</p>
             <div class="flashcard">
                 <h3>Torta</h3>
                 <img src="static\graficos\tortas\secretario_tecnico.png" alt="Gráfico de torta">
@@ -61,8 +66,8 @@
             </div>
             {% elif current_user.rol == '4' %}
             <div>
-                <h3>Panel de Soporte Informático</h3>
-                <p>Resumen administrativo y reclamos pendientes del departamento.</p>
+                <h3>Panel de maestranza</h3>
+                <p style="text-align: center;">Resumen administrativo y reclamos pendientes del departamento.</p>
             <div class="flashcard">
                 <h3>Torta</h3>
                 <img src="static\graficos\tortas\maestranza.png" alt="Gráfico de torta">
@@ -74,14 +79,15 @@
             </div>
             {% endif %}
     </section>
-    <!-- Dentro del body o donde quieras mostrarlo -->
-    <h3>Descargar reporte</h3>
-    <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="btn btn-primary">Descargar PDF</a>
-    <a href="{{ url_for('descargar_reporte', formato='html') }}" class="btn btn-secondary">Descargar HTML</a>
 
-    <div>
-        <a href = "{{ url_for ('descargar_pdf') }}" download=>Descargar informe formato PDF</a>
+
+    <h3>Descargar reporte</h3>
+    <div style="text-align:center;">
+        <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="enlace-boton">Descargar PDF</a>
+        <a href="{{ url_for('descargar_reporte', formato='html') }}" class="enlace-boton">Descargar HTML</a>
     </div>
+
+    
     <div class ="volver-contenedor" style="text-align: center; margin: 30px 0;">
         <a href = "{{ url_for ('inicio')}}" class = "enlace-boton">Volver</a>
 
@@ -89,6 +95,7 @@
 </main>
 
 
+
+
 </body>
 </html>
-<main>    

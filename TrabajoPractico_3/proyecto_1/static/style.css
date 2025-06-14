@@ -891,6 +891,10 @@ input[type="file"].boton-imagenes {
     overflow-wrap: break-word;
 }
 
+h3 {
+    text-align: center;
+}
+
 
 
 

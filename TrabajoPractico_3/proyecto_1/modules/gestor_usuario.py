@@ -57,15 +57,15 @@ class GestorUsuarios:
             raise ValueError("Usuario no encontrado")
         self.repositorio.eliminar_registro_por_id(usuario_id)
 
-    def buscar_usuario(self, filtro, valor):
+    def buscar_usuario(self, filtro, valor,mapeo=True):
         """
         Busca un usuario por un filtro y valor dados.
         Lanza ValueError si el usuario no existe.
         """
-        usuario = self.repositorio.obtener_registro_por_filtro(filtro, valor)
+        usuario = self.repositorio.obtener_registro_por_filtro(filtro, valor,mapeo=mapeo)
         if not usuario:
             raise ValueError("Usuario no encontrado")
-        return usuario.__str__()
+        return usuario
 
     def generar_reporte_usuario(self, tipo_reporte, *args, **kwargs):
         """
