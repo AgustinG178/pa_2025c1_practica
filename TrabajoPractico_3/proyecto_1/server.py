@@ -200,7 +200,7 @@ def analitica_reclamos():
     cantidad_total = generador.cantidad_total_reclamos()
     promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
 
-    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtros(filtro="estado", valor="resuelto")
+    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado", valor="resuelto")
 
     tiempo_reclamos = [
         reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario

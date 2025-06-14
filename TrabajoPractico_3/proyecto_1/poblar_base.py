@@ -141,13 +141,10 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"✖ Usuario '{u['usuario']}' ya existe o error: {e}")
 
-    # Obtener usuarios de la base
     usuarios_db = repo_usuarios.obtener_todos_los_registros()
     if not usuarios_db:
         print("✖ No se encontraron usuarios válidos para asignar reclamos.")
         exit()
-
-    # Crear reclamos
 
     for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
         try:
