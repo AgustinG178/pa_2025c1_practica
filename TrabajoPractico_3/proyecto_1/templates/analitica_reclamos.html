@@ -80,14 +80,16 @@
             {% endif %}
     </section>
 
-
     <h3>Descargar reporte</h3>
+    <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="enlace-boton">Descargar PDF</a>
+    <a href="{{ url_for('descargar_reporte', formato='html') }}" class="enlace-boton">Descargar HTML</a>
+
+    <div>
+        <a href = "{{ url_for ('descargar_pdf') }}" download=>Descargar informe formato PDF</a>
     <div style="text-align:center;">
         <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="enlace-boton">Descargar PDF</a>
         <a href="{{ url_for('descargar_reporte', formato='html') }}" class="enlace-boton">Descargar HTML</a>
     </div>
-
-    
     <div class ="volver-contenedor" style="text-align: center; margin: 30px 0;">
         <a href = "{{ url_for ('inicio')}}" class = "enlace-boton">Volver</a>
 

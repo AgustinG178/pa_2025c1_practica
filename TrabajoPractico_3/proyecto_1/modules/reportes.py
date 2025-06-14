@@ -166,10 +166,13 @@ class ReportePDF:
     def __init__(self, generador:GeneradorReportes):
         self.generador = generador
         
-    def generarPDF(self, ruta_salida='.data/reporte.pdf'):
+    def generarPDF(self, ruta_salida):
         from reportlab.lib import colors
+        import os
 
-        c = canvas.Canvas(ruta_salida, pagesize=A4)
+        ruta_archivo = os.path.join(ruta_salida, 'reporte.pdf')
+
+        c = canvas.Canvas(ruta_archivo, pagesize=A4)
         ancho, alto = A4
         x = 2 * cm
         y = alto - 2 * cm
@@ -237,7 +240,6 @@ class ReportePDF:
             c.drawString(x + 0.5 * cm, y, texto)
             y -= salto
             salto_de_pagina()
-
         c.save()
         print(f"Reporte PDF generado en: {ruta_salida}")
 
