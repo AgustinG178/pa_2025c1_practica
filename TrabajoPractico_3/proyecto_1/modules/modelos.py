@@ -1,12 +1,12 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, DeclarativeBase
 from datetime import datetime, UTC
+from modules.config import crear_engine
 
 """
 relationship() crea una relación entre dos clases en SQLAlchemy, como por ejemplo uno-a-muchos o muchos-a-muchos.  
 Permite acceder desde un objeto a los objetos relacionados en otra tabla, como `usuario.reclamos` o `reclamo.usuario`.
 """
-
 # Base de datos base para los modelos
 class Base(DeclarativeBase):
     """
@@ -26,7 +26,8 @@ usuario_reclamo = Table(
 
 class ModeloUsuario(Base):
     __tablename__ = 'usuarios'
-    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    id = Column(Integer, primary_key=True)
     nombre = Column(String)
     apellido = Column(String)
     email = Column(String, unique=True)
@@ -35,6 +36,7 @@ class ModeloUsuario(Base):
     rol = Column(String)
     claustro = Column(String)
 
+    # Relación muchos a muchos con ModeloReclamo
     reclamos = relationship(
         "ModeloReclamo",
         secondary="usuario_reclamo",
@@ -53,9 +55,13 @@ class ModeloUsuario(Base):
         self.rol = rol
         self.claustro = claustro
         
+@property
+def adherentes_ids(self):
+    return [usuario.id for usuario in self.usuarios]
 
 class ModeloReclamo(Base):
     __tablename__ = 'reclamos'
+
     id = Column(Integer, primary_key=True)
     estado = Column(String, default="pendiente")
     fecha_hora = Column(DateTime, default=datetime.utcnow)
@@ -77,18 +83,14 @@ class ModeloReclamo(Base):
         secondary="usuario_reclamo",
         back_populates="reclamos"
     )
-    usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
 
-    @property
-    def adherentes_ids(self):
-        """Devuelve una lista de IDs de los usuarios adherentes a este reclamo."""
-        return [usuario.id for usuario in self.usuarios]
+    reclamos_usuarios = Table(
+        'reclamos_usuarios',
+        Base.metadata,
+        Column('reclamo_id', Integer, ForeignKey('reclamos.id')),
+        Column('usuario_id', Integer, ForeignKey('usuarios.id'))
+    )
 
-    # @property
-    # def departamento(self):
-    #     return self.departamento_obj.nombre if self.departamento_obj else None
-    
-# class ModeloDepartamento(Base):
-#     __tablename__ = 'departamento'
-#     id = Column(Integer, primary_key=True)
-#     nombre = Column(String)
+    def __str__(self):
+        return f"Reclamo: ID = {self.id}, Estado = {self.estado}, Fecha y hora = {self.fecha_hora}, Contenido = {self.contenido}, Usuario ID = {self.usuario_id}, Clasificación = {self.clasificacion}, Tiempo estimado = {self.tiempo_estimado}, Resuelto en = {self.resuelto_en}"
+

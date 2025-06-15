@@ -17,7 +17,6 @@
     </header>
 
     <main class="contenedor-manejo">
-        <!-- Formulario de selección de reclamo y acción -->
         <div class="formulario-contenedor">
             <form class="formulario-manejo" action="{{ url_for('manejo_reclamos') }}" method="POST">
                 <div class="form-group">
@@ -53,8 +52,6 @@
                 <button type="submit">Confirmar</button>
             </form>
         </div>
-
-        <!-- Tabla de reclamos -->
         <div>
             <table class="tabla-reclamos">
                 <thead>
@@ -74,25 +71,32 @@
                             <td>{{ reclamo.id }}</td>
                             <td>{{ reclamo.usuario_id }}</td>
                             <td>
-                                Falta Implementar relacion reclamo - usuario adheridos
+                                {% if reclamo.cantidad_adherentes == 1 %}
+                                    Sin adherentes
+                                {% else %}
+                                    {% for id_usuario in reclamo.adherentes_ids %}
+                                        <p>Adherente ID: {{ id_usuario }}</p>
+                                    {% endfor %}
+                                {% endif %}
                             </td>
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>{{ reclamo.estado }}</td>
                             <td>
-                                {% if reclamo.estado == 'resuelto' %}
-                                    ######
+                                {% if reclamo.estado == 'pendiente' %}
+                                    {{ reclamo.tiempo_estimado }}
                                 {% elif reclamo.tiempo_estimado == 0 %}
-                                    Sin asignar
-                                
+                                    ya resuelto
                                 {% else %}
                                     {{ reclamo.tiempo_estimado }}
                                 {% endif %}
                             </td>
                             <td>
                                 {% if reclamo.estado == 'resuelto' %}
-                                    {{ reclamo.resuelto_en if reclamo.resuelto_en is not none else '-' }}
+                                    {{ reclamo.resuelto_en }} días
+                                {% elif reclamo.estado == 'en proceso' %}
+                                    {{ reclamo.tiempo_estimado }} días restantes
                                 {% else %}
-                                    Sin resolver
+                                sin resolver
                                 {% endif %}
                             </td>
                         </tr>
@@ -103,8 +107,6 @@
             </table>
         </div>
     </main>
-
-    <!-- Mensajes flash -->
     <div class="mensaje-flash-centro">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -114,7 +116,6 @@
             {% endif %}
         {% endwith %}
     </div>
-    <!-- Botón Volver -->
     <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
         <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
     </div>

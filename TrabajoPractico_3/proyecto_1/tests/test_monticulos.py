@@ -1,14 +1,13 @@
 import unittest
-import heapq
 from modules.monticulos import Estadisticas, MonticuloBinario, MonticuloMediana
 
 # Asumimos que las clases Estadisticas, MonticuloMediana y MonticuloBinario ya están importadas
 
 class TestEstadisticas(unittest.TestCase):
-    """Test de la clase Estadisticas para operaciones estadísticas básicas."""
+    """Tests para la clase Estadisticas."""
 
     def test_obtener_mediana_par(self):
-        """Mediana de lista con cantidad par de elementos."""
+        """Verifica la mediana para una lista par de elementos."""
         #arrange
         datos = [10, 2, 14, 4]
         stats = Estadisticas(datos)
@@ -18,31 +17,31 @@ class TestEstadisticas(unittest.TestCase):
         self.assertEqual(result, (4 + 10) / 2)
 
     def test_obtener_mediana_impar(self):
-        """Mediana de lista con cantidad impar de elementos."""
+        """Verifica la mediana para una lista impar de elementos."""
         datos = [1, 3, 5]
         stats = Estadisticas(datos)
         self.assertEqual(stats.obtener_mediana(), 3)
 
     def test_obtener_maximo(self):
-        """Máximo valor en la lista."""
+        """Verifica el valor máximo de la lista."""
         datos = [5, 9, 1]
         stats = Estadisticas(datos)
         self.assertEqual(stats.obtener_maximo(), 9)
 
     def test_obtener_minimo(self):
-        """Mínimo valor en la lista."""
+        """Verifica el valor mínimo de la lista."""
         datos = [5, 9, 1]
         stats = Estadisticas(datos)
         self.assertEqual(stats.obtener_minimo(), 1)
 
     def test_obtener_promedio(self):
-        """Promedio de los valores en la lista."""
+        """Verifica el promedio de la lista."""
         datos = [2, 4, 6, 8]
         stats = Estadisticas(datos)
         self.assertEqual(stats.obtener_promedio(), 5)
 
     def test_empty_data(self):
-        """Resultados con lista vacía deben ser None."""
+        """Verifica que los métodos retornan None para listas vacías."""
         stats = Estadisticas([])
         self.assertIsNone(stats.obtener_mediana())
         self.assertIsNone(stats.obtener_maximo())
@@ -50,16 +49,16 @@ class TestEstadisticas(unittest.TestCase):
         self.assertIsNone(stats.obtener_promedio())
 
 class TestMonticuloMediana(unittest.TestCase):
-    """Test de MonticuloMediana para cálculo eficiente de la mediana."""
+    """Tests para la clase MonticuloMediana."""
 
     def test_construccion_mediana(self):
-        """Mediana correcta al construir el montículo con datos."""
+        """Verifica la mediana al construir el montículo con datos."""
         datos = [5, 15, 1, 3]
         monticulo = MonticuloMediana(datos)
         self.assertAlmostEqual(monticulo.obtener_mediana(), (3 + 5) / 2)
 
     def test_insertar_y_obtener_mediana(self):
-        """Mediana correcta tras insertar un nuevo valor."""
+        """Verifica la mediana tras insertar un nuevo valor."""
         datos = [1, 2, 3]
         monticulo = MonticuloMediana(datos)
         self.assertEqual(monticulo.obtener_mediana(), 2)
@@ -67,15 +66,15 @@ class TestMonticuloMediana(unittest.TestCase):
         self.assertEqual(monticulo.obtener_mediana(), 2.5)
 
     def test_mediana_lista_vacia(self):
-        """Mediana de lista vacía debe ser None."""
+        """Verifica que la mediana de una lista vacía es None."""
         monticulo = MonticuloMediana([])
         self.assertIsNone(monticulo.obtener_mediana())
 
 class TestMonticuloBinario(unittest.TestCase):
-    """Test del MonticuloBinario para heap mínimo y máximo."""
+    """Tests para la clase MonticuloBinario."""
 
     def test_heap_minimo(self):
-        """Comportamiento básico del heap mínimo."""
+        """Verifica el comportamiento del heap mínimo."""
         heap = MonticuloBinario(es_maximo=False)
         valores = [5, 3, 8]
         for v in valores:
@@ -86,7 +85,7 @@ class TestMonticuloBinario(unittest.TestCase):
         self.assertEqual(heap.top(), 5)
 
     def test_heap_maximo(self):
-        """Comportamiento básico del heap máximo."""
+        """Verifica el comportamiento del heap máximo."""
         heap = MonticuloBinario(es_maximo=True)
         valores = [5, 3, 8]
         for v in valores:

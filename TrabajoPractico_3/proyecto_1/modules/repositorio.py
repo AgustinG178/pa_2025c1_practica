@@ -225,6 +225,34 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         )
 
     def obtener_ultimos_reclamos(self, limit=4):
+        """Devuelve los últimos reclamos ordenados por fecha de creación."""
+        print("[DEBUG] Tipo de self.__session:", type(self.__session))
+        print("[DEBUG] Contenido de self.__session:", self.__session)
+        return (
+            self.__session.query(ModeloReclamo)
+            .order_by(ModeloReclamo.fecha_hora.desc())
+            .limit(limit)
+            .all()
+        )
+
+    def obtener_por_id(self, id_reclamo):
+
+        """Obtiene un reclamo según su ID."""
+
+        return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
+
+    def obtener_registros_por_filtro(self, filtro,valor):
+        
+        """
+        Obtiene todos los registros que coinciden con un filtro específico.
+        """
+        from sqlalchemy import func
+        if filtro == "clasificacion":
+            return self.session.query(ModeloReclamo).filter(
+                func.lower(ModeloReclamo.clasificacion) == valor.lower().strip()
+            ).all()
+        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
+        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
 
         ultimos_modelos_reclamo = self.__session.query(ModeloReclamo).order_by(ModeloReclamo.fecha_hora.desc()).limit(limit).all()
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in ultimos_modelos_reclamo]
@@ -232,7 +260,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
 if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
-    from datetime import datetime
 
     # # Crear engine y sesión
     # engine, Session = crear_engine()

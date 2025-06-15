@@ -891,10 +891,236 @@ input[type="file"].boton-imagenes {
     overflow-wrap: break-word;
 }
 
-h3 {
+.panel-rol {
+  background-color: #ffffff;
+  padding: 24px;
+  margin-top: 20px;
+  border-left: 6px solid #1a237e;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+.panel-rol h3 {
+  color: #003366;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.panel-rol p {
+  text-align: center;
+  font-size: 1.05rem;
+  color: #444;
+}
+
+.descargar-reporte {
+  text-align: center;
+  margin: 40px auto 20px;
+}
+
+.volver-contenedor {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.flashcards-graficos {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap; /* Permite que bajen si no caben */
+  margin-top: 20px;
+}
+
+.flashcards-graficos .flashcard {
+  max-width: 450px;
+  width: 100%;
+}
+
+.contenedor-graficos-horizontal {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 20px auto;
+    flex-wrap: wrap;
+}
+
+.contenedor-graficos-horizontal .flashcard {
+    flex: 1 1 450px;
+    max-width: 450px;
+}
+
+/* Página de ayuda */
+.pagina-ayuda {
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+.header-ayuda {
+    background-color: #003366;
+    color: #fff;
+    padding: 24px 0;
     text-align: center;
 }
 
+.titulo-ayuda {
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
 
+.contenedor-ayuda {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
+.introduccion-ayuda,
+.opciones-ayuda,
+.uso-ayuda,
+.contacto-ayuda {
+    margin-bottom: 30px;
+}
 
+.subtitulo-ayuda {
+    color: #003366;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.texto-ayuda {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+.contenido-ayuda {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-left: 4px solid #003366;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.lista-ayuda {
+    list-style: decimal inside;
+    padding-left: 20px;
+}
+
+.lista-ayuda li {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.footer-ayuda {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #f5f7fa;
+    color: #444;
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+}
+
+/* Opciones del Dashboard */
+.lista-opciones-ayuda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.lista-opciones-ayuda li {
+    margin-bottom: 12px;
+    padding: 10px;
+    border-left: 4px solid #003366;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo alternativo para los elementos de la lista en uso-ayuda */
+.lista-ayuda {
+    list-style: none; /* Eliminamos el estilo de lista predeterminado */
+    padding: 0;
+    margin: 0;
+}
+
+.item-ayuda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-ayuda:hover {
+    background-color: #f0f8ff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.item-ayuda::before {
+    content: "✔"; /* Ícono para cada elemento */
+    font-size: 1.2rem;
+    color: #00509e;
+    margin-right: 10px;
+}
+
+/* Estilo alternativo para los elementos de la lista en uso-ayuda */
+.lista-ayuda {
+    list-style: none; /* Eliminamos el estilo de lista predeterminado */
+    padding: 0;
+    margin: 0;
+}
+
+.item-ayuda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-ayuda:hover {
+    background-color: #f0f8ff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.item-ayuda::before {
+    content: "✔"; /* Ícono para cada elemento */
+    font-size: 1.2rem;
+    color: #00509e;
+    margin-right: 10px;
+}
+
+/* Estilo para los elementos h3 */
+h3 {
+    font-size: 1.5rem; /* Tamaño de fuente */
+    font-weight: bold; /* Negrita */
+    color: #333; /* Color del texto */
+    text-align: center; /* Centrar el texto */
+    margin: 20px 0; /* Espaciado superior e inferior */
+    padding: 10px; /* Espaciado interno */
+    border-bottom: 2px solid #007BFF; /* Línea decorativa debajo */
+    font-family: 'Arial', sans-serif; /* Fuente */
+}

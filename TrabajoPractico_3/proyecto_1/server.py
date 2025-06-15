@@ -9,7 +9,7 @@ from modules.gestor_base_datos import GestorBaseDatos
 from sqlalchemy.exc import IntegrityError
 from modules.monticulos import MonticuloMediana
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
-from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
+from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma, GraficadoraNubePalabras
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 from modules.reclamo import Reclamo
 import os
@@ -28,6 +28,7 @@ repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
 gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
 gestor_imagenes_reclamos = GestorImagenReclamoPng()
+reportes = GeneradorReportes(repo_reclamos)
 
 with open('./data/claims_clf.pkl', 'rb') as archivo:
   
@@ -42,8 +43,7 @@ def index():
 
 @app.route('/inicio')
 def inicio():
-    ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
-    return render_template('inicio.html', ultimos_reclamos=ultimos)
+    return render_template('inicio.html')
 
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
@@ -184,104 +184,138 @@ def adherirse(reclamo_id_adherido):
 
     return redirect(url_for('inicio_usuario'))
 
+@app.route('/listar_reclamos', methods=['GET', 'POST'])
+@login_required
+def listar_reclamos():
+    """
+    Lista todos los reclamos pendientes y permite aplicar filtros por departamento.
+    """
+    generador = GeneradorReportes(repo_reclamos)
+    departamentos = generador.listar_clasificaciones_unicas()
 
+    filtro_departamento = request.args.get('departamento', None)
+
+    if filtro_departamento:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=filtro_departamento)
+    else:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="estado", valor="pendiente")
+
+    return render_template(
+        'listar_reclamos.html',
+        reclamos=reclamos,
+        departamentos=departamentos,
+        filtro_departamento=filtro_departamento
+    )
+    
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():
+    """
+    Genera la analítica de reclamos según el rol del usuario.
+    """
     clasificacion_map = {
-        "2": "soporte informatico",
-        "3": "secretario tecnico",
+        "2": "soporte informático",
+        "3": "secretaría técnica",
         "4": "maestranza"
     }
 
-    rol_usuario = current_user.rol
-    clasificacion_usuario = clasificacion_map.get(rol_usuario)
+    rol = str(current_user.rol)
+    clasificacion_usuario = clasificacion_map.get(rol)
+    es_secretario = rol == "1"
 
-    print(clasificacion_usuario)
-    es_secretario = (rol_usuario == "1")
+    if es_secretario:
+        reclamos = repo_reclamos.obtener_todos_los_registros()
+    elif clasificacion_usuario:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=clasificacion_usuario)
+    else:
+        reclamos = []
 
-    generador = GeneradorReportes(repo_reclamos)
+    cantidad_total = len(reclamos)
+    promedio_adherentes = round(
+        sum(r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes) / cantidad_total, 2
+    ) if cantidad_total > 0 else 0
+    tiempos_resolucion = [r.resuelto_en for r in reclamos if r.resuelto_en]
+
+    if tiempos_resolucion:
+        monticulo = MonticuloMediana(tiempos_resolucion)
+        mediana = monticulo.obtener_mediana()
+    else:
+        mediana = 0
+
+    # Usar clase unificada de graficación
     graficadora = Graficadora(
-        generador_reportes=generador,
+        generador_reportes=GeneradorReportes(repo_reclamos),
         graficadora_torta=GraficadoraTorta(),
-        graficadora_histograma=GraficadoraHistograma()
+        graficadora_histograma=GraficadoraHistograma(),
+        graficadora_nube=GraficadoraNubePalabras()
     )
 
     rutas = graficadora.graficar_todo(
-        clasificacion=clasificacion_usuario, 
+        reclamos=reclamos,
+        clasificacion=clasificacion_usuario,
         es_secretario_tecnico=es_secretario
     )
 
-    cantidad_total = generador.cantidad_total_reclamos()
-    promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
-
-
-    reclamos_resueltos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="estado",valor="resuelto")
-
-    """
-    Se genera una lista con los valores del tiempo en que se tardo en resolver los reclamos de un dpto
-    la cual se utiliza para calcular la mediana
-    """
-    tiempo_reclamos = [
-        reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario and reclamo.resuelto_en is not None] 
-
-    monticulo = MonticuloMediana(tiempo_reclamos)
-
     return render_template(
-        "analitica_reclamos.html",
-        current_user=current_user,
+        'analitica_reclamos.html',
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        graficos=rutas,
-        mediana=monticulo.obtener_mediana(),
-        clasificacion=clasificacion_usuario
+        mediana=mediana,
+        ruta_nube=rutas.get("nube_palabras"),
+        ruta_histograma=rutas.get("histograma"),
+        ruta_torta=rutas.get("torta"),
+        departamento_usuario=clasificacion_usuario or "Todos",
+        reclamos=reclamos
     )
 
-
-@app.route("/descargar_reporte")
+@app.route('/descargar_reporte/<formato>')
 @login_required
-def descargar_reporte():
-    formato = request.args.get("formato", "pdf").lower()
-    if formato not in ["pdf", "html"]:
-        abort(400, description="Formato no válido")
+def descargar_reporte(formato):
+    """
+    Endpoint para descargar reportes en formato PDF o HTML.
+    Filtra los reclamos según la clasificación del usuario.
+    """
+    # Mapeo de roles a clasificaciones
+    clasificacion_map = {
+        "2": "soporte informático",
+        "3": "secretaría técnica",
+        "4": "maestranza"
+    }
 
+    # Obtener el rol del usuario actual
+    rol_usuario = current_user.rol
+    clasificacion_usuario = clasificacion_map.get(rol_usuario)
+
+    # Verificar si el usuario tiene una clasificación válida
+    if not clasificacion_usuario:
+        abort(403)  # Prohibido si el rol no está mapeado
+
+    # Crear el generador de reportes
     generador = GeneradorReportes(repo_reclamos)
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    carpeta_temp = os.path.join(BASE_DIR, "temp_reportes")
-    os.makedirs(carpeta_temp, exist_ok=True)
-
-    if formato == "pdf":
-        nombre_archivo = f"reporte.pdf"
-        ruta_archivo = "temp_reportes"
+    # Lógica para generar y enviar el reporte
+    if formato == 'pdf':
+        # Ruta para guardar el PDF
+        ruta_pdf = 'static/reporte_departamento.pdf'
         reporte_pdf = ReportePDF(generador)
-        reporte_pdf.generarPDF(ruta_archivo)
-        ruta_pdf = os.path.join(ruta_archivo, nombre_archivo)
+        # Generar el PDF filtrado por clasificación
+        reporte_pdf.generarPDF(ruta_pdf, clasificacion_usuario)
+        # Enviar el archivo PDF como descarga
+        return send_file(ruta_pdf, as_attachment=True)
 
-
-        if not os.path.exists(ruta_archivo):
-            abort(500, description="No se generó el PDF.")
-
-        return send_file(
-            ruta_pdf,
-            as_attachment=True,
-            download_name=nombre_archivo,
-            mimetype="application/pdf"
-        )
+    elif formato == 'html':
+        # Ruta para guardar el HTML
+        ruta_html = 'static/reporte_departamento.html'
+        reporte_html = ReporteHTML(generador)
+        # Generar el HTML filtrado por clasificación
+        reporte_html.exportar_html(ruta_html, clasificacion_usuario)
+        # Enviar el archivo HTML como descarga
+        return send_file(ruta_html, as_attachment=True)
 
     else:
-        nombre_archivo = f"reporte_{current_user.id}.html"
-        ruta_archivo = os.path.join(carpeta_temp, nombre_archivo)
-        reporte_html = ReporteHTML(generador)
-        reporte_html.exportar_html(nombre_archivo=ruta_archivo)
+        # Si el formato no es válido, devolver un error 404
+        abort(404)
 
-        return send_file(
-            ruta_archivo,
-            as_attachment=True,
-            download_name=nombre_archivo,
-            mimetype="text/html"
-        )
-                
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
 def editar_reclamo(reclamo_id):
@@ -339,6 +373,13 @@ def editar_reclamo(reclamo_id):
 @app.route("/manejar_reclamos", methods=["GET", "POST"])
 @login_required
 def manejo_reclamos():
+    
+    rol_to_dpto = {
+        "2": "soporte informático",
+        "3": "secretaría técnica",
+        "4": "maestranza"
+    }
+    
     rol = current_user.rol
     dpto = current_user.rol_to_dpto()
 
@@ -402,14 +443,14 @@ def manejo_reclamos():
         selected_id=selected_id,
         date=date
     )
-
-@app.route("/descargar_reporte_pdf")
-def descargar_pdf():
-    return send_from_directory(
-        directory='data',
-        path="salida_reporte_pdf",
-        as_attachment=True
-    )
+    
+@app.route('/ayuda')
+@login_required
+def ayuda():
+    """
+    Muestra una página de ayuda con un tutorial o guía de uso del sistema.
+    """
+    return render_template('ayuda.html', current_user=current_user)
 
 @login_manager.user_loader
 def load_user(user_id):

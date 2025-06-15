@@ -8,6 +8,8 @@ from jinja2 import Environment, FileSystemLoader
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Table, TableStyle, Paragraph
 
 engine, Session = crear_engine()
 
@@ -107,16 +109,17 @@ class GeneradorReportes:
         Devuelve la clasificación asociada a un rol específico.
         """
         try:
-            rol_int = int(rol)
+            rol = str(rol) 
         except ValueError:
             return None
 
         mapa_roles = {
-            1: 'soporte informático',
-            2: 'secretaría técnica',
-            3: 'maestranza'
+            '1': 'soporte informático',
+            '2': 'secretaría técnica',
+            '3': 'maestranza'
         }
-        return mapa_roles.get(rol_int)
+        return mapa_roles.get(rol)
+
     
     def obtener_datos_para_torta(self, rol):
         """
@@ -162,141 +165,319 @@ class GeneradorReportes:
         reclamos = query.all()
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
         
-class ReportePDF:
-    def __init__(self, generador:GeneradorReportes):
-        self.generador = generador
+    def mediana_tiempo_resolucion(self, clasificacion=None):
+        """
+        Calcula la mediana del tiempo estimado de resolución de los reclamos resueltos.
+        Si clasificacion es None, toma todos los reclamos resueltos; si no, filtra por clasificación.
+        """
+        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
+
+        # Filtrar reclamos resueltos
+        query = self.repositorio_reclamos.session.query(ModeloReclamo.resuelto_en).filter(
+            ModeloReclamo.estado == 'resuelto'
+        )
+        if clasificacion:
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
+
+        resultados = query.all()
+        print("Resultados de la consulta:", resultados)
+
+        tiempos_resueltos = [reclamo.resuelto_en for reclamo in query if reclamo.resuelto_en is not None]
+
+        # Verificar si hay datos
+        if not tiempos_resueltos:
+            return None
+
+        # Calcular la mediana usando MonticuloMediana
+        monticulo = MonticuloMediana(tiempos_resueltos)
+        return monticulo.obtener_mediana()
+
+    def calcular_mediana(self, atributo, clasificacion=None):
+        """
+        Calcula la mediana de un atributo específico de los reclamos.
+        Si clasificacion es None, toma todos los reclamos; si no, filtra por clasificación.
+        Solo considera valores válidos (no None).
         
-    def generarPDF(self, ruta_salida):
-        from reportlab.lib import colors
-        import os
+        :param atributo: Nombre del atributo del modelo ModeloReclamo (ej. 'tiempo_estimado', 'cantidad_adherentes').
+        :param clasificacion: Clasificación de los reclamos para filtrar (opcional).
+        :return: Mediana del atributo o None si no hay datos válidos.
+        """
+        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
 
-        ruta_archivo = os.path.join(ruta_salida, 'reporte.pdf')
+        # Filtrar reclamos
+        query = self.repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo))
+        if clasificacion:
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
 
-        c = canvas.Canvas(ruta_archivo, pagesize=A4)
-        ancho, alto = A4
-        x = 2 * cm
-        y = alto - 2 * cm
-        salto = 1 * cm
+        # Obtener valores válidos del atributo
+        valores = [r[0] for r in query.all() if r[0] is not None]
 
-        def salto_de_pagina():
-            nonlocal y
-            if y < 2.5 * cm:
-                c.showPage()
-                y = alto - 2 * cm
-                c.setFont("Helvetica-Bold", 14)
-                c.setFillColor(colors.darkblue)
-                c.drawString(x, y, "Reporte de Reclamos (continuación)")
-                c.setFillColor(colors.black)
-                y -= salto
+        # Verificar si hay datos
+        if not valores:
+            return None
 
-        # Título
-        c.setFont("Helvetica-Bold", 18)
-        c.setFillColor(colors.darkblue)
-        c.drawCentredString(ancho / 2, y, "Reporte de Reclamos")
-        c.setFillColor(colors.black)
-        y -= 2 * salto
+        # Calcular la mediana usando MonticuloMediana
+        monticulo = MonticuloMediana(valores)
+        return monticulo.obtener_mediana()
 
-        # Total y promedio
-        c.setFont("Helvetica", 12)
-        c.drawString(x, y, f"Total de reclamos: {self.generador.cantidad_total_reclamos()}")
-        y -= salto
-        salto_de_pagina()
+    def calcular_medianas_atributos(self, clasificacion=None):
+        """
+        Calcula la mediana de todos los atributos relevantes del modelo ModeloReclamo.
+        :param clasificacion: Clasificación de los reclamos para filtrar (opcional).
+        :return: Diccionario con las medianas de los atributos.
+        """
+        atributos_relevantes = ['cantidad_adherentes', 'tiempo_estimado', 'resuelto_en']
+        medianas = {}
 
-        c.drawString(x, y, f"Promedio de adherentes por reclamo: {self.generador.cantidad_promedio_adherentes():.2f}")
-        y -= 2 * salto
-        salto_de_pagina()
+        for atributo in atributos_relevantes:
+            medianas[atributo] = self.calcular_mediana(atributo, clasificacion)
 
-        def seccion(titulo):
-            nonlocal y
-            c.setFillColorRGB(0.9, 0.9, 0.9)
-            c.rect(x - 0.2*cm, y - 0.3*cm, ancho - 4*cm, salto + 0.2*cm, fill=True, stroke=False)
-            c.setFillColor(colors.black)
-            c.setFont("Helvetica-Bold", 14)
-            c.drawString(x, y, titulo)
-            y -= salto
-            salto_de_pagina()
-            c.setFont("Helvetica", 11)
+        return medianas
 
-        # Por estado
-        seccion("Cantidad de reclamos por estado:")
-        for estado, cantidad in self.generador.cantidad_reclamos_por_estado().items():
-            c.drawString(x + 0.5 * cm, y, f"• {estado}: {cantidad}")
-            y -= salto
-            salto_de_pagina()
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+import os
 
-        # Por clasificación
-        seccion("Cantidad de reclamos por clasificación:")
-        for clasificacion, cantidad in self.generador.cantidad_reclamos_por_clasificacion().items():
-            c.drawString(x + 0.5 * cm, y, f"• {clasificacion}: {cantidad}")
-            y -= salto
-            salto_de_pagina()
+class ReportePDF:
+    def __init__(self, generador: GeneradorReportes):
+        self.generador = generador
 
-        # Reclamos recientes
-        seccion("Reclamos recientes (últimos 7 días):")
-        recientes = self.generador.reclamos_recientes()
-        c.setFont("Helvetica-Oblique", 10)
-        for reclamo in recientes:
-            texto = f"• ID {reclamo.id} - {reclamo.contenido or 'Sin título'} ({reclamo.estado or 'Sin estado'})"
-            c.drawString(x + 0.5 * cm, y, texto)
-            y -= salto
-            salto_de_pagina()
-        c.save()
+    def generarPDF(self, ruta_salida, clasificacion_usuario):
+        carpeta = os.path.dirname(ruta_salida)
+        if carpeta:
+            os.makedirs(carpeta, exist_ok=True)
+
+        doc = SimpleDocTemplate(
+            ruta_salida, pagesize=A4,
+            leftMargin=2 * cm, rightMargin=2 * cm,
+            topMargin=2 * cm, bottomMargin=2 * cm
+        )
+
+        estilos = getSampleStyleSheet()
+        estilo_normal = estilos["BodyText"]
+        estilo_titulo = ParagraphStyle(
+            'Titulo',
+            parent=estilos["Heading1"],
+            fontName='Helvetica-Bold',
+            fontSize=18,
+            textColor=colors.HexColor("#003366"),
+            alignment=1,
+            spaceAfter=12
+        )
+        estilo_subtitulo = ParagraphStyle(
+            'Subtitulo',
+            parent=estilos["Heading2"],
+            fontName='Helvetica-Bold',
+            fontSize=14,
+            textColor=colors.HexColor("#003366"),
+            spaceAfter=6
+        )
+
+        elementos = []
+
+        # Título principal
+        elementos.append(Paragraph(f"Reporte de Reclamos - {clasificacion_usuario.capitalize()}", estilo_titulo))
+        elementos.append(Spacer(1, 0.25 * cm))
+
+        # Línea azul decorativa
+        from reportlab.platypus import HRFlowable
+        elementos.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#00509e")))
+        elementos.append(Spacer(1, 0.5 * cm))
+
+        # Estadísticas con medianas
+        medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
+        elementos.append(Paragraph(f"Estadísticas del Departamento: {clasificacion_usuario.capitalize()}", estilo_subtitulo))
+        elementos.append(Spacer(1, 0.3 * cm))
+
+        for atributo, mediana in medianas.items():
+            texto = f"Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}"
+            elementos.append(Paragraph(texto, estilo_normal))
+
+        elementos.append(Spacer(1, 1 * cm))
+
+        # Listado de reclamos
+        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
+            filtro="clasificacion", valor=clasificacion_usuario
+        )
+
+        if not reclamos:
+            elementos.append(Paragraph("No hay reclamos para esta clasificación.", estilo_normal))
+        else:
+            elementos.append(Paragraph("Listado de Reclamos:", estilo_subtitulo))
+            elementos.append(Spacer(1, 0.3 * cm))
+
+            # Datos de la tabla
+            datos_tabla = [["ID", "Contenido", "Estado", "Fecha", "Adherentes"]]
+            for reclamo in reclamos:
+                datos_tabla.append([
+                    str(reclamo.id),
+                    Paragraph(reclamo.contenido, estilo_normal),
+                    reclamo.estado,
+                    reclamo.fecha_hora.strftime("%Y-%m-%d %H:%M:%S"),
+                    str(reclamo.cantidad_adherentes or "")
+                ])
+
+            tabla = Table(datos_tabla, colWidths=[2 * cm, 8 * cm, 3 * cm, 4 * cm, 3 * cm])
+            tabla.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#00509e")),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 11),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor("#f9f9f9")),
+                ('TEXTCOLOR', (0, 1), (-1, -1), colors.black),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#00509e")),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+            ]))
+            elementos.append(tabla)
+
+        # Construir el PDF
+        doc.build(elementos)
         print(f"Reporte PDF generado en: {ruta_salida}")
 
+
 class ReporteHTML:
-    def __init__(self, generador_reportes):
-        self.generador = generador_reportes
+    def __init__(self, generador: GeneradorReportes):
+        self.generador = generador
 
-    def obtener_datos_reporte(self):
-        return {
-            "total": self.generador.cantidad_total_reclamos(),
-            "promedio": f"{self.generador.cantidad_promedio_adherentes():.2f}",
-            "reclamos_por_estado": self.generador.cantidad_reclamos_por_estado(),
-            "reclamos_por_clasificacion": self.generador.cantidad_reclamos_por_clasificacion(),
-            "reclamos_recientes": self.generador.reclamos_recientes(),
-        }
-
-    def exportar_html(self, nombre_archivo="reporte.html"):
-        datos = self.obtener_datos_reporte()
-
-        # Cargar el entorno de plantillas desde la carpeta templates/
-        env = Environment(loader=FileSystemLoader("templates"))
-        template = env.get_template("reporte.html")
-
-        # Renderizar el HTML con los datos
-        html = template.render(**datos)
-
-        # Guardar el resultado en un archivo
-        with open(nombre_archivo, "w", encoding="utf-8") as f:
-            f.write(html)
-        
-        import webbrowser
+    def exportar_html(self, ruta_salida, clasificacion_usuario):
+        """
+        Genera un archivo HTML estilizado con los reclamos filtrados por clasificación de usuario,
+        incluyendo estadísticas adicionales y una tabla con los reclamos.
+        """
         import os
 
-        ruta_absoluta = os.path.abspath(nombre_archivo)
-        webbrowser.open(f"file://{ruta_absoluta}")
+        # Asegúrate de que la carpeta existe
+        carpeta = os.path.dirname(ruta_salida)
+        if carpeta:
+            os.makedirs(carpeta, exist_ok=True)
+
+        # Obtener estadísticas
+        medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
+
+        # Obtener reclamos filtrados
+        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
+            filtro="clasificacion", valor=clasificacion_usuario
+        )
+
+        # Crear el contenido HTML
+        html = f"""
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Reporte de Reclamos - {clasificacion_usuario.capitalize()}</title>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    padding: 0;
+                }}
+                h1 {{
+                    color: #003366;
+                    text-align: center;
+                }}
+                h2 {{
+                    color: #00509e;
+                }}
+                table {{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }}
+                th, td {{
+                    border: 1px solid #00509e;
+                    padding: 8px;
+                    text-align: center;
+                }}
+                th {{
+                    background-color: #00509e;
+                    color: white;
+                }}
+                tr:nth-child(even) {{
+                    background-color: #f2f2f2;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Reporte de Reclamos - {clasificacion_usuario.capitalize()}</h1>
+            <h2>Estadísticas del Departamento</h2>
+            <ul>
+        """
+
+        # Agregar estadísticas al HTML
+        for atributo, mediana in medianas.items():
+            html += f"<li>Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}</li>"
+
+        html += "</ul>"
+
+        # Agregar tabla de reclamos
+        html += """
+            <h2>Listado de Reclamos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Contenido</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                        <th>Adherentes</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """
+
+        if not reclamos:
+            html += "<tr><td colspan='5'>No hay reclamos para esta clasificación.</td></tr>"
+        else:
+            for reclamo in reclamos:
+                html += f"""
+                    <tr>
+                        <td>{reclamo.id}</td>
+                        <td>{reclamo.contenido}</td>
+                        <td>{reclamo.estado}</td>
+                        <td>{reclamo.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}</td>
+                        <td>{reclamo.cantidad_adherentes}</td>
+                    </tr>
+                """
+
+        html += """
+                </tbody>
+            </table>
+        </body>
+        </html>
+        """
+
+        # Guardar el archivo HTML
+        with open(ruta_salida, "w", encoding="utf-8") as archivo:
+            archivo.write(html)
+
+        print(f"Reporte HTML generado en: {ruta_salida}")
 
 
 if __name__ == '__main__':  # pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
     generador = GeneradorReportes(repo_reclamos)
-    print("Cantidad total de reclamos:", generador.cantidad_total_reclamos())
+
+    # Mediana para todos los reclamos resueltos
+    mediana_general = generador.mediana_tiempo_resolucion()
+    print("Mediana general del tiempo de resolución:", mediana_general)
+
+    # Mediana para una clasificación específica
+    mediana_maestranza = generador.mediana_tiempo_resolucion(clasificacion="maestranza")
+    print("Mediana del tiempo de resolución para maestranza:", mediana_maestranza)
+   # print("Cantidad total de reclamos:", generador.cant_reclamos())
 
     # Reporte en PDF
     reporte_pdf = ReportePDF(generador)
-    reporte_pdf.generarPDF("data/salida_reporte.pdf")
-    
-    reporte_html = ReporteHTML(generador)
-
-    # Exportar el reporte HTML a archivo y abrirlo en navegador
-    reporte_html.exportar_html("templates/reporte.html")
-
-    # Obtener datos para testeo e imprimir en consola
-    datos = reporte_html.obtener_datos_reporte()
-    import pprint
-    pprint.pprint(datos)
-    
-    for reclamo in datos["reclamos_recientes"]:
-        print(f"ID {reclamo.id} - {reclamo.contenido or 'Sin título'} - Estado: {reclamo.estado or 'Sin estado'}")
+    reporte_pdf.generarPDF("data/salida_reporte.pdf", "maestranza")
 
 

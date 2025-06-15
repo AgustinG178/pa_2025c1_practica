@@ -12,6 +12,7 @@ class ClasificadorMock:
         return "soporte"  # Respuesta fija para test # pragma: no cover
 
 class TestGestorReclamo(unittest.TestCase):
+    """Tests para la gestión de reclamos con GestorReclamo."""
 
     @classmethod
     def setUpClass(cls):
@@ -54,6 +55,7 @@ class TestGestorReclamo(unittest.TestCase):
         self.session.commit()
 
     def test_crear_reclamo_valido(self):
+        """Verifica que se puede crear un reclamo válido y se asignan los atributos correctamente."""
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="El proyector no enciende",
@@ -64,6 +66,7 @@ class TestGestorReclamo(unittest.TestCase):
         self.assertEqual(reclamo.usuario_id, self.usuario.id)
 
     def test_eliminar_reclamo(self):
+        """Verifica que se puede eliminar un reclamo y que ya no existe en el repositorio."""
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="Teclado roto",
@@ -79,6 +82,7 @@ class TestGestorReclamo(unittest.TestCase):
         self.assertIsNone(self.repositorio.obtener_registro_por_filtro("id", reclamo_id))
 
     def agregar_adherente(self, id_reclamo, usuario_modelo):
+        """Agrega un adherente a un reclamo para pruebas de duplicados."""
         reclamo = self.repositorio.obtener_por_id(id_reclamo)
         if usuario_modelo in reclamo.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.") #pragma: no cover
@@ -87,6 +91,7 @@ class TestGestorReclamo(unittest.TestCase):
 
 
     def test_agregar_adherente_valido(self):
+        """Verifica que se puede agregar un adherente a un reclamo correctamente."""
         # Creo un reclamo primero
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
@@ -125,6 +130,7 @@ class TestGestorReclamo(unittest.TestCase):
 
 
     def test_agregar_adherente_duplicado(self):
+        """Verifica que no se puede agregar dos veces el mismo adherente a un reclamo."""
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="Sin señal WiFi",

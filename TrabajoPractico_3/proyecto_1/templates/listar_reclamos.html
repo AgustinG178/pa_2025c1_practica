@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Reclamos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Listar Reclamos Pendientes</h1>
+    </header>
+    <main>
+        <section>
+            <form method="GET" action="{{ url_for('listar_reclamos') }}">
+                <label for="departamento">Filtrar por Departamento:</label>
+                <select name="departamento" id="departamento">
+                    <option value="">Todos</option>
+                    {% for departamento in departamentos %}
+                        <option value="{{ departamento }}" {% if filtro_departamento == departamento %}selected{% endif %}>
+                            {{ departamento }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Aplicar Filtro</button>
+            </form>
+        </section>
+        <section>
+            <h2>Reclamos Pendientes</h2>
+            {% if reclamos %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Contenido</th>
+                            <th>Departamento</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reclamo in reclamos %}
+                            <tr>
+                                <td>{{ reclamo.id }}</td>
+                                <td>{{ reclamo.contenido }}</td>
+                                <td>{{ reclamo.clasificacion }}</td>
+                                <td>{{ reclamo.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay reclamos pendientes para mostrar.</p>
+            {% endif %}
+        </section>
+    </main>
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
+    <footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+    </div>
+</footer>
+
+</body>
+</html>

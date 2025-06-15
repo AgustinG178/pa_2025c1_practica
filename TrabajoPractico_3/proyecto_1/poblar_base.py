@@ -5,7 +5,8 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
-import sqlite3
+from modules.modelos import ModeloReclamo
+
 """
 poblar_base.py
 
@@ -24,7 +25,7 @@ Solo para uso en entorno de desarrollo.
 """
 
 # ─── Conexión ───────────────────────────────────────────────────────────────────
-base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
+base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
 base_datos.conectar()
 engine, Session = crear_engine()
 session = Session()
@@ -103,9 +104,6 @@ reclamos_info = [
     "Los horarios publicados en la cartelera están desactualizados",
 ]
 
-
-
-
 # ─── Script Principal ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
     """
@@ -141,13 +139,10 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"✖ Usuario '{u['usuario']}' ya existe o error: {e}")
 
-    # Obtener usuarios de la base
     usuarios_db = repo_usuarios.obtener_todos_los_registros()
     if not usuarios_db:
         print("✖ No se encontraron usuarios válidos para asignar reclamos.")
         exit()
-
-    # Crear reclamos
 
     for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
         try:
@@ -167,11 +162,13 @@ if __name__ == "__main__":
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
-            modelo.cantidad_adherentes = randint(0, 20)
+            modelo.cantidad_adherentes = randint(0,35)  # Simular adherentes
+            modelo.tiempo_estimado = randint(1, 10) if estado == "pendiente" else 0
             modelo.resuelto_en = resuelto_en
 
             repo_reclamos.guardar_registro(modelo)
             print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en departamento: {desc}")
         except Exception as e:
             print(f"✖ Error creando reclamo '{desc}': {e}")
+
 
