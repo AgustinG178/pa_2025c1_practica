@@ -1,7 +1,8 @@
 from modules.reportes import GeneradorReportes
-from wordcloud import WordCloud
-import matplotlib.pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+from collections import Counter
 import os
+import matplotlib.pyplot as plt
 
 class GraficadoraTorta:
     def graficar(self, datos: dict, nombre_archivo:str, subcarpeta:str):
@@ -26,30 +27,40 @@ class GraficadoraTorta:
         return f'graficos/{subcarpeta}/{nombre_archivo}'
 
 class GraficadoraHistograma:
-    def graficar(self, datos: list, titulo: str, xlabel: str, ylabel: str, nombre_archivo:str, subcarpeta:str):
+    def graficar(self, datos, titulo, xlabel, ylabel, nombre_archivo="histograma.png", subcarpeta="histogramas"):
+        """
+        Genera un histograma a partir de los datos proporcionados.
 
+        :param datos: Lista de valores numéricos para el histograma.
+        :param titulo: Título del gráfico.
+        :param xlabel: Etiqueta del eje X.
+        :param ylabel: Etiqueta del eje Y.
+        :param nombre_archivo: Nombre del archivo de salida para el histograma.
+        :param subcarpeta: Subcarpeta donde se guardará la imagen.
         """
-        Genera un histograma a partir de los datos proporcionados, reclamos por ejemplo
-        """
+        # Verificar si hay datos
         if not datos:
-            print(f"[!] No hay datos para graficar: {titulo}")
-            return
+            print("[!] No hay datos para generar el histograma.")
+            return None
 
+        # Crear el histograma
         plt.figure(figsize=(10, 6))
-        plt.hist(datos, bins=10, color='salmon', edgecolor='black')
+        plt.hist(datos, bins=10, color="#00509e", edgecolor="black", alpha=0.7)
         plt.title(titulo)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        plt.tight_layout()
+        plt.grid(axis="y", linestyle="--", alpha=0.7)
 
-        ruta_carpeta = os.path.join('static', 'graficos', subcarpeta)
+        # Crear la carpeta de salida si no existe
+        ruta_carpeta = os.path.join("static", "graficos", subcarpeta)
         os.makedirs(ruta_carpeta, exist_ok=True)
 
+        # Guardar el histograma
         ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
         plt.savefig(ruta_archivo)
         plt.close()
 
-        return f'graficos/{subcarpeta}/{nombre_archivo}'
+        return f"graficos/{subcarpeta}/{nombre_archivo}"
 
 
     def graficar_por_clasificacion(self, datos_por_clasificacion: dict, titulo: str, xlabel: str, ylabel: str):
@@ -77,7 +88,7 @@ class GraficadoraNubePalabras:
     def generar_nube_palabras(self, reclamos, nombre_archivo="nube_palabras.png", subcarpeta="nubes"):
         """
         Genera una nube de palabras a partir de los contenidos de los reclamos.
-        
+
         :param reclamos: Lista de objetos Reclamo o strings con los contenidos de los reclamos.
         :param nombre_archivo: Nombre del archivo de salida para la nube de palabras.
         :param subcarpeta: Subcarpeta donde se guardará la imagen.
@@ -85,14 +96,32 @@ class GraficadoraNubePalabras:
         # Concatenar todos los contenidos de los reclamos en un solo texto
         texto = " ".join([reclamo.contenido for reclamo in reclamos if reclamo.contenido])
 
+        # Verificar si el texto está vacío
+        if not texto.strip():
+            print("[!] No hay palabras para generar la nube de palabras.")
+            return None
+
+        # Filtrar palabras vacías (stopwords) y caracteres no deseados
+        stopwords = set(STOPWORDS)
+        palabras = texto.lower().split()
+        palabras_filtradas = [
+            palabra.strip(".,!?()[]{}\"'") for palabra in palabras if palabra not in stopwords and len(palabra) > 2
+        ]
+
+        # Calcular la frecuencia de las palabras
+        contador = Counter(palabras_filtradas)
+
+        # Seleccionar las 15 palabras más frecuentes
+        palabras_frecuentes = dict(contador.most_common(15))
+
         # Generar la nube de palabras
         wordcloud = WordCloud(
             width=800,
             height=400,
             background_color="white",
             colormap="viridis",
-            max_words=100
-        ).generate(texto)
+            max_words=15
+        ).generate_from_frequencies(palabras_frecuentes)
 
         # Crear la carpeta de salida si no existe
         ruta_carpeta = os.path.join("static", "graficos", subcarpeta)
@@ -101,20 +130,6 @@ class GraficadoraNubePalabras:
         # Guardar la imagen de la nube de palabras
         ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
         wordcloud.to_file(ruta_archivo)
-
-        # Mostrar la nube de palabras
-        plt.figure(figsize=(10, 5))
-        plt.imshow(wordcloud, interpolation="bilinear")
-        plt.axis("off")
-        plt.title("Nube de Palabras - Reclamos")
-        plt.tight_layout()
-        
-        ruta_carpeta = os.path.join('static', 'graficos', subcarpeta)
-        os.makedirs(ruta_carpeta, exist_ok=True)
-
-        ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
-        plt.savefig(ruta_archivo)
-        plt.close()
 
         return f"graficos/{subcarpeta}/{nombre_archivo}"
 
@@ -184,7 +199,7 @@ class Graficadora:
         Se genera un grafico de torta para un rol específico, por ejemplo, soporte informático o un jefe de departamento.
         """
         datos = self.generador_reportes.obtener_datos_para_torta(rol)
-        self.graficadora_torta.graficar(datos, nombre_archivo, subcarpeta)
+        return self.graficadora_torta.graficar(datos, nombre_archivo, subcarpeta)
         
     def graficar_histograma_por_rol(self, rol, nombre_archivo, subcarpeta):
 
@@ -213,6 +228,17 @@ class Graficadora:
         graficadora_nube = GraficadoraNubePalabras()
         graficadora_nube.generar_nube_palabras(reclamos, nombre_archivo, subcarpeta)
         
+    def clasificacion_por_rol(self, rol):
+        """
+        Devuelve la clasificación correspondiente a un rol.
+        """
+        clasificaciones = {
+            "2": "secretaría técnica",
+            "3": "soporte informático",
+            "4": "maestranza"
+        }
+        return clasificaciones.get(rol)
+        
 if __name__ == "__main__":
     from modules.config import crear_engine
     from repositorio import RepositorioReclamosSQLAlchemy
@@ -223,10 +249,11 @@ if __name__ == "__main__":
 
     graficadora_torta = GraficadoraTorta()
     graficadora_histograma = GraficadoraHistograma()
+    graficadora_nube = GraficadoraNubePalabras()
 
     repositorio = RepositorioReclamosSQLAlchemy(session)
     generador = GeneradorReportes(repositorio)
-    graficadora = Graficadora(generador, graficadora_torta, graficadora_histograma)
+    graficadora = Graficadora(generador, graficadora_torta, graficadora_histograma, graficadora_nube)
 
     # Roles por los que queremos generar gráficos
     roles = {

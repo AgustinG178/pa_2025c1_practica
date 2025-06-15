@@ -27,6 +27,7 @@ repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
 gestor_usuarios = GestorUsuarios(repo_usuarios)
 gestor_login = GestorLogin(repo_usuarios)
 gestor_imagenes_reclamos = GestorImagenReclamoPng()
+reportes = GeneradorReportes(repo_reclamos)
 
 with open('./data/claims_clf.pkl', 'rb') as archivo:
   
@@ -191,58 +192,59 @@ def listar_reclamos():
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():
-    clasificacion_map = {
-        "2": "soporte informatico",
-        "3": "secretario tecnico",
+    """
+    Genera la analítica de reclamos según el rol del usuario.
+    """
+    # Mapeo de roles a departamentos
+    rol_a_departamento = {
+        "2": "secretaría técnica",
+        "3": "soporte informático",
         "4": "maestranza"
     }
-    rol_usuario = current_user.rol
-    clasificacion_usuario = clasificacion_map.get(rol_usuario)
-    
-    generador = GeneradorReportes(repo_reclamos)
-    mediana_tiempo = generador.mediana_tiempo_resolucion()
 
-    es_secretario = (rol_usuario == "1")
+    # Obtener el departamento según el rol del usuario
+    departamento_usuario = rol_a_departamento.get(current_user.rol)
 
-    generador = GeneradorReportes(repo_reclamos)
-    graficadora = Graficadora(
-        generador_reportes=generador,
-        graficadora_torta=GraficadoraTorta(),
-        graficadora_histograma=GraficadoraHistograma(),
-        graficadora_nube=GraficadoraNubePalabras()
+    # Filtrar reclamos según el rol del usuario
+    if current_user.rol == "1":  # Secretario Técnico
+        reclamos = repo_reclamos.obtener_todos_los_registros()
+    elif departamento_usuario:  # Jefe de Departamento
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=departamento_usuario)
+    else:
+        reclamos = []  # Si el rol no es válido, no hay reclamos
+
+    # Calcular estadísticas
+    cantidad_total = len(reclamos)
+    promedio_adherentes = round(sum(reclamo.cantidad_adherentes for reclamo in reclamos if reclamo.cantidad_adherentes) / cantidad_total, 2) if cantidad_total > 0 else 0
+    tiempos_resolucion = [reclamo.resuelto_en for reclamo in reclamos if reclamo.resuelto_en]
+
+    # Calcular la mediana usando MonticuloMediana
+    if tiempos_resolucion:
+        monticulo = MonticuloMediana(tiempos_resolucion)
+        mediana = monticulo.obtener_mediana()
+    else:
+        mediana = 0
+
+    # Generar gráficos
+    graficadora_nube = GraficadoraNubePalabras()
+    ruta_nube = graficadora_nube.generar_nube_palabras(reclamos, nombre_archivo="nube_palabras.png")
+
+    graficadora_histograma = GraficadoraHistograma()
+    ruta_histograma = graficadora_histograma.graficar(
+        datos=tiempos_resolucion,
+        titulo="Distribución de Tiempos de Resolución",
+        xlabel="Días",
+        ylabel="Frecuencia",
+        nombre_archivo="histograma_tiempos.png"
     )
-
-    rutas = graficadora.graficar_todo(
-        reclamos = repo_reclamos.obtener_todos_los_registros(usuario_id=2),
-        clasificacion=clasificacion_usuario, 
-        es_secretario_tecnico=es_secretario
-    )
-
-    cantidad_total = generador.cantidad_total_reclamos()
-    promedio_adherentes = round(generador.cantidad_promedio_adherentes(), 2)
-
-    reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado", valor="resuelto")
-
-    tiempo_reclamos = [
-        reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
-    ]
-    
-    # Solo los reclamos del departamento del usuario
-    reclamos_departamento = repo_reclamos.obtener_registros_por_filtro(
-        filtro="clasificacion", valor=clasificacion_usuario
-    )
-
-    monticulo = MonticuloMediana(tiempo_reclamos)
 
     return render_template(
-        "analitica_reclamos.html",
-        current_user=current_user,
+        'analitica_reclamos.html',
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        reclamos_departamento=reclamos_departamento,
-        mediana_tiempo=mediana_tiempo,
-        graficos=rutas,
-        mediana=monticulo.obtener_mediana()
+        mediana=mediana,
+        ruta_nube=ruta_nube,
+        ruta_histograma=ruta_histograma
     )
 
 @app.route('/descargar_reporte/<formato>')
@@ -378,14 +380,6 @@ def manejo_reclamos():
         usuario=current_user,
         selected_id=selected_id,
         date=date
-    )
-
-@app.route("/descargar_reporte_pdf")
-def descargar_pdf():
-    return send_from_directory(
-        directory='data',
-        path="salida_reporte_pdf",
-        as_attachment=True
     )
     
 @app.route('/ayuda')

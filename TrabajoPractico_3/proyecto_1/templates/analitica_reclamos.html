@@ -38,15 +38,15 @@
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
                 <div class="flashcard">
                     <h3>Torta</h3>
-                    <img src="{{ url_for('static', filename='graficos/tortas/soporte_informatico.png') }}" alt="Gráfico de torta">
+                    <img src="{{ url_for('static', filename='graficos/soporte_informatico/torta_estado_soporte_informatico.png') }}" alt="Gráfico de torta">
                 </div>
                 <div class="flashcard">
                     <h3>Histograma</h3>
-                    <img src="{{ url_for('static', filename='graficos/histogramas/soporte_informatico.png') }}" alt="Gráfico de histograma">
+                    <img src="{{ url_for('static', filename='graficos/soporte_informatico/histograma_soporte_informatico.png') }}" alt="Gráfico de histograma">
                 </div>
                 <div class="flashcard">
                     <h3>Nube de Palabras</h3>
-                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras.png') }}" alt="Nube de palabras">
+                    <img src="{{ url_for('static', filename='graficos\soporte_informatico\nube_palabras_soporte_informatico.png') }}" alt="Nube de palabras">
                 </div>
             </div>
         {% elif current_user.rol == '3' %}
@@ -55,15 +55,15 @@
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
                 <div class="flashcard">
                     <h3>Torta</h3>
-                    <img src="{{ url_for('static', filename='graficos/tortas/secretario_tecnico.png') }}" alt="Gráfico de torta">
+                    <img src="{{ url_for('static', filename='graficos\secretario_tecnico\torta_estado_general.png') }}" alt="Gráfico de torta">
                 </div>
                 <div class="flashcard">
                     <h3>Histograma</h3>
-                    <img src="{{ url_for('static', filename='graficos/histogramas/secretario_tecnico.png') }}" alt="Gráfico de histograma">
+                    <img src="{{ url_for('static', filename='graficos\secretario_tecnico\histograma_adherentes.png') }}" alt="Gráfico de histograma">
                 </div>
                 <div class="flashcard">
                     <h3>Nube de Palabras</h3>
-                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras_secretario_tecnico.png') }}" alt="Nube de palabras">
+                    <img src="{{ url_for('static', filename='graficos\secretario_tecnico\nube_palabras_secretario_tecnico.png') }}" alt="Nube de palabras">
                 </div>
             </div>
         {% elif current_user.rol == '4' %}
@@ -72,15 +72,15 @@
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
                 <div class="flashcard">
                     <h3>Torta</h3>
-                    <img src="{{ url_for('static', filename='graficos/tortas/maestranza.png') }}" alt="Gráfico de torta">
+                    <img src="{{ url_for('static', filename='graficos\maestranza\torta_estado_maestranza.png') }}" alt="Gráfico de torta">
                 </div>
                 <div class="flashcard">
                     <h3>Histograma</h3>
-                    <img src="{{ url_for('static', filename='graficos/histogramas/maestranza.png') }}" alt="Gráfico de histograma">
+                    <img src="{{ url_for('static', filename='graficos\maestranza\histograma_maestranza.png') }}" alt="Gráfico de histograma">
                 </div>
                 <div class="flashcard">
                     <h3>Nube de Palabras</h3>
-                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras_maestranza.png') }}" alt="Nube de palabras">
+                    <img src="{{ url_for('static', filename='graficos\maestranza\nube_palabras_maestranza.png') }}" alt="Nube de palabras">
                 </div>
             </div>
         {% endif %}
