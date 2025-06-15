@@ -269,15 +269,14 @@ if __name__ == "__main__":
 
     print("Todos los gráficos fueron generados exitosamente.")
 
-    # Obtener todos los reclamos
     reclamos = repositorio.obtener_todos_los_registros(usuario_id=2)
-
-    # Crear una instancia de la graficadora
-    graficadora_nube = GraficadoraNubePalabras()
-
-    # Generar la nube de palabras
-    ruta_nube = graficadora_nube.generar_nube_palabras(reclamos)
-    print(f"Nube de palabras generada en: {ruta_nube}")
+    if reclamos:
+        graficadora_nube = GraficadoraNubePalabras()
+        ruta_nube = graficadora_nube.generar_nube_palabras(reclamos)
+        if ruta_nube:
+            print(f"Nube de palabras generada en: {ruta_nube}")
+    else:
+        print("[!] No se encontraron reclamos para el usuario_id=2. No se generó nube de palabras.")
 
 
 

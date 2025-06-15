@@ -109,16 +109,17 @@ class GeneradorReportes:
         Devuelve la clasificación asociada a un rol específico.
         """
         try:
-            rol_int = int(rol)
+            rol = str(rol) 
         except ValueError:
             return None
 
         mapa_roles = {
-            1: 'soporte informático',
-            2: 'secretaría técnica',
-            3: 'maestranza'
+            '1': 'soporte informático',
+            '2': 'secretaría técnica',
+            '3': 'maestranza'
         }
-        return mapa_roles.get(rol_int)
+        return mapa_roles.get(rol)
+
     
     def obtener_datos_para_torta(self, rol):
         """

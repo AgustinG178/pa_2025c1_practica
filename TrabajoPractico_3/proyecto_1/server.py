@@ -42,8 +42,7 @@ def index():
 
 @app.route('/inicio')
 def inicio():
-    ultimos = repo_reclamos.obtener_ultimos_reclamos(limit=4)
-    return render_template('inicio.html', ultimos_reclamos=ultimos)
+    return render_template('inicio.html')
 
 @app.route('/registrarse', methods=['GET', 'POST'])
 def registrarse():
@@ -195,47 +194,45 @@ def analitica_reclamos():
     """
     Genera la analítica de reclamos según el rol del usuario.
     """
-    # Mapeo de roles a departamentos
-    rol_a_departamento = {
-        "2": "secretaría técnica",
-        "3": "soporte informático",
+    clasificacion_map = {
+        "2": "soporte informático",
+        "3": "secretaría técnica",
         "4": "maestranza"
     }
 
-    # Obtener el departamento según el rol del usuario
-    departamento_usuario = rol_a_departamento.get(current_user.rol)
+    rol = str(current_user.rol)
+    clasificacion_usuario = clasificacion_map.get(rol)
+    es_secretario = rol == "1"
 
-    # Filtrar reclamos según el rol del usuario
-    if current_user.rol == "1":  # Secretario Técnico
+    if es_secretario:
         reclamos = repo_reclamos.obtener_todos_los_registros()
-    elif departamento_usuario:  # Jefe de Departamento
-        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=departamento_usuario)
+    elif clasificacion_usuario:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=clasificacion_usuario)
     else:
-        reclamos = []  # Si el rol no es válido, no hay reclamos
+        reclamos = []
 
-    # Calcular estadísticas
     cantidad_total = len(reclamos)
-    promedio_adherentes = round(sum(reclamo.cantidad_adherentes for reclamo in reclamos if reclamo.cantidad_adherentes) / cantidad_total, 2) if cantidad_total > 0 else 0
-    tiempos_resolucion = [reclamo.resuelto_en for reclamo in reclamos if reclamo.resuelto_en]
+    promedio_adherentes = round(sum(r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes) / cantidad_total, 2) if cantidad_total > 0 else 0
+    tiempos_resolucion = [r.resuelto_en for r in reclamos if r.resuelto_en]
 
-    # Calcular la mediana usando MonticuloMediana
     if tiempos_resolucion:
         monticulo = MonticuloMediana(tiempos_resolucion)
         mediana = monticulo.obtener_mediana()
     else:
         mediana = 0
 
-    # Generar gráficos
-    graficadora_nube = GraficadoraNubePalabras()
-    ruta_nube = graficadora_nube.generar_nube_palabras(reclamos, nombre_archivo="nube_palabras.png")
+    # Usar clase unificada de graficación
+    graficadora = Graficadora(
+        generador_reportes=GeneradorReportes(repo_reclamos),
+        graficadora_torta=GraficadoraTorta(),
+        graficadora_histograma=GraficadoraHistograma(),
+        graficadora_nube=GraficadoraNubePalabras()
+    )
 
-    graficadora_histograma = GraficadoraHistograma()
-    ruta_histograma = graficadora_histograma.graficar(
-        datos=tiempos_resolucion,
-        titulo="Distribución de Tiempos de Resolución",
-        xlabel="Días",
-        ylabel="Frecuencia",
-        nombre_archivo="histograma_tiempos.png"
+    rutas = graficadora.graficar_todo(
+        reclamos=reclamos,
+        clasificacion=clasificacion_usuario,
+        es_secretario_tecnico=es_secretario
     )
 
     return render_template(
@@ -243,8 +240,11 @@ def analitica_reclamos():
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
         mediana=mediana,
-        ruta_nube=ruta_nube,
-        ruta_histograma=ruta_histograma
+        ruta_nube=rutas.get("nube_palabras"),
+        ruta_histograma=rutas.get("histograma"),
+        ruta_torta=rutas.get("torta"),
+        departamento_usuario=clasificacion_usuario or "Todos",
+        reclamos=reclamos
     )
 
 @app.route('/descargar_reporte/<formato>')

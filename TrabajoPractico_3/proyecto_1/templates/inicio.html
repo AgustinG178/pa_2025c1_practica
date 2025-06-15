@@ -47,23 +47,6 @@
         <p class="saludo">
             Bienvenido {{ current_user.nombre_de_usuario }} al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.
         </p>
-        {% if ultimos_reclamos %}
-            {%if current_user.rol in ['0','1'] %}
-            <section class="contenedor-flashcards">
-                <h2 class="titulo-seccion">Últimos Reclamos Realizados</h2>
-                <div class="flashcards-grid">
-                    {% for reclamo in ultimos_reclamos %}
-                        <div class="flashcard">
-                            <p><strong>Descripción:</strong> {{ reclamo.contenido }}</p>
-                            <p><strong>Fecha:</strong> {{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
-                            <p><strong>Clasificación:</strong> {{ reclamo.clasificacion }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {%endif%}
-            </section>
-        {% endif %}
-    {% else %}
         <div class="home-container">
             <div class="flashcard-big">
                 <h2 class="titulo-flashcard-grande">¿De qué se trata este sistema?</h2>

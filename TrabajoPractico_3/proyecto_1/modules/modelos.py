@@ -29,9 +29,10 @@ class ModeloUsuario(Base):
     claustro = Column(String)
 
     reclamos = relationship(
-        "ModeloReclamo",
-        back_populates="usuarios"
-    )
+    "ModeloReclamo",
+    back_populates="usuarios",
+    overlaps="reclamos_creados,usuario"
+)
     
     def __str__(self):  
         return f"Usuario: Nombre = {self.nombre}, Apellido = {self.apellido}, Email = {self.email}, Nombre_de_usuario = {self.nombre_de_usuario}, Rol = {self.rol}"
@@ -65,10 +66,17 @@ class ModeloReclamo(Base):
     '''
 
     usuarios = relationship(
+    "ModeloUsuario",
+    back_populates="reclamos",
+    overlaps="reclamos_creados,usuario"
+)
+
+    usuario = relationship(
         "ModeloUsuario",
-        back_populates="reclamos"
+        foreign_keys=[usuario_id],
+        backref="reclamos_creados",
+        overlaps="reclamos,usuarios"
     )
-    usuario = relationship("ModeloUsuario", foreign_keys=[usuario_id], backref="reclamos_creados")
 
     @property
     def adherentes_ids(self):

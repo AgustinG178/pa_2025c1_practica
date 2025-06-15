@@ -27,7 +27,6 @@
     {% endif %}
     {% endwith %}
     <main class="contenedor-manejo">
-        <!-- Formulario de selección de reclamo y acción -->
         <div class="formulario-contenedor">
             <form class="formulario-manejo" action="{{ url_for('manejo_reclamos') }}" method="POST">
                 <div class="form-group">
@@ -55,8 +54,6 @@
                 <button type="submit">Confirmar</button>
             </form>
         </div>
-
-        <!-- Tabla de reclamos -->
         <div>
             <table class="tabla-reclamos">
                 <thead>
@@ -111,8 +108,6 @@
             </table>
         </div>
     </main>
-
-    <!-- Mensajes flash -->
     <div class="mensaje-flash-centro">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -124,7 +119,6 @@
             {% endif %}
         {% endwith %}
     </div>
-    <!-- Botón Volver -->
     <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
         <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
     </div>

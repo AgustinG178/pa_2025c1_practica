@@ -251,6 +251,11 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """
         Obtiene todos los registros que coinciden con un filtro específico.
         """
+        from sqlalchemy import func
+        if filtro == "clasificacion":
+            return self.session.query(ModeloReclamo).filter(
+                func.lower(ModeloReclamo.clasificacion) == valor.lower().strip()
+            ).all()
         modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
 
