@@ -77,7 +77,7 @@
                                     Sin adherentes
                                 {% else %}
                                     {% for id_usuario in reclamo.adherentes_ids %}
-                                        {{ id_usuario }}{% if not loop.last %}, {% endif %}
+                                        <p>Adherente ID: {{ id_usuario }}</p>
                                     {% endfor %}
                                 {% endif %}
                             </td>
@@ -90,7 +90,7 @@
                                     Sin asignar
                                 
                                 {% else %}
-                                    {{ reclamo.tiempo_estimado }}
+                                    {{ reclamo.tiempo_estimado}}
                                 {% endif %}
                             </td>
                             <td>
