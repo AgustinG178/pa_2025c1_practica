@@ -22,40 +22,32 @@ class GestorBaseDatos:
         Crea una nueva sesión para interactuar con la base de datos.
         """
         self.session = self.Session()
+        return self.session is not None  # 👈 ESTA LÍNEA ES LA CLAVE
 
     def guardar_usuario(self, usuario):
-        """
-        Guarda un objeto Usuario en la base de datos.
-        """
         self.session.add(usuario)
         self.session.commit()
 
     def guardar_reclamo(self, reclamo):
-        """
-        Guarda un objeto Reclamo en la base de datos.
-        """
         self.session.add(reclamo)
         self.session.commit()
 
-    def actualizar_reclamo(self, reclamo_actualizado:Reclamo):
-        
-        """
-        Actualiza un objeto Reclamo existente en la base de datos.
-        """
+    def actualizar_reclamo(self, reclamo_actualizado: Reclamo):
         self.session.merge(reclamo_actualizado)
         self.session.commit()
 
     def obtener_reclamos(self, **filtros):
-        """
-        Obtiene una lista de reclamos aplicando filtros opcionales.
-        """
         query = self.session.query(Reclamo)
         for attr, value in filtros.items():
             query = query.filter(getattr(Reclamo, attr) == value)
         return query.all()
-    
-    def obtener_reclamo_por_id(self,reclamo_id):
-        """
-        Obtiene un reclamo por su ID.
-        """
+
+    def obtener_reclamo_por_id(self, reclamo_id):
         return self.session.query(Reclamo).filter_by(id=reclamo_id)
+
+    def desconectar(self):
+        if self.session:
+            self.session.close()
+            self.session = None
+            return True
+        return False
