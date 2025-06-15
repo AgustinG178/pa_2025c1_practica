@@ -948,6 +948,169 @@ input[type="file"].boton-imagenes {
     max-width: 450px;
 }
 
+/* Página de ayuda */
+.pagina-ayuda {
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
 
+.header-ayuda {
+    background-color: #003366;
+    color: #fff;
+    padding: 24px 0;
+    text-align: center;
+}
+
+.titulo-ayuda {
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+
+.contenedor-ayuda {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.introduccion-ayuda,
+.opciones-ayuda,
+.uso-ayuda,
+.contacto-ayuda {
+    margin-bottom: 30px;
+}
+
+.subtitulo-ayuda {
+    color: #003366;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.texto-ayuda {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+.contenido-ayuda {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-left: 4px solid #003366;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.lista-ayuda {
+    list-style: decimal inside;
+    padding-left: 20px;
+}
+
+.lista-ayuda li {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.footer-ayuda {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #f5f7fa;
+    color: #444;
+    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+}
+
+/* Opciones del Dashboard */
+.lista-opciones-ayuda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.1rem;
+    color: #222;
+}
+
+.lista-opciones-ayuda li {
+    margin-bottom: 12px;
+    padding: 10px;
+    border-left: 4px solid #003366;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilo alternativo para los elementos de la lista en uso-ayuda */
+.lista-ayuda {
+    list-style: none; /* Eliminamos el estilo de lista predeterminado */
+    padding: 0;
+    margin: 0;
+}
+
+.item-ayuda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-ayuda:hover {
+    background-color: #f0f8ff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.item-ayuda::before {
+    content: "✔"; /* Ícono para cada elemento */
+    font-size: 1.2rem;
+    color: #00509e;
+    margin-right: 10px;
+}
+
+/* Estilo alternativo para los elementos de la lista en uso-ayuda */
+.lista-ayuda {
+    list-style: none; /* Eliminamos el estilo de lista predeterminado */
+    padding: 0;
+    margin: 0;
+}
+
+.item-ayuda {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.5;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-ayuda:hover {
+    background-color: #f0f8ff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.item-ayuda::before {
+    content: "✔"; /* Ícono para cada elemento */
+    font-size: 1.2rem;
+    color: #00509e;
+    margin-right: 10px;
+}
 
 

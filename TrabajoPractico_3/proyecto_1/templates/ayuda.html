@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayuda - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="pagina-ayuda">
+    <header class="header-ayuda">
+        <h1 class="titulo-ayuda">Ayuda del Sistema</h1>
+    </header>
+
+    <main class="contenedor-ayuda">
+        <section class="introduccion-ayuda">
+            <h2 class="subtitulo-ayuda">Bienvenido/a al Dashboard</h2>
+            <p class="texto-ayuda">Este sistema está diseñado para facilitar la gestión de reclamos en los departamentos. Aquí encontrarás una guía rápida sobre cómo utilizar las diferentes opciones disponibles.</p>
+        </section>
+
+        <section class="opciones-ayuda">
+            <h2 class="subtitulo-ayuda">Opciones del Dashboard</h2>
+            <ul class="lista-opciones-ayuda">
+                <li><strong>Listar Reclamos:</strong> Permite visualizar todos los reclamos de la base de datos.</li>
+                {% if current_user.rol in ['2', '3', '4'] %}
+                    <li><strong>Analítica:</strong> Muestra estadísticas sobre los reclamos, incluyendo gráficos circulares, medianas de tiempos de resolución y una nube de palabras clave.</li>
+                    <li><strong>Manejar Reclamos:</strong> Permite listar los reclamos del departamento, cambiar su estado y asignar tiempos de resolución.</li>
+                {% endif %}
+                <li><strong>Ayuda:</strong> Muestra la guía de uso del sistema.</li>
+                <li><strong>Salir:</strong> Cierra la sesión del usuario y lo redirige a la página de inicio.</li>
+            </ul>
+        </section>
+
+        <section class="uso-ayuda">
+            <h2 class="subtitulo-ayuda">Cómo usar el sistema</h2>
+            <ol class="lista-ayuda">
+                <li class="item-ayuda">Inicia sesión con tu usuario y contraseña.</li>
+                <li class="item-ayuda">Accede al panel correspondiente a tu departamento.</li>
+                <li class="item-ayuda">Utiliza las opciones disponibles para gestionar los reclamos y consultar estadísticas.</li>
+                {% if current_user.rol == '1' %}
+                    <li class="item-ayuda">Si necesitas derivar un reclamo, utiliza la opción disponible en el panel de Secretaría Técnica.</li>
+                {% endif %}
+                {% if current_user.rol in ['2', '3', '4'] %}
+                    <li class="item-ayuda">Genera reportes en formato HTML o PDF desde la opción de Analítica.</li>
+                {% endif %}
+            </ol>
+        </section>
+
+        <section class="contacto-ayuda">
+            <h2 class="subtitulo-ayuda">Contacto</h2>
+            <p class="texto-ayuda">Si tienes dudas o problemas con el sistema, puedes contactar al equipo de soporte técnico.</p>
+            <p class="texto-ayuda"><strong>Email:</strong> agugrio17@gmail.com</p>
+            <p class="texto-ayuda"><strong>Teléfono:</strong> +54 3498 461017</p>
+        </section>
+    </main>
+
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
+    <footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+    </div>
+</footer>
+</body>
+</html>

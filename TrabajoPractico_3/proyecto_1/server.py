@@ -387,6 +387,14 @@ def descargar_pdf():
         path="salida_reporte_pdf",
         as_attachment=True
     )
+    
+@app.route('/ayuda')
+@login_required
+def ayuda():
+    """
+    Muestra una página de ayuda con un tutorial o guía de uso del sistema.
+    """
+    return render_template('ayuda.html', current_user=current_user)
 
 @login_manager.user_loader
 def load_user(user_id):

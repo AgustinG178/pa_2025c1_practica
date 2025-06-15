@@ -10,9 +10,7 @@
     <header>
         <h1>Listar Reclamos Pendientes</h1>
     </header>
-
     <main>
-        <!-- Filtros -->
         <section>
             <form method="GET" action="{{ url_for('listar_reclamos') }}">
                 <label for="departamento">Filtrar por Departamento:</label>
@@ -27,8 +25,6 @@
                 <button type="submit">Aplicar Filtro</button>
             </form>
         </section>
-
-        <!-- Listado de Reclamos -->
         <section>
             <h2>Reclamos Pendientes</h2>
             {% if reclamos %}
@@ -57,9 +53,14 @@
             {% endif %}
         </section>
     </main>
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
+    <footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+    </div>
+</footer>
 
-    <footer>
-        <p>&copy; 2025 Reclamos. Todos los derechos reservados.</p>
-    </footer>
 </body>
 </html>
