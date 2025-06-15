@@ -165,13 +165,29 @@ def adherirse(reclamo_id):
 
     return redirect(url_for('inicio_usuario'))
 
-@app.route('/listar_reclamos')
+@app.route('/listar_reclamos', methods=['GET', 'POST'])
 @login_required
 def listar_reclamos():
-    reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
+    """
+    Lista todos los reclamos pendientes y permite aplicar filtros por departamento.
+    """
+    generador = GeneradorReportes(repo_reclamos)
+    departamentos = generador.listar_clasificaciones_unicas()
 
-    return render_template('listar_reclamos.html', reclamos=reclamos)
+    filtro_departamento = request.args.get('departamento', None)
 
+    if filtro_departamento:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion", valor=filtro_departamento)
+    else:
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="estado", valor="pendiente")
+
+    return render_template(
+        'listar_reclamos.html',
+        reclamos=reclamos,
+        departamentos=departamentos,
+        filtro_departamento=filtro_departamento
+    )
+    
 @app.route("/analitica")
 @login_required
 def analitica_reclamos():

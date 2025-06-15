@@ -162,6 +162,7 @@ if __name__ == "__main__":
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
             modelo.cantidad_adherentes = randint(0, 20)
+            modelo.tiempo_estimado = randint(1, 10) if estado == "pendiente" else 0
             modelo.resuelto_en = resuelto_en
 
             repo_reclamos.guardar_registro(modelo)

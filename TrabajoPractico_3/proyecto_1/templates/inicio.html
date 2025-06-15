@@ -13,6 +13,7 @@
         <ul>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('crear_reclamos') }}">Crear Reclamo</a></li>
+                <li><a href="{{ url_for('listar_reclamos') }}">Listar Reclamos</a></li>
                 {%if current_user.rol == '1'%}
                     <li><a href="{{ url_for('mis_reclamos') }}">RECLAMO FIUNER</a></li>
                 {%else%}
