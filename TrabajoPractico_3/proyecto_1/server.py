@@ -11,6 +11,7 @@ from modules.monticulos import MonticuloMediana
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma, GraficadoraNubePalabras
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
+from modules.reclamo import Reclamo
 import os
 import datetime as date
 from modules.monticulos import MonticuloMediana
@@ -104,9 +105,10 @@ def inicio_usuario():
 @login_required
 def mis_reclamos():
     if current_user.rol == '1':
-        reclamos = repo_reclamos.obtener_todos_los_reclamos_base()
+        reclamos = gestor_reclamos.devolver_reclamos_base(usuario=current_user)
+
     else:
-        reclamos = repo_reclamos.obtener_todos_los_registros(current_user.id)
+        reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="usuario_id",valor=current_user.id)
         
     return render_template('mis_reclamos.html', usuario=current_user, reclamos=reclamos, os=os)
 
@@ -115,7 +117,7 @@ def mis_reclamos():
 def crear_reclamos():
     if request.method == 'POST':
         descripcion = request.form.get('descripcion')
-        
+        imagen = request.files.get('imagen')
         try:
             clasificacion_predicha = clf.clasificar([descripcion])[0]
             reclamo = gestor_reclamos.crear_reclamo(
@@ -123,37 +125,54 @@ def crear_reclamos():
                 descripcion=descripcion,
                 clasificacion=str(clasificacion_predicha)
             )
-            modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
-            repo_reclamos.guardar_registro(modelo)
-            sqlalchemy_session.refresh(modelo)
-            imagen = request.files.get('imagen')
-            reclamos_similares = repo_reclamos.buscar_similares(str(clasificacion_predicha), modelo.id)
+
+            gestor_reclamos.guardar_reclamo(reclamo=reclamo)
+
+
+            
+            #Ahora tomamos el reclamo de la bd para utilizar su id, es el ultimo creado
+
+            reclamo_creado = gestor_reclamos.obtener_ultimos_reclamos(cantidad=1)[0]
+
+
+            reclamos_similares = gestor_reclamos.buscar_reclamos_similares(clasificacion=reclamo_creado.clasificacion,reclamo_id=reclamo_creado.id)
 
             if imagen and imagen.filename:
-                gestor_imagenes_reclamos.guardar_imagen(reclamo_id=modelo.id, imagen=imagen)
-                return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
+                gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_creado.id, imagen=imagen)
+                return render_template('ultimo_reclamo.html', reclamo=reclamo_creado, similares=reclamos_similares)
 
-            return render_template('ultimo_reclamo.html', reclamo=modelo, similares=reclamos_similares)
+            return render_template('ultimo_reclamo.html', reclamo=reclamo_creado, similares=reclamos_similares)
         except Exception as e:
             flash(f'Error al crear el reclamo: {e}', 'danger')
 
     return render_template('crear_reclamo.html')
 
-@app.route('/adherirse/<int:reclamo_id>', methods=['POST'])
+@app.route('/adherirse/<int:reclamo_id_adherido>', methods=['POST'])
 @login_required
-def adherirse(reclamo_id):
+def adherirse(reclamo_id_adherido):
     usuario_actual = current_user
     accion = request.form.get('accion')
-    reclamo_id_adherido = reclamo_id
+    reclamo_id_adherido = reclamo_id_adherido
     reclamo_id_creado = request.form.get('reclamo_id_creado')
 
     if accion == "confirmar":
         flash("Reclamo creado exitosamente.", "success")
     elif accion == "adherir":
         try:
-            gestor_reclamos.agregar_adherente(reclamo_id, usuario_actual)
-            gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=reclamo_id_creado)
-            repo_reclamos.eliminar_registro_por_id(id=reclamo_id_creado)
+
+            usuario_a_adherirse = gestor_usuarios.buscar_usuario(filtro="id",valor=current_user.id,mapeo=False)
+
+            gestor_reclamos.agregar_adherente(usuario=usuario_a_adherirse,reclamo_id=reclamo_id_adherido)
+            
+            # Eliminar imagen solo si existe el archivo
+
+            ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{reclamo_id_creado}.png")
+
+            if os.path.exists(ruta_imagen):
+                gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=reclamo_id_creado)
+
+            gestor_reclamos.invalidar_reclamo(reclamo_id=reclamo_id_creado)
+
             flash("Te adheriste al reclamo correctamente.", "success")
         except ValueError as e:
             flash(str(e), "warning")
@@ -300,48 +319,56 @@ def descargar_reporte(formato):
 @app.route('/editar_reclamo/<int:reclamo_id>', methods=['GET', 'POST'])
 @login_required
 def editar_reclamo(reclamo_id):
-    modelo_reclamo = repo_reclamos.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
+
+    reclamo = gestor_reclamos.devolver_reclamo(reclamo_id=reclamo_id)
+    print(type(reclamo))
+
     accion = request.form.get("accion")
+    nuevo_dpto = request.form.get("nuevo_dpto")
+    nuevo_contenido = request.form.get('descripcion')
+    imagen = request.files.get('imagen')
+
     if request.method == 'POST':
 
-        nuevo_dpto = request.form.get("nuevo_dpto")
-        nuevo_contenido = request.form.get('descripcion')
-        imagen = request.files.get('imagen')
+        
 
         if nuevo_dpto:
 
-            modelo_reclamo.clasificacion = nuevo_dpto.lower()
+            reclamo.clasificacion = nuevo_dpto.lower()
 
-            repo_reclamos.actualizar_reclamo(modelo_reclamo)
+            gestor_reclamos.modificar_reclamo(reclamo_modificado=reclamo)
+
 
             flash('Reclamo derivado correctamente','success')
 
             return redirect(url_for('mis_reclamos'))
-        try:
-            nueva_clasificacion = clf.clasificar([nuevo_contenido])[0]
-        except Exception as e:
-            flash(f"Error al clasificar el contenido: {e}", "danger")
-            return render_template("editar_reclamo.html", reclamo=modelo_reclamo)
+        
 
-        modelo_reclamo.contenido = nuevo_contenido
-        modelo_reclamo.clasificacion = nueva_clasificacion
+        elif nuevo_contenido:
 
-        try:
-            repo_reclamos.modificar_registro_orm(repo_reclamos.mapear_reclamo_a_modelo(modelo_reclamo))
+            try:
 
-            if imagen and imagen.filename:
-                try:
-                    gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_id, imagen=imagen)
-                except Exception as e:
-                    flash(f"Error al guardar la imagen: {e}", "warning")
+                nueva_clasificacion = clf.clasificar([nuevo_contenido])[0]
+                reclamo.contenido = nuevo_contenido
+                reclamo.clasificacion = nueva_clasificacion
 
-            flash("Reclamo actualizado correctamente.", "success")
-            return redirect(url_for('mis_reclamos'))
+                gestor_reclamos.modificar_reclamo(reclamo_modificado=reclamo)
 
-        except Exception as e:
-            flash(f"Error al actualizar el reclamo: {e}", "danger")
+                if imagen and imagen.filename:
+                    try:
+                        gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_id, imagen=imagen)
+                    except Exception as e:
+                        flash(f"Error al guardar la imagen: {e}", "warning")
 
-    return render_template("editar_reclamo.html", reclamo=modelo_reclamo)
+
+                flash("Reclamo actualizado correctamente.", "success")
+                return redirect(url_for('mis_reclamos'))
+            
+            except Exception as e:
+                flash(f"Error al modificar el reclamo: {e}", "danger")
+
+
+    return render_template("editar_reclamo.html", reclamo=reclamo)
 
 @app.route("/manejar_reclamos", methods=["GET", "POST"])
 @login_required
@@ -354,34 +381,60 @@ def manejo_reclamos():
     }
     
     rol = current_user.rol
+    dpto = current_user.rol_to_dpto()
+
     if rol not in ['1', '2', '3', '4']:
         flash("No tienes permisos para acceder.", "danger")
         return redirect(url_for('index'))
 
-    reclamos = repo_reclamos.obtener_todos_los_registros(usuario_id=current_user.id)
+    reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion",valor=dpto)
     selected_id = None
 
     if request.method == "POST":
         selected_id = request.form.get('reclamo_id')
         accion = request.form.get('accion')
-        reclamo = repo_reclamos.obtener_registro_por_filtro(filtro="id", valor=selected_id)
+        tiempo_estimado = request.form.get('tiempo_estimado')
+        reclamo = gestor_reclamos.devolver_reclamo(reclamo_id=selected_id)
+
+        
+
         try:
             if accion == "resolver":
                 gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="resolver")
                 flash("Reclamo resuelto exitosamente.", "success")
-            elif accion == "actualizar":
-                gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="actualizar")
-                flash("Reclamo actualizado exitosamente.", "success")
+                
+            elif accion == "actualizar" and tiempo_estimado:
+                if reclamo.estado == "en proceso":
+                    flash("El reclamo ya se encuentra en proceso","danger")
+                else:
+
+                    gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="actualizar",tiempo_estimado=tiempo_estimado)
+                    flash("Reclamo actualizado exitosamente.", "success")
+            elif accion == "actualizar" and not tiempo_estimado:
+                flash("El tiempo estimado es obligatorio para pasar un reclamo de pendiente --> en proceso","danger")
+
             elif accion == "eliminar":
                 gestor_reclamos.invalidar_reclamo(usuario=current_user, reclamo_id=selected_id)
-                gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=selected_id)
+                # Eliminar imagen solo si existe el archivo
+                import os
+                ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{selected_id}.png")
+                if os.path.exists(ruta_imagen):
+                    gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=selected_id)
                 flash("Reclamo eliminado exitosamente.", "success")
+
+
         except Exception as e:
             flash(f"Error al procesar el reclamo: {e}", "danger")
 
-        dpto = rol_to_dpto.get(current_user.rol)
+        
+        try:
+            reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion", valor=dpto)
+        except Exception as e:
+            flash("Hubo un error al obtener los reclamos: " + str(e), "danger")
+            reclamos = []
+            
+        #reclamos = gestor_reclamos.buscar_reclamos_por_filtro(usuario=current_user,filtro="clasificacion",valor=dpto)
 
-        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion",valor=dpto)
 
     return render_template(
         'manejo_reclamos.html',
@@ -401,7 +454,7 @@ def ayuda():
 
 @login_manager.user_loader
 def load_user(user_id):
-    usuario = repo_usuarios.obtener_registro_por_filtro(campo='id', valor=user_id)
+    usuario = gestor_usuarios.buscar_usuario(filtro="id",valor=user_id)
     if usuario:
         return FlaskLoginUser(usuario)
     return None

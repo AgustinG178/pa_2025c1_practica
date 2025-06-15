@@ -1,14 +1,14 @@
 from modules.repositorio import RepositorioReclamosSQLAlchemy, RepositorioUsuariosSQLAlchemy
-from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
 from datetime import datetime, UTC
-from modules.modelos import ModeloUsuario, ModeloReclamo
+from modules.login import FlaskLoginUser
+from modules.modelos import ModeloReclamo,ModeloUsuario
 import random
 from datetime import date
 
-session = crear_engine()
-repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
+#session = crear_engine()
+#repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
 
 class GestorReclamo:
 
@@ -21,7 +21,7 @@ class GestorReclamo:
     def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
         self.repositorio_reclamo = repositorio_reclamo
 
-    def crear_reclamo(self, usuario, descripcion: str, clasificacion: str):
+    def crear_reclamo(self, usuario:FlaskLoginUser, descripcion: str, clasificacion: str):
         # acepta cualquier objeto con atributo id, por ejemplo
         if not hasattr(usuario, 'id') or not descripcion:
             raise ValueError("Verificar que los datos ingresados sean correctos")
@@ -34,86 +34,162 @@ class GestorReclamo:
         )
         return p_reclamo
     
-    def buscar_reclamos_por_usuario(self, usuario: Usuario):
-        """
-        Se buscan y devuelven todos los reclamos asociados a un usuario
-        """
-        if isinstance(usuario, Usuario):
+    def guardar_reclamo(self,reclamo:Reclamo):
 
+        if isinstance(reclamo,Reclamo):
+
+            modelo_reclamo = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo)
+            self.repositorio_reclamo.guardar_registro(modelo_reclamo=modelo_reclamo)
+
+
+    def devolver_reclamo(self,reclamo_id) ->Reclamo:
+
+        """
+        Se devuelve un reclamo accediendo a  este con su id
+        """
+        try:
+
+            return self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id",valor=reclamo_id)
+    
+        except Exception as e:
+            
+            print(f"Error: {e} a la hora de devolver el reclamo")
+            
+    def buscar_reclamos_por_filtro(self, filtro=None, valor=None):
+
+        """
+        Se devuelven todos los reclamos que correspondan con los filtros ingresados.
+        """
+        if filtro and valor:
             try:
 
-                reclamos = self.repositorio_reclamo.obtener_todos_los_registros(usuario_id=usuario.id)
+                return self.repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor)
+            except Exception as e:
+                raise e  # Lanza el error en vez de retornarlo
 
-
-                return reclamos
-
-            except AttributeError:
-                return "El usuario no posee reclamos asociados"
-
-        raise TypeError("El usuario no es una instancia de la clase Usuario")
-
-    def actualizar_estado_reclamo(self, usuario: Usuario, reclamo: Reclamo,accion:str):
+        
+    def devolver_reclamos_base(self,usuario:FlaskLoginUser):
 
         """
-        Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Secretario Tecnico o un Jefe de Departamento
+        Se devuelven todos los reclamos de la base de datos, solo si el usuario es un sec. tecnico
         """
 
-        if int(usuario.rol) in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
+        usuario.__dict__
+
+        if int(usuario.rol) == 1:
+            return self.repositorio_reclamo.obtener_todos_los_registros()
+        
+        raise PermissionError(f"El usuario {usuario.nombre_de_usuario} no posee los permisos para realizar dicha petición")
+    
+    def buscar_reclamos_similares(self,clasificacion:str,reclamo_id:int):
+        """
+        Se devuelven todos los reclamos similares asociados a uno creado
+        """
+
+        if clasificacion and reclamo_id:
+            try:
+
+                return self.repositorio_reclamo.buscar_similares(clasificacion=clasificacion,reclamo_id=reclamo_id)
+            except Exception as e:
+
+                print(f"Error: {e} al intentar buscar similares")
+
+        raise ValueError("Verifique los datos ingresados")
+
+    def actualizar_estado_reclamo(self, usuario: FlaskLoginUser, reclamo: Reclamo,accion:str,tiempo_estimado:int=None):
+
+        """
+        Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Jefe de Departamento
+        """
+
+        if int(usuario.rol) in [2,3,4]:  #Los roles estan definidos en FlaskLoginUser
             try:
                 reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
 
                 if accion == "resolver":
                     reclamo_a_modificar.estado = "resuelto"
-
-                    dias = (date.today() - reclamo.fecha_hora.date()).days
-
+                    # Se resuelve el reclamo directamente, sin pasarlo de pendiente --> proceso
+                    if reclamo_a_modificar.tiempo_estimado is None:
+                        dias = 0
+                        reclamo_a_modificar.resuelto_en = dias
+                        self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+                        return
+                    
+                    if hasattr(reclamo, 'fecha_hora') and isinstance(reclamo.fecha_hora, datetime):
+                        dias = (date.today() - reclamo.fecha_hora.date()).days
+                    else:
+                        dias = None  
                     reclamo_a_modificar.resuelto_en = dias
-                    self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
+                    self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+                    print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
+                    return
+                elif accion == "actualizar":
+                    
 
+                    reclamo_a_modificar.estado = "en proceso"
+                    reclamo_a_modificar.tiempo_estimado = tiempo_estimado
+                    self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                     print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
                     return
                 
-                elif accion == "actualizar":
-                    reclamo_a_modificar.estado = "en proceso"
-                    reclamo_a_modificar.tiempo_estimado = random.randint(1,15) #Tiempo aleatorio estimado entre 1 y 15 días desde la fecha en que se creo
-                    self.repositorio_reclamo.actualizar_reclamo(reclamo=reclamo_a_modificar)
-                    print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
-                    return
-            except AttributeError:
-                print(f"[DEBUG] El reclamo con id {reclamo.id} no existe o no es correcto")
+
+            except Exception as e:
+                print(f"[DEBUG] Error {e} al actualizar estado del reclamo")
                 return
 
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
 
-    def invalidar_reclamo(self, usuario: Usuario, reclamo_id: int):
+    def invalidar_reclamo(self,reclamo_id: int):
         """
-        Se elimina un reclamo (accediendo a este con su id) asociado a un usuario, realizando sus  pertinentes verificaciones.
+        Se elimina un reclamo (accediendo a este con su id) asociado a un usuario.
         """
-        if int(usuario.rol) in [1,2,3,4]:  #Los roles estan definidos en FlaskLoginUser
 
-            try:
+        try:
 
-                self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
+            self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
 
 
-                return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
+            return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
 
-            except AttributeError:
-                return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
-
-        raise PermissionError("El usuario no posee los permisos para realizar dicha modificacion.")
-
-    def agregar_adherente(self, reclamo_id, usuario: Usuario):
+        except AttributeError:
+            return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
         
-        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id, mapeado=False)
+
+        
+    def agregar_adherente(self, reclamo_id, usuario:ModeloUsuario):
+        
+        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
+
+        modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)
+
         if reclamo_a_adherir is None:
             raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")
-        if usuario in reclamo_a_adherir.usuarios:
+        if usuario in modelo_reclamo_adherir.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.")
+        
         reclamo_a_adherir.cantidad_adherentes += 1
-        reclamo_a_adherir.usuarios.append(usuario.id)
+        
+        
+        modelo_reclamo_adherir.usuarios.append(usuario)
         self.repositorio_reclamo.commit()
-    
+
+    def obtener_ultimos_reclamos(self,cantidad:int):
+        """
+        Se devuelven los ultimos n reclamos de la base de datos 
+        """
+
+        print("[DEBUG] Tipo de self.repositorio_reclamo:", type(self.repositorio_reclamo))
+        if isinstance(cantidad,int):
+
+            return self.repositorio_reclamo.obtener_ultimos_reclamos(limit=cantidad)
+
+
+    def modificar_reclamo(self,reclamo_modificado:Reclamo):
+
+        if isinstance(reclamo_modificado,Reclamo):
+
+            self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_modificado)
+
 if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
@@ -124,26 +200,26 @@ if __name__ == "__main__": #pragma: no cover
     session = Session()
 
     # 2. Crear repositorio y gestor
-    repositorio = RepositorioReclamosSQLAlchemy(session)
+    #repositorio = RepositorioReclamosSQLAlchemy(session)
+    
     
 
     #gestor = GestorReclamo(repositorio, clasificador)
     repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
     repositorio_reclamos = RepositorioReclamosSQLAlchemy(session)
-
+    gestor_reclamo =GestorReclamo(repositorio_reclamo=repositorio_reclamos)
     # 3. Crear usuario y reclamo en DB para la prueba
-    usuario = repo_usuarios.obtener_registro_por_filtros(nombre="Laura", apellido = "Garcia", email="LauraGarcia@example.com",nombre_de_usuario='Laurita777', contraseña='1234', rol=0, claustro="estudiante")
+    usuario = repo_usuarios.obtener_registro_por_filtros(nombre_de_usuario = "esteban")
     print("[DEBUG] Usuario creado:", usuario)
     #session.add(usuario)
     print("[DEBUG] Usuario agregado a la sesión.")
     #session.commit()  # para que usuario.id se genere
-    print("[DEBUG] Usuario presente en la base de datos con ID:", usuario.id)
+    #print("[DEBUG] Usuario presente en la base de datos con ID:", usuario.id)
 
     reclamo = Reclamo(
         estado="pendiente",
         fecha_hora=datetime.now(),
         contenido="Reclamo prueba",
-        departamento="Servicio Técnico",
         clasificacion="soporte informático",
         usuario_id=usuario.id
     )
@@ -161,6 +237,11 @@ if __name__ == "__main__": #pragma: no cover
     assert reclamo_actualizado.cantidad_adherentes > 0, "El reclamo no tiene adherentes."
     print("Prueba OK, usuario adherido al reclamo.")
 
+
+    ultimos_reclamos = gestor_reclamo.obtener_ultimos_reclamos(cantidad=4)
+    
+    for reclamo in ultimos_reclamos:
+        print(reclamo)
     # except Exception as e:
     #     print("Error al agregar adherente:", e)
 

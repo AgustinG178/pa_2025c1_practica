@@ -23,7 +23,7 @@
                          onerror="this.style.display='none';">
                 </div>
             {% endif %}
-            <form method="post" action="{{ url_for('adherirse', reclamo_id=0) }}">
+            <form method="post" action="{{ url_for('adherirse', reclamo_id_adherido=0) }}">
                 <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
                 <div style="text-align: center;">
                     <button type="submit" name="accion" value="confirmar" class="botton">Confirmar Reclamo</button>
@@ -39,7 +39,7 @@
                 {% for r in similares %}
                     <div class="flashcard">
                         <p class="texto-reclamo">{{ r.contenido }}</p>
-                        <form method="post" action="{{ url_for('adherirse', reclamo_id=r.id) }}">
+                        <form method="post" action="{{ url_for('adherirse', reclamo_id_adherido=r.id) }}">
                             <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
                             <input type="hidden" name="reclamo_id_adherido" value="{{ r.id }}">
                             <div style="text-align: center;">

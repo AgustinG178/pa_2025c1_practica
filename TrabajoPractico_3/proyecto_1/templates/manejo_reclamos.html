@@ -10,22 +10,12 @@
     <header class="header-principal">
         <h1 class="titulo-principal">MANEJO RECLAMOS</h1>
         <div class="saludo">
-            Bienvenido {{ current_user.nombre_de_usuario }}, se mostrarán todos los reclamos pendientes según tu rol:
-            Ingrese la ID del reclamo que desea gestionar, seleccione la acción y confirme.
+            Bienvenido {{ current_user.nombre_de_usuario }}, se mostrarán todos los reclamos pendientes, en proceso y/o resueltos asociados a tu departamento:
+            Ingrese la ID del reclamo que desea gestionar, seleccione la acción y confirme (sobre los reclamos resueltos no se puede realizar ninguna acción, si invalida uno
+            se elimina de la lista); recuerde que el tiempo estimado para un reclamo es obligatorio solo si actualiza un reclamo.
         </div>
     </header>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="flash-container">
-        {% for category, message in messages %}
-            <div class="flash-message {{ category }}">
-            <center>{{message}}</center>
-            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none';" aria-label="Cerrar"></button>
-            </div>
-        {% endfor %}
-        </div>
-    {% endif %}
-    {% endwith %}
+
     <main class="contenedor-manejo">
         <div class="formulario-contenedor">
             <form class="formulario-manejo" action="{{ url_for('manejo_reclamos') }}" method="POST">
@@ -49,6 +39,14 @@
                         <option value="resolver">Resolver</option>
                         <option value="actualizar">Actualizar (pendiente -> en proceso)</option>
                     </select>
+                
+                </div>
+
+                <div class = "form-group">
+                    <label for="tiempo_estimado">Tiempo que estima en resolverse el reclamo (dias):
+                     </label>
+                    <input type="number" name="tiempo_estimado" class="form-group" placeholder="Dias:" min="1" max="15" >
+
                 </div>
 
                 <button type="submit">Confirmar</button>
@@ -113,9 +111,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    {% if category == 'success' %}
-                        <div class="flash-{{ category }}">{{ message }}</div>
-                    {% endif %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}

@@ -4,9 +4,9 @@ from functools import wraps
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_base_datos import GestorBaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
-
+from modules.modelos import ModeloUsuario
 class FlaskLoginUser:
-    def __init__(self, usuario):
+    def __init__(self, usuario:ModeloUsuario):
         self._usuario = usuario  # Guardo la instancia ORM original
         self.id = usuario.id
         self.nombre = usuario.nombre
@@ -82,7 +82,8 @@ class GestorLogin:
         return None
 
     def login_usuario(self, nombre_de_usuario, password):
-        dicc_usuario = self.__gestor_usuarios.buscar_usuario_por_nombre(nombre_de_usuario)
+        dicc_usuario = self.repositorio_usuario.obtener_registro_por_filtro(filtro="nombre_de_usuario",valor=nombre_de_usuario).to_dict()
+
         if dicc_usuario and dicc_usuario["password"] == password:  # Mejora: usar hash seguro
             user = FlaskLoginUser(dicc_usuario)
             login_user(user)
