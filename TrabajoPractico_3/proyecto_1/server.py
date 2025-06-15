@@ -212,7 +212,9 @@ def analitica_reclamos():
         reclamos = []
 
     cantidad_total = len(reclamos)
-    promedio_adherentes = round(sum(r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes) / cantidad_total, 2) if cantidad_total > 0 else 0
+    promedio_adherentes = round(
+        sum(r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes) / cantidad_total, 2
+    ) if cantidad_total > 0 else 0
     tiempos_resolucion = [r.resuelto_en for r in reclamos if r.resuelto_en]
 
     if tiempos_resolucion:
@@ -344,6 +346,13 @@ def editar_reclamo(reclamo_id):
 @app.route("/manejar_reclamos", methods=["GET", "POST"])
 @login_required
 def manejo_reclamos():
+    
+    rol_to_dpto = {
+        "2": "soporte informático",
+        "3": "secretaría técnica",
+        "4": "maestranza"
+    }
+    
     rol = current_user.rol
     if rol not in ['1', '2', '3', '4']:
         flash("No tienes permisos para acceder.", "danger")
@@ -370,9 +379,9 @@ def manejo_reclamos():
         except Exception as e:
             flash(f"Error al procesar el reclamo: {e}", "danger")
 
-        dpto = current_user.rol_to_dpto
+        dpto = rol_to_dpto.get(current_user.rol)
 
-        reclamos = repo_reclamos.obtener_registros_por_filtros(filtro="clasificacion",valor=dpto)
+        reclamos = repo_reclamos.obtener_registros_por_filtro(filtro="clasificacion",valor=dpto)
 
     return render_template(
         'manejo_reclamos.html',

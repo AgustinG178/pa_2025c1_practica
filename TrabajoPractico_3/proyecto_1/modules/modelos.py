@@ -1,12 +1,12 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, DeclarativeBase
 from datetime import datetime, UTC
+from modules.config import crear_engine
 
 """
 relationship() crea una relación entre dos clases en SQLAlchemy, como por ejemplo uno-a-muchos o muchos-a-muchos.  
 Permite acceder desde un objeto a los objetos relacionados en otra tabla, como `usuario.reclamos` o `reclamo.usuario`.
 """
-
 # Base de datos base para los modelos
 class Base(DeclarativeBase):
     """
@@ -61,18 +61,22 @@ class ModeloReclamo(Base):
     contenido = Column(String)
     usuario_id = Column(Integer, ForeignKey('usuarios.id'))
     clasificacion = Column(String)
-    tiempo_estimado = Column(Integer, default=0)  
-    resuelto_en = Column(Integer, default=0)  
-    # Relación muchos a muchos con ModeloUsuario
+    tiempo_estimado = Column(Integer, default=0)
+    resuelto_en = Column(Integer, default=0)
+    cantidad_adherentes = Column(Integer, default=0)
     usuarios = relationship(
         "ModeloUsuario",
         secondary="reclamos_usuarios",
         back_populates="reclamos"
     )
 
-reclamos_usuarios = Table(
-    'reclamos_usuarios',
-    Base.metadata,
-    Column('reclamo_id', Integer, ForeignKey('reclamos.id')),
-    Column('usuario_id', Integer, ForeignKey('usuarios.id'))
-)
+    reclamos_usuarios = Table(
+        'reclamos_usuarios',
+        Base.metadata,
+        Column('reclamo_id', Integer, ForeignKey('reclamos.id')),
+        Column('usuario_id', Integer, ForeignKey('usuarios.id'))
+    )
+
+    def __str__(self):
+        return f"Reclamo: ID = {self.id}, Estado = {self.estado}, Fecha y hora = {self.fecha_hora}, Contenido = {self.contenido}, Usuario ID = {self.usuario_id}, Clasificación = {self.clasificacion}, Tiempo estimado = {self.tiempo_estimado}, Resuelto en = {self.resuelto_en}"
+

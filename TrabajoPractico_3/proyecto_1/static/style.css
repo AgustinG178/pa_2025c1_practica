@@ -1113,4 +1113,14 @@ input[type="file"].boton-imagenes {
     margin-right: 10px;
 }
 
-
+/* Estilo para los elementos h3 */
+h3 {
+    font-size: 1.5rem; /* Tamaño de fuente */
+    font-weight: bold; /* Negrita */
+    color: #333; /* Color del texto */
+    text-align: center; /* Centrar el texto */
+    margin: 20px 0; /* Espaciado superior e inferior */
+    padding: 10px; /* Espaciado interno */
+    border-bottom: 2px solid #007BFF; /* Línea decorativa debajo */
+    font-family: 'Arial', sans-serif; /* Fuente */
+}
