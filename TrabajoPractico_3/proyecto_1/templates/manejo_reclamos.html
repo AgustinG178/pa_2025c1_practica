@@ -84,21 +84,22 @@
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>{{ reclamo.estado }}</td>
                             <td>
-                                {% if reclamo.estado == 'resuelto' %}
-                                    ######
+                                {% if reclamo.estado == 'pendiente' %}
+                                    {{ reclamo.tiempo_estimado }}
                                 {% elif reclamo.tiempo_estimado == 0 %}
-                                    Sin asignar
-                                
+                                    ya resuelto
                                 {% else %}
-                                    {{ reclamo.tiempo_estimado}}
+                                    {{ reclamo.tiempo_estimado }}
                                 {% endif %}
                             </td>
                             <td>
-                                {%if reclamo.estado == 'resuelto'%}
-                                    {{reclamo.resuelto_en}}
-                                {%else%}
-                                    Sin resolver
-                                {%endif%}
+                                {% if reclamo.estado == 'resuelto' %}
+                                    {{ reclamo.resuelto_en }} días
+                                {% elif reclamo.estado == 'en proceso' %}
+                                    {{ reclamo.tiempo_estimado }} días restantes
+                                {% else %}
+                                sin resolver
+                                {% endif %}
                             </td>
                         </tr>
                     {% else %}
