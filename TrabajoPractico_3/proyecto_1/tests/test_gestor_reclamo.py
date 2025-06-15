@@ -147,6 +147,15 @@ class TestGestorReclamo(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.gestor.agregar_adherente(modelo.id, self.usuario_modelo)
 
+    def test_crear_reclamo(self):
+        """Verifica que se puede crear un reclamo."""
+        reclamo = self.gestor.crear_reclamo(
+            descripcion="El proyector no funciona",
+            departamento="soporte informático",
+            clasificacion="hardware"
+        )
+        self.assertIsInstance(reclamo, ModeloReclamo)
+
 if __name__ == "__main__": #pragma: no cover
     unittest.main()
 

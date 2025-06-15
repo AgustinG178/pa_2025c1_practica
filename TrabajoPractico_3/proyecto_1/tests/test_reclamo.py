@@ -39,13 +39,13 @@ class TestReclamo(unittest.TestCase):
     def test_repr(self):
         """Verifica la representación oficial (__repr__) del objeto Reclamo."""
         esperado = ("Reclamo(estado=pendiente, fecha_hora=2025-06-09 15:30:00, contenido=El equipo no funciona, "
-                    "departamento=soporte informático, clasificacion=hardware, usuario_id=123)")
+                    "clasificacion=hardware, usuario_id=123)")  # Elimina departamento
         self.assertEqual(repr(self.reclamo), esperado)
 
     def test_str(self):
         """Verifica la representación informal (__str__) del objeto Reclamo."""
         esperado = ("Reclamo: El equipo no funciona | Estado: pendiente | Fecha: 2025-06-09 15:30:00 | "
-                    "Departamento: soporte informático | Clasificación: hardware | Usuario ID: 123")
+                    "Clasificación: hardware | Usuario ID: 123")  # Elimina departamento
         self.assertEqual(str(self.reclamo), esperado)
 
     def test_id_opcional(self):

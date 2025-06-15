@@ -30,9 +30,9 @@ class TestGestorReclamos(unittest.TestCase):
 
         self.repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
 
-        self.gestor_reclamo = GestorReclamo(self.repo_reclamos, clasificador=None)
-
         self.gestor_usuario = GestorUsuarios(self.repo_usuarios)
+
+        self.gestor_reclamo = GestorReclamo(self.repo_reclamos)  
 
 
     def tearDown(self):
