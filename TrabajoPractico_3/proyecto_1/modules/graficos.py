@@ -1,4 +1,5 @@
 from modules.reportes import GeneradorReportes
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import os
 
@@ -70,48 +71,87 @@ class GraficadoraHistograma:
         plt.ylabel(ylabel)
         plt.legend()
         plt.tight_layout()
-        plt.show()
         
+        
+class GraficadoraNubePalabras:
+    def generar_nube_palabras(self, reclamos, nombre_archivo="nube_palabras.png", subcarpeta="nubes"):
+        """
+        Genera una nube de palabras a partir de los contenidos de los reclamos.
+        
+        :param reclamos: Lista de objetos Reclamo o strings con los contenidos de los reclamos.
+        :param nombre_archivo: Nombre del archivo de salida para la nube de palabras.
+        :param subcarpeta: Subcarpeta donde se guardará la imagen.
+        """
+        # Concatenar todos los contenidos de los reclamos en un solo texto
+        texto = " ".join([reclamo.contenido for reclamo in reclamos if reclamo.contenido])
+
+        # Generar la nube de palabras
+        wordcloud = WordCloud(
+            width=800,
+            height=400,
+            background_color="white",
+            colormap="viridis",
+            max_words=100
+        ).generate(texto)
+
+        # Crear la carpeta de salida si no existe
+        ruta_carpeta = os.path.join("static", "graficos", subcarpeta)
+        os.makedirs(ruta_carpeta, exist_ok=True)
+
+        # Guardar la imagen de la nube de palabras
+        ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
+        wordcloud.to_file(ruta_archivo)
+
+        # Mostrar la nube de palabras
+        plt.figure(figsize=(10, 5))
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis("off")
+        plt.title("Nube de Palabras - Reclamos")
+        plt.tight_layout()
+        
+        ruta_carpeta = os.path.join('static', 'graficos', subcarpeta)
+        os.makedirs(ruta_carpeta, exist_ok=True)
+
+        ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
+        plt.savefig(ruta_archivo)
+        plt.close()
+
+        return f"graficos/{subcarpeta}/{nombre_archivo}"
+
 class Graficadora:
     """
     Clase generado de graficos, encargada de generar gráficos de torta y histogramas, emplea las clases GraficadoraTorta y GraficadoraHistograma.
     """
-    def __init__(self, generador_reportes:GeneradorReportes, graficadora_torta:GraficadoraTorta, graficadora_histograma:GraficadoraHistograma):
+    def __init__(self, generador_reportes:GeneradorReportes, graficadora_torta:GraficadoraTorta, graficadora_histograma:GraficadoraHistograma, graficadora_nube:GraficadoraNubePalabras):
         self.generador_reportes = generador_reportes
         self.graficadora_torta = graficadora_torta
         self.graficadora_histograma = graficadora_histograma
+        self.graficadora_nube = graficadora_nube
 
-    def graficar_todo(self, clasificacion=None, es_secretario_tecnico=False):
+    def graficar_todo(self, reclamos, clasificacion=None, es_secretario_tecnico=False):
         rutas = {}
 
         if es_secretario_tecnico:
-            # Carpeta para secretario técnico
             subcarpeta = 'secretario_tecnico'
-
-            # Torta general de estados (todos los reclamos)
             datos_estado = self.generador_reportes.cantidad_reclamos_por_estado()
             rutas["torta"] = self.graficadora_torta.graficar(
-                datos_estado,
-                nombre_archivo="torta_estado_general.png",
-                subcarpeta=subcarpeta
+                datos_estado, "torta_estado_general.png", subcarpeta
             )
-
-            # Reclamos recientes sin filtro
-            reclamos = self.generador_reportes.reclamos_recientes(365)
-
+            # SOLO usar reclamos que vienen como parámetro
         else:
-            # Carpeta según clasificación (soporte_informatico, secretario_tecnico, maestranza)
             subcarpeta = clasificacion.replace(" ", "_")
-
             datos_estado = self.generador_reportes.cantidad_reclamos_por_estado_filtrado(clasificacion)
             rutas["torta"] = self.graficadora_torta.graficar(
-                datos_estado,
-                nombre_archivo=f"torta_estado_{subcarpeta}.png",
-                subcarpeta=subcarpeta
+                datos_estado, f"torta_estado_{subcarpeta}.png", subcarpeta
             )
+            # SOLO usar reclamos que vienen como parámetro
 
-            reclamos = self.generador_reportes.reclamos_recientes_filtrado(clasificacion, 365)
+        # Asegurarse que reclamos no esté vacío
+        if not reclamos:
+            print("[!] No hay reclamos para generar gráficos.")
+            return rutas
 
+        # Histograma
         datos_por_clasificacion = {}
         for reclamo in reclamos:
             if reclamo.cantidad_adherentes is not None:
@@ -120,7 +160,7 @@ class Graficadora:
 
         nombre_histograma = "histograma_adherentes.png" if es_secretario_tecnico else f"histograma_{subcarpeta}.png"
         rutas["histograma"] = self.graficadora_histograma.graficar(
-            datos=[adherentes for adherentes_list in datos_por_clasificacion.values() for adherentes in adherentes_list],
+            datos=[v for sublist in datos_por_clasificacion.values() for v in sublist],
             titulo="Distribución de Adherentes",
             xlabel="Cantidad de Adherentes",
             ylabel="Frecuencia",
@@ -128,7 +168,15 @@ class Graficadora:
             subcarpeta=subcarpeta
         )
 
+        # Nube de palabras
+        ruta_nube = self.graficadora_nube.generar_nube_palabras(
+            reclamos, nombre_archivo=f"nube_palabras_{subcarpeta}.png", subcarpeta=subcarpeta
+        )
+        if ruta_nube:
+            rutas["nube_palabras"] = ruta_nube
+
         return rutas
+
     
     def graficar_torta_por_rol(self, rol, nombre_archivo, subcarpeta):
 
@@ -153,7 +201,18 @@ class Graficadora:
         nombre_archivo=nombre_archivo,
         subcarpeta=subcarpeta
     )
-
+        
+    def graficar_nube_palabras_por_rol(self, reclamos, nombre_archivo="nube_palabras.png", subcarpeta="nubes"):
+        """
+        Genera una nube de palabras a partir de los contenidos de los reclamos.
+        
+        :param reclamos: Lista de objetos Reclamo o strings con los contenidos de los reclamos.
+        :param nombre_archivo: Nombre del archivo de salida para la nube de palabras.
+        :param subcarpeta: Subcarpeta donde se guardará la imagen.
+        """
+        graficadora_nube = GraficadoraNubePalabras()
+        graficadora_nube.generar_nube_palabras(reclamos, nombre_archivo, subcarpeta)
+        
 if __name__ == "__main__":
     from modules.config import crear_engine
     from repositorio import RepositorioReclamosSQLAlchemy
@@ -182,6 +241,16 @@ if __name__ == "__main__":
         graficadora.graficar_histograma_por_rol(rol, nombre_directorio, 'histogramas')
 
     print("Todos los gráficos fueron generados exitosamente.")
+
+    # Obtener todos los reclamos
+    reclamos = repositorio.obtener_todos_los_registros(usuario_id=2)
+
+    # Crear una instancia de la graficadora
+    graficadora_nube = GraficadoraNubePalabras()
+
+    # Generar la nube de palabras
+    ruta_nube = graficadora_nube.generar_nube_palabras(reclamos)
+    print(f"Nube de palabras generada en: {ruta_nube}")
 
 
 

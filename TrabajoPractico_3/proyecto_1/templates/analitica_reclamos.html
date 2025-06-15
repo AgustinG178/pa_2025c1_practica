@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Analíticas Reclamos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Analiticas Reclamos</h1>
+    <h1>Analíticas Reclamos</h1>
     <section class="contenedor-flashcards">
         <h2 class="titulo-seccion">Resumen General</h2>
         <div class="flashcards-grid">
@@ -17,9 +17,8 @@
             <div class="flashcard">
                 <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
             </div>
-            <div class = "flashcard">
-
-                <p><strong>Mediana de tiempo en resolver reclamos (dias): </strong> {{mediana}}</p>
+            <div class="flashcard">
+                <p><strong>Mediana de tiempo en resolver reclamos (días):</strong> {{ mediana }}</p>
             </div>
         </div>
     </section>
@@ -30,65 +29,69 @@
         <h2 class="titulo-seccion">Vista Personalizada</h2>
         {% if current_user.rol == '1' %}
             <div>
-                <h3 style="text-align:center;">Panel de maestranza</h3>
+                <h3 style="text-align:center;">Panel de Maestranza</h3>
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
             </div>
         {% elif current_user.rol == '2' %}
             <div>
                 <h3>Panel de Soporte Informático</h3>
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            <div class="flashcard">
-                <h3>Torta</h3>
-                <img src="static\graficos\tortas\soporte_informatico.png" alt="Gráfico de torta">
-            </div>
-            <div class="flashcard">
-                <h3>Histograma</h3>
-                <img src="static\graficos\histogramas\soporte_informatico.png" alt="Gráfico de histograma">
-            </div>
+                <div class="flashcard">
+                    <h3>Torta</h3>
+                    <img src="{{ url_for('static', filename='graficos/tortas/soporte_informatico.png') }}" alt="Gráfico de torta">
+                </div>
+                <div class="flashcard">
+                    <h3>Histograma</h3>
+                    <img src="{{ url_for('static', filename='graficos/histogramas/soporte_informatico.png') }}" alt="Gráfico de histograma">
+                </div>
+                <div class="flashcard">
+                    <h3>Nube de Palabras</h3>
+                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras.png') }}" alt="Nube de palabras">
+                </div>
             </div>
         {% elif current_user.rol == '3' %}
             <div>
-                <h3>Panel de Soporte Informático</h3>
+                <h3>Panel de Secretario Técnico</h3>
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            <div class="flashcard">
-                <h3>Torta</h3>
-                <img src="static\graficos\tortas\secretario_tecnico.png" alt="Gráfico de torta">
+                <div class="flashcard">
+                    <h3>Torta</h3>
+                    <img src="{{ url_for('static', filename='graficos/tortas/secretario_tecnico.png') }}" alt="Gráfico de torta">
+                </div>
+                <div class="flashcard">
+                    <h3>Histograma</h3>
+                    <img src="{{ url_for('static', filename='graficos/histogramas/secretario_tecnico.png') }}" alt="Gráfico de histograma">
+                </div>
+                <div class="flashcard">
+                    <h3>Nube de Palabras</h3>
+                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras_secretario_tecnico.png') }}" alt="Nube de palabras">
+                </div>
             </div>
-            <div class="flashcard">
-                <h3>Histograma</h3>
-                <img src="static\graficos\histogramas\secretario_tecnico.png" alt="Gráfico de histograma">
-            </div>
-            </div>
-            {% elif current_user.rol == '4' %}
+        {% elif current_user.rol == '4' %}
             <div>
-                <h3>Panel de Soporte Informático</h3>
+                <h3>Panel de Maestranza</h3>
                 <p>Resumen administrativo y reclamos pendientes del departamento.</p>
-            <div class="flashcard">
-                <h3>Torta</h3>
-                <img src="static\graficos\tortas\maestranza.png" alt="Gráfico de torta">
+                <div class="flashcard">
+                    <h3>Torta</h3>
+                    <img src="{{ url_for('static', filename='graficos/tortas/maestranza.png') }}" alt="Gráfico de torta">
+                </div>
+                <div class="flashcard">
+                    <h3>Histograma</h3>
+                    <img src="{{ url_for('static', filename='graficos/histogramas/maestranza.png') }}" alt="Gráfico de histograma">
+                </div>
+                <div class="flashcard">
+                    <h3>Nube de Palabras</h3>
+                    <img src="{{ url_for('static', filename='graficos/nubes/nube_palabras_maestranza.png') }}" alt="Nube de palabras">
+                </div>
             </div>
-            <div class="flashcard">
-                <h3>Histograma</h3>
-                <img src="static\graficos\histogramas\maestranza.png" alt="Gráfico de histograma">
-            </div>
-            </div>
-            {% endif %}
+        {% endif %}
     </section>
 
     <h3>Descargar reporte</h3>
     <center><a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="enlace-boton">Descargar PDF</a></center>
     <center><a href="{{ url_for('descargar_reporte', formato='html') }}" class="enlace-boton">Descargar HTML</a></center>
 
-    <div>
-        <a href = "{{ url_for ('descargar_pdf') }}" download=>Descargar informe formato PDF</a>
+    <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
     </div>
-    <div class ="volver-contenedor" style="text-align: center; margin: 30px 0;">
-        <a href = "{{ url_for ('inicio')}}" class = "enlace-boton">Volver</a>
-
-    </div>
-</main>
-
-
 </body>
 </html>
-<main>    

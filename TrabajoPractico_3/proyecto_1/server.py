@@ -9,7 +9,7 @@ from modules.gestor_base_datos import GestorBaseDatos
 from sqlalchemy.exc import IntegrityError
 from modules.monticulos import MonticuloMediana
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
-from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma
+from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma, GraficadoraNubePalabras
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
 import os
 import datetime as date
@@ -192,10 +192,12 @@ def analitica_reclamos():
     graficadora = Graficadora(
         generador_reportes=generador,
         graficadora_torta=GraficadoraTorta(),
-        graficadora_histograma=GraficadoraHistograma()
+        graficadora_histograma=GraficadoraHistograma(),
+        graficadora_nube=GraficadoraNubePalabras()
     )
 
     rutas = graficadora.graficar_todo(
+        reclamos = repo_reclamos.obtener_todos_los_registros(usuario_id=2),
         clasificacion=clasificacion_usuario, 
         es_secretario_tecnico=es_secretario
     )
@@ -205,10 +207,6 @@ def analitica_reclamos():
 
     reclamos_resueltos = repo_reclamos.obtener_registros_por_filtro(filtro="estado", valor="resuelto")
 
-    tiempo_reclamos = [
-        reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
-    ]
-    
     tiempo_reclamos = [
         reclamo.resuelto_en for reclamo in reclamos_resueltos if reclamo.clasificacion == clasificacion_usuario
     ]

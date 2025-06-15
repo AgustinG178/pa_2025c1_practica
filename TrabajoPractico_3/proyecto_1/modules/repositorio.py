@@ -257,7 +257,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
 if __name__ == "__main__": #pragma: no cover
     from modules.config import crear_engine
-    from datetime import datetime
 
     # # Crear engine y sesión
     # engine, Session = crear_engine()
