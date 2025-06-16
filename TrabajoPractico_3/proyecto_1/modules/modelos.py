@@ -94,3 +94,4 @@ class ModeloReclamo(Base):
     def __str__(self):
         return f"Reclamo: ID = {self.id}, Estado = {self.estado}, Fecha y hora = {self.fecha_hora}, Contenido = {self.contenido}, Usuario ID = {self.usuario_id}, Clasificación = {self.clasificacion}, Tiempo estimado = {self.tiempo_estimado}, Resuelto en = {self.resuelto_en}"
 
+

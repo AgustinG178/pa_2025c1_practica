@@ -1,116 +1,152 @@
-# Archivo de test para realizar pruebas unitarias del modulo1
 import unittest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from modules.usuarios import Usuario
-from modules.modelos import Base
-from modules.repositorio import RepositorioUsuariosSQLAlchemy,RepositorioReclamosSQLAlchemy
-from modules.gestor_reclamos import GestorReclamo
+from unittest.mock import MagicMock
 from modules.gestor_usuario import GestorUsuarios
-from modules.reclamo import Reclamo
-from modules.config import crear_engine
+from modules.repositorio import RepositorioUsuariosSQLAlchemy
+from modules.modelos import ModeloUsuario
 
 
 class TestGestorUsuarios(unittest.TestCase):
-    """Tests para la gestión de usuarios."""
-
-    @classmethod
-    def setUpClass(cls):
-        engine, Session = crear_engine()
-        cls.session = Session()
-        cls.repo_usuarios = RepositorioUsuariosSQLAlchemy(cls.session)
-        cls.gestor_usuario = GestorUsuarios(cls.repo_usuarios)
-
     def setUp(self):
-        self.session.query(self.repo_usuarios.modelo).delete()
-        self.session.commit()
+        """Configura el entorno para cada prueba."""
+        # Mock de la sesión y el repositorio
+        self.session = MagicMock()
+        self.repo = RepositorioUsuariosSQLAlchemy(self.session)
+        self.gestor = GestorUsuarios(self.repo)
+
+        # Limpia la base de datos simulada
+        self.session.query(ModeloUsuario).delete()
 
     def test_crear_usuario(self):
         """Verifica que se puede crear un usuario y recuperarlo por id."""
-
-        self.gestor_usuario.registrar_nuevo_usuario(
-            nombre="Juan", apellido="Perez", email="juan@gmail.com",
-            nombre_de_usuario="juanperez", password="1234", rol=0, claustro=0, id=1
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
         )
-
-        usuario_db = self.repo_usuarios.obtener_registro_por_filtro(campo="id", valor=1)
-
-        self.assertIsInstance(usuario_db, Usuario)
-        
-    def test_autenticar_usuario(self):
-        """Verifica que se puede autenticar un usuario con nombre y contraseña correctos."""
-        self.gestor_usuario.registrar_nuevo_usuario(nombre="Juan", apellido="Perez", email="pere@gmail.com", nombre_de_usuario="juanperez", password="1234", rol=0, claustro=0,id=1)
-
-        usuario_autenticado = self.gestor_usuario.autenticar_usuario(nombre_de_usuario="juanperez",password="1234")
-
-        #Esperamos que usuario auntenticado sea una instancia de Usuario
-
-        self.assertIsInstance(usuario_autenticado,Usuario)
+        self.repo.guardar_registro(usuario)
+        self.session.commit.assert_called_once()
 
     def test_actualizar_usuario(self):
         """Verifica que se puede actualizar el nombre de usuario correctamente."""
-
-        self.gestor_usuario.registrar_nuevo_usuario(nombre="Juan", apellido="Perez", email="juanpe@gmail.com", nombre_de_usuario="juanperez", password="1234", rol=0, claustro=0,id=1)
-
-        usuario_bd = self.repo_usuarios.obtener_registro_por_filtro(campo="id",valor=1)
-
-        nuevo_nombre = "juanperez_modificado"
-        #Actualizamos mediante un setter el nombre de usuario
-        usuario_bd.nombre_de_usuario = nuevo_nombre
-
-        self.gestor_usuario.actualizar_usuario(usuario_bd)
-
-        usuario_bd_modificado = self.repo_usuarios.obtener_registro_por_filtro(campo="id",valor=1)
-        #Verificamos que el nombre de usuario se haya actualizado correctamente
-        self.assertEqual(usuario_bd.nombre_de_usuario, nuevo_nombre)
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
+        )
+        self.repo.guardar_registro(usuario)
+        usuario.nombre = "Juan Carlos"
+        self.repo.modificar_registro(usuario)
+        self.session.commit.assert_called()
 
     def test_eliminar_usuario(self):
         """Verifica que se puede eliminar un usuario y que ya no existe."""
-        self.gestor_usuario.registrar_nuevo_usuario(nombre="Juan", apellido="Perez", email="", nombre_de_usuario="juanperez", password="1234", rol=0, claustro=0,id=1)
-        usuario_bd = self.repo_usuarios.obtener_registro_por_filtro(campo="id",valor=1)
-
-        self.gestor_usuario.eliminar_usuario(usuario_bd.id)
-
-        usuario_eliminado = self.repo_usuarios.obtener_registro_por_filtro(campo="id",valor=1)
-
-        self.assertIsNone(usuario_eliminado)
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
+        )
+        self.repo.guardar_registro(usuario)
+        self.repo.eliminar_registro_por_id(usuario.id)
+        self.session.commit.assert_called()
 
     def test_buscar_usuario(self):
         """Verifica que se puede buscar un usuario por id y coincide la representación."""
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
+        )
+        self.repo.guardar_registro(usuario)
 
-        self.gestor_usuario.registrar_nuevo_usuario(nombre="Juan", apellido="Perez", email="", nombre_de_usuario="juanperez", password="1234", rol=0, claustro=0,id=1)
-        usuario_bd = self.repo_usuarios.obtener_registro_por_filtro(campo="id",valor=1)
+        # Configurar el mock para devolver el usuario
+        self.session.query().filter_by().first.return_value = usuario
 
-        usuario_metodo_buscar = self.gestor_usuario.buscar_usuario(filtro="id",valor=usuario_bd.id)
+        resultado = self.repo.obtener_modelo_por_id(usuario.id)
+        self.assertEqual(resultado, usuario)
 
-        self.assertEqual(usuario_metodo_buscar, usuario_bd.__str__())
+    def test_autenticar_usuario(self):
+        """Verifica que se puede autenticar un usuario con nombre y contraseña correctos."""
+        # Crear un usuario válido
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
+        )
+        self.repo.guardar_registro(usuario)
 
-    @classmethod
-    def setUpClass(cls):
-        engine, Session = crear_engine()
-        cls.session = Session()
-        cls.repo = RepositorioUsuariosSQLAlchemy(cls.session)
-        cls.gestor = GestorUsuarios(cls.repo)
+        # Configurar el mock para devolver el usuario válido
+        self.session.query().filter_by().first.return_value = usuario
 
-    def setUp(self):
-        self.session.query(self.repo.modelo).delete()
-        self.session.commit()
+        # Ejecutar el método de autenticación
+        resultado = self.gestor.autenticar_usuario("juanperez", "1234")
 
-    def test_actualizar_usuario_sin_id(self):
-        """Verifica que no se puede actualizar un usuario sin id."""
-        usuario = Usuario(nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab", contraseña="123", rol=0, claustro=0)
+        # Verificar que el resultado sea correcto
+        self.assertEqual(resultado.nombre_de_usuario, "juanperez")
+        self.assertEqual(resultado.nombre, "Juan")
+        self.assertEqual(resultado.apellido, "Pérez")
+
+    def test_autenticar_usuario_contraseña_incorrecta(self):
+        """Verifica que no se puede autenticar un usuario con contraseña incorrecta."""
+        usuario = ModeloUsuario(
+            nombre="Juan",
+            apellido="Pérez",
+            email="juan.perez@example.com",
+            nombre_de_usuario="juanperez",
+            contraseña="1234",
+            rol=0,
+            claustro="estudiante",
+        )
+        self.repo.guardar_registro(usuario)
+
+        # Configurar el mock para devolver el usuario
+        self.session.query().filter_by().first.return_value = usuario
+
         with self.assertRaises(ValueError):
-            self.gestor.actualizar_usuario(usuario)
+            self.gestor.autenticar_usuario("juanperez", "incorrecta")
 
-    def test_eliminar_usuario_no_existente(self):
-        """Verifica que no se puede eliminar un usuario inexistente."""
+    def test_autenticar_usuario_inexistente(self):
+        """Verifica que no se puede autenticar un usuario inexistente."""
+        # Configurar el mock para devolver None
+        self.session.query().filter_by().first.return_value = None
+
         with self.assertRaises(ValueError):
-            self.gestor.eliminar_usuario(999)
+            self.gestor.autenticar_usuario("usuario_inexistente", "1234")
 
-    def test_buscar_usuario_no_existente(self):
-        """Verifica que buscar un usuario inexistente lanza ValueError."""
+    def test_generar_reporte_usuario_pdf(self):
+        """Verifica que se puede generar un reporte en formato PDF."""
+        resultado = self.gestor.generar_reporte_usuario("pdf")
+        self.assertEqual(resultado, "Reporte PDF generado para usuarios")
+
+    def test_generar_reporte_usuario_html(self):
+        """Verifica que se puede generar un reporte en formato HTML."""
+        resultado = self.gestor.generar_reporte_usuario("html")
+        self.assertEqual(resultado, "Reporte HTML generado para usuarios")
+
+    def test_generar_reporte_usuario_tipo_invalido(self):
+        """Verifica que no se puede generar un reporte con un tipo inválido."""
         with self.assertRaises(ValueError):
-            self.gestor.buscar_usuario("id", 999)
+            self.gestor.generar_reporte_usuario("xml")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

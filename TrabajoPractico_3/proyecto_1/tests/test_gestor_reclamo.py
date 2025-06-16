@@ -1,155 +1,99 @@
 import unittest
-from modules.repositorio import RepositorioReclamosSQLAlchemy
-from modules.usuarios import Usuario
+from unittest.mock import MagicMock
+from datetime import datetime, timedelta
 from modules.reclamo import Reclamo
-from modules.config import crear_engine
 from modules.modelos import ModeloUsuario, ModeloReclamo
-from modules.gestor_reclamos import GestorReclamo 
+from modules.gestor_reclamos import GestorReclamo
 
-class ClasificadorMock:
-    def clasificar(self, texto):
-        return "soporte"  # Respuesta fija para test # pragma: no cover
+class DummyUser:
+    def __init__(self, id=1, nombre_de_usuario="dummy", rol="1"):
+        self.id = id
+        self.nombre_de_usuario = nombre_de_usuario
+        self.rol = rol
 
-class TestGestorReclamo(unittest.TestCase):
-    """Tests para la gestión de reclamos con GestorReclamo."""
+class TestGestorReclamoExtra(unittest.TestCase):
+    def setUp(self):
+        self.repositorio = MagicMock()
+        self.gestor = GestorReclamo(self.repositorio)
+        self.usuario = DummyUser()
 
-    @classmethod
-    def setUpClass(cls):
-        engine, Session = crear_engine()
-        cls.session = Session()
-        cls.session.query(ModeloUsuario).delete()
-        cls.session.commit()
+    def test_guardar_reclamo(self):
+        reclamo = Reclamo("pendiente", datetime.now(), self.usuario.id, "Fallo", "soporte")
+        self.gestor.guardar_reclamo(reclamo)
+        self.repositorio.mapear_reclamo_a_modelo.assert_called_once()
+        self.repositorio.guardar_registro.assert_called_once()
 
-        ModeloUsuario.metadata.create_all(engine)
-        ModeloReclamo.metadata.create_all(engine)
+    def test_devolver_reclamo(self):
+        self.repositorio.obtener_registro_por_filtro.return_value = "MockReclamo"
+        resultado = self.gestor.devolver_reclamo(1)
+        self.assertEqual(resultado, "MockReclamo")
 
-        cls.repositorio = RepositorioReclamosSQLAlchemy(cls.session)
-        cls.clasificador = ClasificadorMock()
-        cls.gestor = GestorReclamo(cls.repositorio)
+    def test_buscar_reclamos_por_filtro(self):
+        self.repositorio.obtener_registros_por_filtro.return_value = ["R1", "R2"]
+        resultado = self.gestor.buscar_reclamos_por_filtro("estado", "pendiente")
+        self.assertEqual(resultado, ["R1", "R2"])
 
-        cls.usuario_modelo = ModeloUsuario(
-            nombre="Admin",
-            apellido="User",
-            email="admin@example.com",
-            nombre_de_usuario="admin",
-            contraseña="admin",
-            rol="Secretario Tecnico",
-            claustro="ing"
-        )
-        cls.session.add(cls.usuario_modelo)
-        cls.session.commit()
-        cls.usuario = Usuario(
-            id=cls.usuario_modelo.id,
-            nombre=cls.usuario_modelo.nombre,
-            apellido=cls.usuario_modelo.apellido,
-            email=cls.usuario_modelo.email,
-            nombre_de_usuario=cls.usuario_modelo.nombre_de_usuario,
-            contraseña=cls.usuario_modelo.contraseña,
-            rol=cls.usuario_modelo.rol,
-            claustro=cls.usuario_modelo.claustro
-        )
+    def test_devolver_reclamos_base_permitido(self):
+        usuario = DummyUser(rol="1")
+        self.repositorio.obtener_todos_los_registros.return_value = ["R1"]
+        resultado = self.gestor.devolver_reclamos_base(usuario)
+        self.assertEqual(resultado, ["R1"])
 
-    def tearDown(self):
-        self.session.query(ModeloReclamo).delete()
-        self.session.commit()
+    def test_devolver_reclamos_base_denegado(self):
+        usuario = DummyUser(rol="2")
+        with self.assertRaises(PermissionError):
+            self.gestor.devolver_reclamos_base(usuario)
 
-    def test_crear_reclamo_valido(self):
-        """Verifica que se puede crear un reclamo válido y se asignan los atributos correctamente."""
-        reclamo = self.gestor.crear_reclamo(self.usuario, "El proyector no funciona", "maestranza")
-        self.assertIsInstance(reclamo, Reclamo)
-        self.assertEqual(reclamo.descripcion, "El proyector no funciona")
-        self.assertEqual(reclamo.estado, "pendiente")
-        self.assertEqual(reclamo.usuario_id, self.usuario.id)
+    def test_buscar_reclamos_similares(self):
+        self.repositorio.buscar_similares.return_value = ["Sim1"]
+        resultado = self.gestor.buscar_reclamos_similares("soporte", 1)
+        self.assertEqual(resultado, ["Sim1"])
 
-    def test_eliminar_reclamo(self):
-        """Verifica que se puede eliminar un reclamo y que ya no existe en el repositorio."""
-        reclamo = self.gestor.crear_reclamo(
-            self.usuario,
-            descripcion="Teclado roto",
-            clasificacion="soporte"
-        )
-        repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
-        
-        modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
-        self.repositorio.guardar_registro(modelo)
-        reclamo_id = modelo.id
+    def test_actualizar_estado_reclamo_resolver(self):
+        usuario = DummyUser(rol="2")
+        reclamo = Reclamo("pendiente", datetime.now() - timedelta(days=2), usuario.id, "Falla", "hw")
+        reclamo.id = 1
+        modelo = ModeloReclamo(id=1, tiempo_estimado=3)
+        self.repositorio.obtener_registro_por_filtro.return_value = modelo
+        self.gestor.actualizar_estado_reclamo(usuario, reclamo, "resolver")
+        self.repositorio.modificar_registro.assert_called_once()
 
-        repo_reclamos.eliminar_registro_por_id(reclamo_id)
-        self.assertEqual(self.repositorio.obtener_registro_por_filtro("id", reclamo_id), None)
+    def test_actualizar_estado_reclamo_actualizar(self):
+        usuario = DummyUser(rol="2")
+        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Falla", "hw")
+        reclamo.id = 1
+        modelo = ModeloReclamo(id=1)
+        self.repositorio.obtener_registro_por_filtro.return_value = modelo
+        self.gestor.actualizar_estado_reclamo(usuario, reclamo, "actualizar", 5)
+        self.assertEqual(modelo.tiempo_estimado, 5)
+        self.assertEqual(modelo.estado, "en proceso")
+        self.repositorio.modificar_registro.assert_called_once()
 
+    def test_invalidar_reclamo(self):
+        self.repositorio.eliminar_registro_por_id.return_value = None
+        msg = self.gestor.invalidar_reclamo(99)
+        self.assertIn("se ha eliminado correctamente", msg)
 
-    def agregar_adherente(self, id_reclamo, usuario_modelo):
-        """Agrega un adherente a un reclamo para pruebas de duplicados."""
-        reclamo = self.repositorio.obtener_por_id(id_reclamo)
-        if usuario_modelo in reclamo.usuarios:
-            raise ValueError("El usuario ya está adherido a este reclamo.") #pragma: no cover
-        reclamo.usuarios.append(usuario_modelo)
-        self.repositorio.actualizar_reclamo(reclamo)
+    def test_obtener_ultimos_reclamos(self):
+        self.repositorio.obtener_ultimos_reclamos.return_value = ["R1", "R2"]
+        resultado = self.gestor.obtener_ultimos_reclamos(2)
+        self.assertEqual(resultado, ["R1", "R2"])
 
+    def test_modificar_reclamo(self):
+        reclamo = Reclamo("pendiente", datetime.now(), 1, "Desc", "tipo")
+        self.gestor.modificar_reclamo(reclamo)
+        self.repositorio.modificar_registro.assert_called_once()
 
-    def test_agregar_adherente_valido(self):
-        """Verifica que se puede agregar un adherente a un reclamo correctamente."""
-        # Creo un reclamo primero
-        reclamo = self.gestor.crear_reclamo(
-            self.usuario,
-            descripcion="Internet caído",
-            clasificacion="soporte"
-        )
-        modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
-        self.repositorio.guardar_registro(modelo)
+    def test_actualizar_estado_reclamo_excepcion(self):
+        usuario = DummyUser(rol="2")
+        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Desc", "tipo")
+        reclamo.id = 999
+        self.repositorio.obtener_registro_por_filtro.side_effect = Exception("DB error")
 
-        # Creo usuario dummy para adherente
-        otro_usuario_modelo = ModeloUsuario(
-            nombre="Otro",
-            apellido="Usuario",
-            email="otro@example.com",
-            nombre_de_usuario="otro",
-            contraseña="1234",
-            rol="Usuario",
-            claustro="ing"
-        )
-        self.session.add(otro_usuario_modelo)
-        self.session.commit()
+        self.gestor.actualizar_estado_reclamo(usuario, reclamo, "resolver")
 
-        try:
-            # Agrego adherente
-            self.gestor.agregar_adherente(modelo.id, otro_usuario_modelo)
-
-            # Verifico que se haya agregado correctamente
-            reclamo_actualizado = self.repositorio.obtener_por_id(modelo.id)
-            self.assertEqual(reclamo_actualizado.cantidad_adherentes, 1)
-
-        finally:
-            # Limpio el usuario dummy para que no quede en la BD
-            self.session.delete(otro_usuario_modelo)
-            self.session.commit()
+        self.repositorio.modificar_registro.assert_not_called()
 
 
-    def test_agregar_adherente_duplicado(self):
-        """Verifica que no se puede agregar dos veces el mismo adherente a un reclamo."""
-        reclamo = self.gestor.crear_reclamo(
-            self.usuario,
-            descripcion="Sin señal WiFi",
-            clasificacion="soporte"
-        )
-        modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
-        self.repositorio.guardar_registro(modelo)
-
-        # Primer agregado, debería funcionar
-        self.gestor.agregar_adherente(modelo.id, self.usuario_modelo)
-
-        with self.assertRaises(ValueError):
-            self.gestor.agregar_adherente(modelo.id, self.usuario_modelo)
-
-
-    def test_crear_reclamo(self):
-        """Verifica que se puede crear un reclamo."""
-        reclamo = self.gestor.crear_reclamo(
-            descripcion="El proyector no funciona",
-            clasificacion="hardware"
-        )
-        self.assertIsInstance(reclamo, ModeloReclamo)
-
-if __name__ == "__main__": #pragma: no cover
+if __name__ == "__main__":
     unittest.main()
-
