@@ -70,6 +70,11 @@ class TestMonticuloMediana(unittest.TestCase):
         monticulo = MonticuloMediana([])
         self.assertIsNone(monticulo.obtener_mediana())
 
+    def test_insertar_valores(self):
+        monticulo = MonticuloMediana([10, 20, 30])
+        monticulo.insertar(25)
+        self.assertEqual(monticulo.obtener_mediana(), 22.5)  # Ajusta el valor esperado
+        
 class TestMonticuloBinario(unittest.TestCase):
     """Tests para la clase MonticuloBinario."""
 

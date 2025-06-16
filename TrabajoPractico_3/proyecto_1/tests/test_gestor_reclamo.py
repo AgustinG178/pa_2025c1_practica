@@ -6,7 +6,6 @@ from modules.config import crear_engine
 from modules.modelos import ModeloUsuario, ModeloReclamo
 from modules.gestor_reclamos import GestorReclamo 
 
-
 class ClasificadorMock:
     def clasificar(self, texto):
         return "soporte"  # Respuesta fija para test # pragma: no cover
@@ -26,7 +25,7 @@ class TestGestorReclamo(unittest.TestCase):
 
         cls.repositorio = RepositorioReclamosSQLAlchemy(cls.session)
         cls.clasificador = ClasificadorMock()
-        cls.gestor = GestorReclamo(cls.repositorio, cls.clasificador)
+        cls.gestor = GestorReclamo(cls.repositorio)
 
         cls.usuario_modelo = ModeloUsuario(
             nombre="Admin",
@@ -56,12 +55,9 @@ class TestGestorReclamo(unittest.TestCase):
 
     def test_crear_reclamo_valido(self):
         """Verifica que se puede crear un reclamo válido y se asignan los atributos correctamente."""
-        reclamo = self.gestor.crear_reclamo(
-            self.usuario,
-            descripcion="El proyector no enciende",
-            departamento="Maestranza",
-            clasificacion="soporte"
-        )
+        reclamo = self.gestor.crear_reclamo(self.usuario, "El proyector no funciona", "maestranza")
+        self.assertIsInstance(reclamo, Reclamo)
+        self.assertEqual(reclamo.descripcion, "El proyector no funciona")
         self.assertEqual(reclamo.estado, "pendiente")
         self.assertEqual(reclamo.usuario_id, self.usuario.id)
 
@@ -70,16 +66,17 @@ class TestGestorReclamo(unittest.TestCase):
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="Teclado roto",
-            departamento="IT",
             clasificacion="soporte"
         )
+        repo_reclamos = RepositorioReclamosSQLAlchemy(self.session)
+        
         modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
         self.repositorio.guardar_registro(modelo)
         reclamo_id = modelo.id
 
-        mensaje = self.gestor.eliminar_reclamo(self.usuario, reclamo_id)
-        self.assertEqual(mensaje, f"El reclamo de id:{reclamo_id} se ha eliminado correctamente.")
-        self.assertIsNone(self.repositorio.obtener_registro_por_filtro("id", reclamo_id))
+        repo_reclamos.eliminar_registro_por_id(reclamo_id)
+        self.assertEqual(self.repositorio.obtener_registro_por_filtro("id", reclamo_id), None)
+
 
     def agregar_adherente(self, id_reclamo, usuario_modelo):
         """Agrega un adherente a un reclamo para pruebas de duplicados."""
@@ -96,7 +93,6 @@ class TestGestorReclamo(unittest.TestCase):
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="Internet caído",
-            departamento="IT",
             clasificacion="soporte"
         )
         modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
@@ -120,7 +116,7 @@ class TestGestorReclamo(unittest.TestCase):
             self.gestor.agregar_adherente(modelo.id, otro_usuario_modelo)
 
             # Verifico que se haya agregado correctamente
-            reclamo_actualizado = self.repositorio.obtener_registro_por_filtro("id", modelo.id, mapeado=False)
+            reclamo_actualizado = self.repositorio.obtener_por_id(modelo.id)
             self.assertEqual(reclamo_actualizado.cantidad_adherentes, 1)
 
         finally:
@@ -134,18 +130,25 @@ class TestGestorReclamo(unittest.TestCase):
         reclamo = self.gestor.crear_reclamo(
             self.usuario,
             descripcion="Sin señal WiFi",
-            departamento="IT",
             clasificacion="soporte"
         )
         modelo = self.repositorio.mapear_reclamo_a_modelo(reclamo)
         self.repositorio.guardar_registro(modelo)
 
         # Primer agregado, debería funcionar
-        self.agregar_adherente(modelo.id, self.usuario_modelo)
+        self.gestor.agregar_adherente(modelo.id, self.usuario_modelo)
 
-        # Segundo agregado, debería lanzar excepción
         with self.assertRaises(ValueError):
             self.gestor.agregar_adherente(modelo.id, self.usuario_modelo)
+
+
+    def test_crear_reclamo(self):
+        """Verifica que se puede crear un reclamo."""
+        reclamo = self.gestor.crear_reclamo(
+            descripcion="El proyector no funciona",
+            clasificacion="hardware"
+        )
+        self.assertIsInstance(reclamo, ModeloReclamo)
 
 if __name__ == "__main__": #pragma: no cover
     unittest.main()

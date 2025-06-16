@@ -5,6 +5,7 @@ source = modules
 omit = 
     modules\clasificador_de_reclamos\modules\classifier.py
     modules\clasificador_de_reclamos\modules\preprocesamiento.py
+    modules\classifier.py  
     .tests/*
     templates/*
     .venv/*

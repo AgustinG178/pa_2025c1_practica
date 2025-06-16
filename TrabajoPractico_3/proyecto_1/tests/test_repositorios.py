@@ -14,7 +14,7 @@ class TestRepositorioUsuariosSQLAlchemyCobertura(unittest.TestCase):
         cls.repo = RepositorioUsuariosSQLAlchemy(cls.session)
 
     def setUp(self):
-        self.session.query(ModeloUsuario).delete()
+        self.session.query(ModeloUsuario).delete()   
         self.session.commit()
 
     def test_guardar_registro_tipo_invalido(self):
@@ -123,6 +123,42 @@ class TestRepositorioReclamosSQLAlchemyCobertura(unittest.TestCase):
 
     def test_obtener_registros_por_filtro_no_existente(self):
         self.assertEqual(self.repo.obtener_registros_por_filtro("clasificacion", "noexiste"), [])
+
+    def test_obtener_registros_por_filtro_clasificacion(self):
+        # Crear reclamos de prueba
+        reclamo1 = ModeloReclamo(
+            estado="pendiente", fecha_hora=datetime.now(),
+            contenido="Reclamo 1", usuario_id=1, clasificacion="soporte", cantidad_adherentes=2
+        )
+        reclamo2 = ModeloReclamo(
+            estado="pendiente", fecha_hora=datetime.now(),
+            contenido="Reclamo 2", usuario_id=2, clasificacion="infraestructura", cantidad_adherentes=1
+        )
+        self.session.add_all([reclamo1, reclamo2])
+        self.session.commit()
+
+        # Filtrar por clasificación
+        resultados = self.repo.obtener_registros_por_filtro(filtro="clasificacion", valor="soporte")
+        self.assertEqual(len(resultados), 1)
+        self.assertEqual(resultados[0].clasificacion, "soporte")
+
+    def test_obtener_registros_por_filtro_estado(self):
+        # Crear reclamos de prueba
+        reclamo1 = ModeloReclamo(
+            estado="resuelto", fecha_hora=datetime.now(),
+            contenido="Reclamo 1", usuario_id=1, clasificacion="soporte", cantidad_adherentes=2
+        )
+        reclamo2 = ModeloReclamo(
+            estado="pendiente", fecha_hora=datetime.now(),
+            contenido="Reclamo 2", usuario_id=2, clasificacion="infraestructura", cantidad_adherentes=1
+        )
+        self.session.add_all([reclamo1, reclamo2])
+        self.session.commit()
+
+        # Filtrar por estado
+        resultados = self.repo.obtener_registros_por_filtro(filtro="estado", valor="resuelto")
+        self.assertEqual(len(resultados), 1)
+        self.assertEqual(resultados[0].estado, "resuelto")
 
     def test_mapear_reclamo_a_modelo_y_modelo_a_reclamo(self):
         reclamo = Reclamo(
