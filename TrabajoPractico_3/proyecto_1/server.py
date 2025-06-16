@@ -17,7 +17,7 @@ import datetime as date
 from modules.monticulos import MonticuloMediana
 import pickle
 
-base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
+base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
 base_datos.conectar()
 
 engine, Session = crear_engine()
@@ -453,6 +453,7 @@ def ayuda():
     return render_template('ayuda.html', current_user=current_user)
 
 @login_manager.user_loader
+
 def load_user(user_id):
     usuario = gestor_usuarios.buscar_usuario(filtro="id",valor=user_id)
     if usuario:
