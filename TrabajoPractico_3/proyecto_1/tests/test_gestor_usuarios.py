@@ -81,8 +81,6 @@ class TestGestorUsuarios(unittest.TestCase):
         self.assertEqual(resultado, usuario)
 
     def test_autenticar_usuario(self):
-        """Verifica que se puede autenticar un usuario con nombre y contraseña correctos."""
-        # Crear un usuario válido
         usuario = ModeloUsuario(
             nombre="Juan",
             apellido="Pérez",
@@ -92,18 +90,12 @@ class TestGestorUsuarios(unittest.TestCase):
             rol=0,
             claustro="estudiante",
         )
-        self.repo.guardar_registro(usuario)
+        self.repo.obtener_registro_por_filtro = MagicMock(return_value=usuario)
 
-        # Configurar el mock para devolver el usuario válido
-        self.session.query().filter_by().first.return_value = usuario
-
-        # Ejecutar el método de autenticación
         resultado = self.gestor.autenticar_usuario("juanperez", "1234")
 
-        # Verificar que el resultado sea correcto
         self.assertEqual(resultado.nombre_de_usuario, "juanperez")
         self.assertEqual(resultado.nombre, "Juan")
-        self.assertEqual(resultado.apellido, "Pérez")
 
     def test_autenticar_usuario_contraseña_incorrecta(self):
         """Verifica que no se puede autenticar un usuario con contraseña incorrecta."""

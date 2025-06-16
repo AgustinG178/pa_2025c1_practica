@@ -165,17 +165,11 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.add(modelo_reclamo)
         self.__session.commit()
 
-
-
-
     def obtener_registro_por_filtro(self, filtro, valor):
         """Obtiene un reclamo aplicando un filtro; puede devolverlo mapeado o como modelo."""
         modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
 
         return self.mapear_modelo_a_reclamo(modelo) 
-
-
-
 
     def obtener_registros_por_filtro(self, filtro,valor):
         
@@ -184,7 +178,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """
         modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
-    
 
     def obtener_todos_los_registros(self):
         """Devuelve todos los reclamos en la base de datos."""

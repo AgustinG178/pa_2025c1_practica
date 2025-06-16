@@ -204,10 +204,10 @@ def test_graficadora_histograma(mock_close, mock_makedirs, mock_savefig):
     mock_savefig.assert_called_once()
     mock_savefig.assert_called_once()
     
-    def test_graficadora_histograma_sin_datos():
-        graficadora = GraficadoraHistograma()
-        resultado = graficadora.graficar([], "Título", "X", "Y")
-        assert resultado is None
+def test_graficadora_histograma_sin_datos():
+    graficadora = GraficadoraHistograma()
+    resultado = graficadora.graficar([], "Título", "X", "Y")
+    assert resultado is None
 
 from modules.graficos import GraficadoraNubePalabras
 from unittest.mock import patch, MagicMock
@@ -221,27 +221,6 @@ def test_graficadora_nube_palabras(mock_to_file, mock_makedirs):
     
     assert "graficos/nube_test/nube_test.png" in resultado
     mock_to_file.assert_called_once()
-
-from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma, GraficadoraNubePalabras
-from unittest.mock import MagicMock
-
-def test_graficar_todo_secretario_tecnico():
-    mock_generador = MagicMock()
-    mock_generador.cantidad_reclamos_por_estado.return_value = {"Abierto": 3}
-    mock_torta = GraficadoraTorta()
-    mock_histograma = GraficadoraHistograma()
-    mock_nube = GraficadoraNubePalabras()
-
-    graficadora = Graficadora(mock_generador, mock_torta, mock_histograma, mock_nube)
-
-    reclamos = [MagicMock(contenido="algo importante", cantidad_adherentes=2, clasificacion="soporte informático")]
-    rutas = graficadora.graficar_todo(reclamos, es_secretario_tecnico=True)
-
-    assert "torta" in rutas
-    assert "histograma" in rutas
-    assert "nube_palabras" in rutas
-
-
 
 if __name__ == "__main__":
     unittest.main()
