@@ -18,19 +18,18 @@ session = Session()
 """func es un objeto que provee SQLAlchemy para usar funciones SQL como COUNT(), AVG(), SUM(), MAX(), etc., dentro de consultas ORM."""
 
 class GeneradorReportes:
+    """Genera estadísticas y datos para reportes de reclamos."""
+
     def __init__(self, repositorio_reclamos):
+        """Inicializa el generador con un repositorio de reclamos."""
         self.repositorio_reclamos = repositorio_reclamos
 
     def cantidad_total_reclamos(self):
-        """
-        Devuelve el total de reclamos en la base de datos.
-        """
+        """Devuelve el total de reclamos en la base de datos."""
         return self.repositorio_reclamos.session.query(ModeloReclamo).count()
 
     def cantidad_reclamos_por_estado(self):
-        """
-        Devuelve un diccionario con la cantidad de reclamos agrupados por estado.
-        """
+        """Devuelve un diccionario con la cantidad de reclamos por estado."""
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado, 
             func.count(ModeloReclamo.id)
@@ -38,9 +37,7 @@ class GeneradorReportes:
         return dict(query)
 
     def cantidad_reclamos_por_clasificacion(self):
-        """
-        Devuelve un diccionario con la cantidad de reclamos agrupados por clasificación.
-        """
+        """Devuelve un diccionario con la cantidad de reclamos por clasificación."""
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion,
             func.count(ModeloReclamo.id)
@@ -48,18 +45,14 @@ class GeneradorReportes:
         return dict(query)
 
     def cantidad_promedio_adherentes(self):
-        """
-        Devuelve el promedio de adherentes por reclamo. En caso de que no haya reclamos se devuelve 0.
-        """
+        """Devuelve el promedio de adherentes por reclamo, o 0 si no hay reclamos."""
         query = self.repositorio_reclamos.session.query(
             func.avg(ModeloReclamo.cantidad_adherentes)
         ).scalar()
         return query or 0
 
     def reclamos_recientes(self, dias=7):
-        """
-        Devuelve una lista de los reclamos creados en los últimos `dias` días.
-        """
+        """Devuelve una lista de reclamos creados en los últimos `dias` días."""
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
@@ -67,18 +60,14 @@ class GeneradorReportes:
         return reclamos
 
     def reclamos_por_usuario(self, usuario_id):
-        """
-        Devuelve una lista de reclamos creados por un usuario específico.
-        """
+        """Devuelve una lista de reclamos creados por un usuario específico."""
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
             usuario_id=usuario_id
         ).all()
         return reclamos
     
     def cantidad_reclamos_por_estado_filtrado(self, clasificacion):   
-        """
-        Devuelve un diccionario con la cantidad de reclamos agrupados por estado, filtrados por clasificación.
-        """ 
+        """Devuelve un dict con la cantidad de reclamos por estado, filtrados por clasificación."""
         query = self.repositorio_reclamos.session.query(
             ModeloReclamo.estado,
             func.count(ModeloReclamo.id)
@@ -86,9 +75,7 @@ class GeneradorReportes:
         return dict(query)
 
     def reclamos_recientes_filtrado(self, clasificacion, dias=7):
-        """
-        Devuelve una lista de reclamos recientes filtrados por clasificación.
-        """
+        """Devuelve una lista de reclamos recientes filtrados por clasificación."""
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite,
@@ -96,18 +83,14 @@ class GeneradorReportes:
         ).all()
         
     def listar_clasificaciones_unicas(self):
-        """
-        Devuelve una lista de clasificaciones únicas de reclamos en la base de datos.
-        """
+        """Devuelve una lista de clasificaciones únicas de reclamos."""
         clasificaciones = self.repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion
         ).distinct().all()
         return [c[0] for c in clasificaciones]
 
     def clasificacion_por_rol(self, rol):
-        """
-        Devuelve la clasificación asociada a un rol específico.
-        """
+        """Devuelve la clasificación asociada a un rol específico."""
         try:
             rol = str(rol) 
         except ValueError:
@@ -122,9 +105,7 @@ class GeneradorReportes:
 
     
     def obtener_datos_para_torta(self, rol):
-        """
-        Obtiene los datos necesarios para generar un gráfico de torta, filtrados por rol.
-        """
+        """Obtiene los datos necesarios para un gráfico de torta, filtrados por rol."""
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
@@ -137,9 +118,7 @@ class GeneradorReportes:
         return dict(query)
 
     def obtener_datos_para_histograma(self, rol):
-        """
-        Obtiene los datos necesarios para generar un histograma, filtrados por rol.
-        """
+        """Obtiene los datos necesarios para un histograma, filtrados por rol."""
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
             return {}
@@ -152,10 +131,7 @@ class GeneradorReportes:
         return dict(agrupados_por_mes)
     
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
-        """
-        Obtiene las cantidades de adherentes de los reclamos creados en los últimos `dias` días.
-        Si se especifica una clasificación, se filtran los reclamos por esa clasificación.
-        """
+        """Obtiene las cantidades de adherentes de reclamos recientes, opcionalmente filtrados por clasificación."""
         fecha_limite = datetime.utcnow() - timedelta(days=dias)
         query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
@@ -166,10 +142,7 @@ class GeneradorReportes:
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
         
     def mediana_tiempo_resolucion(self, clasificacion=None):
-        """
-        Calcula la mediana del tiempo estimado de resolución de los reclamos resueltos.
-        Si clasificacion es None, toma todos los reclamos resueltos; si no, filtra por clasificación.
-        """
+        """Calcula la mediana del tiempo de resolución de reclamos resueltos, opcionalmente filtrados."""
         from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
 
         # Filtrar reclamos resueltos
@@ -193,15 +166,7 @@ class GeneradorReportes:
         return monticulo.obtener_mediana()
 
     def calcular_mediana(self, atributo, clasificacion=None):
-        """
-        Calcula la mediana de un atributo específico de los reclamos.
-        Si clasificacion es None, toma todos los reclamos; si no, filtra por clasificación.
-        Solo considera valores válidos (no None).
-        
-        :param atributo: Nombre del atributo del modelo ModeloReclamo (ej. 'tiempo_estimado', 'cantidad_adherentes').
-        :param clasificacion: Clasificación de los reclamos para filtrar (opcional).
-        :return: Mediana del atributo o None si no hay datos válidos.
-        """
+        """Calcula la mediana de un atributo de los reclamos, opcionalmente filtrados."""
         from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
 
         # Filtrar reclamos
@@ -221,11 +186,7 @@ class GeneradorReportes:
         return monticulo.obtener_mediana()
 
     def calcular_medianas_atributos(self, clasificacion=None):
-        """
-        Calcula la mediana de todos los atributos relevantes del modelo ModeloReclamo.
-        :param clasificacion: Clasificación de los reclamos para filtrar (opcional).
-        :return: Diccionario con las medianas de los atributos.
-        """
+        """Calcula la mediana de atributos relevantes de los reclamos."""
         atributos_relevantes = ['cantidad_adherentes', 'tiempo_estimado', 'resuelto_en']
         medianas = {}
 
@@ -242,10 +203,14 @@ from reportlab.lib import colors
 import os
 
 class ReportePDF:
+    """Genera reportes de reclamos en formato PDF."""
+
     def __init__(self, generador: GeneradorReportes):
+        """Inicializa el reporte PDF con un generador de reportes."""
         self.generador = generador
 
     def generarPDF(self, ruta_salida, clasificacion_usuario):
+        """Genera y guarda un reporte PDF de reclamos filtrados por clasificación."""
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
@@ -344,14 +309,14 @@ class ReportePDF:
 
 
 class ReporteHTML:
+    """Genera reportes de reclamos en formato HTML."""
+
     def __init__(self, generador: GeneradorReportes):
+        """Inicializa el reporte HTML con un generador de reportes."""
         self.generador = generador
 
     def exportar_html(self, ruta_salida, clasificacion_usuario):
-        """
-        Genera un archivo HTML estilizado con los reclamos filtrados por clasificación de usuario,
-        incluyendo estadísticas adicionales y una tabla con los reclamos.
-        """
+        """Genera y guarda un reporte HTML de reclamos filtrados por clasificación."""
         import os
 
         # Asegúrate de que la carpeta existe
