@@ -14,56 +14,57 @@ El código está dividido en módulos para separar la lógica de usuarios, recla
 
 ## 📑Dependencias
 
-1. ***Python 3.13.2***
-2. ***Flask***
-3. ***SQLalchemy***
-4. ***flask***
-5. ***flask_login***
-6. ***flask_session***
-7. ***flask_bootstrap***
-8. ***sqlalchemy***
-9. ***sqlalchemy.orm***
-10. ***sqlalchemy.ext.declarative***
-11. ***datetime***
-12. ***functools***
-13. ***werkzeug.security***
-14. ***abc***
+1. Flask
+2. Flask-Login
+3. Flask-Session
+4. SQLAlchemy
+5. Jinja2
+6. reportlab
+7. wordcloud
+8. nltk
+9. scikit-learn
+10. numpy
+11. cachelib
+12. pytest
+13. pytest-cov
 
 ## 🚀Cómo Ejecutar el Proyecto
+
 1. **Clonar o descargar** el repositorio.
-
 2. **Crear** un entorno virtual.
-
 3. **Instalar las dependencias**:
 
    En la terminal escriba los siguientes comandos en orden:
 
-      1) ./venv/Scrpt/Activate
+   1) ./venv/Scrpt/Activate
 
-            (para saber que se activo el entorno se visualizara al principio de la ruta de direccion un mensaje en verde que diga .venv)
+      (para saber que se activo el entorno se visualizara al principio de la ruta de direccion un mensaje en verde que diga .venv)
+   2) pip install -r requirements.txt
 
-      2) pip install -r requirements.txt
+      **El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.**
+   3) Dirigirse al archivo [Server](server.py) y ejecutarlo
 
-         **El archivo `requirements.txt` se encuentran en la carpeta [deps](./deps) del proyecto.**
-
-4. Dirigirse al archivo [Server](server.py) y ejecutarlo
-
-      Aparecera un mensaje en la terminal, con el CTRL apretado hacer click en el link que diga **127.0.0.1:5000**
-
+   Aparecera un mensaje en la terminal, con el CTRL apretado hacer click en el link que diga **127.0.0.1:5000**
 
 ## 💻Uso de la aplicación
 
 La aplicación permite a los usuarios registrarse e iniciar sesión para acceder a las funcionalidades según su rol. Una vez autenticados, pueden crear y visualizar reclamos, y los roles administrativos pueden gestionarlos.
 
 - **Ruta principal** (`/`): Muestra la página de inicio y acceso al sistema.
-- **(`/login`)**: Permite a los usuarios iniciar sesión.
-- **(`/register`)**: Permite a los nuevos usuarios registrarse.
-- **(`/reclamos`)**: Muestra el listado de reclamos del usuario autenticado.
-- **(`/reclamo/nuevo`)**: Permite crear un nuevo reclamo.
-- **(`/dashboard`)**: Panel de control para Jefe de Departamento y Secretario Técnico, donde pueden gestionar reclamos.
+- **(`/iniciar_sesion`)**: Permite a los usuarios iniciar sesión.
+- **(`/registrarse`)**: Permite a los nuevos usuarios registrarse.
+- **(`/mis_reclamos`)**: Muestra el listado de reclamos del usuario autenticado.
+- **(`/crear_reclamos`)**: Permite crear un nuevo reclamo.
+- **(`/analitica_reclamos`)**: Panel de control para Jefe de Departamento y Secretario Técnico, donde pueden gestionar reclamos.
 - **(`/logout`)**: Cierra la sesión del usuario.
+- **`(/inicio_usuario)`**: Muestra la pagina de inicio para usuarios logueados junto ocn los botones de acceso a las demas rutas dependiendo del rol del usuario
+- **`(/adherirse)`**: endpoint que muestra reclamos para adherirse luego de crear un reclamo
+- **`(/listar_reclamos)`**: muestra todos los reclamos pendientes del sistema
+- **`(/editar_reclamo)`**: permite editar un reclamo ya creado o adherirle una imagen
+- **`(/manejo_reclamos)`**: dashboard para los jefes y el secretario tecnico para resolver reclamos
+- **`(/ayuda)`**: manual de uso de la web para el usuario
 
-Para acceder a la mayoría de las rutas es necesario estar autenticado. El flujo típico es: registro → inicio de sesión → acceso a funcionalidades según el rol.
+Para acceder a la mayoría de los endpoints es necesario estar autenticado. El flujo típico es: registro → inicio de sesión → acceso a funcionalidades según el rol.
 
 ## 🙎‍♀️🙎‍♂️Autores
 

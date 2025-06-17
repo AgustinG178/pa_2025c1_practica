@@ -1,42 +1,45 @@
-# Claims Classifier
 
-Clasificador para Sistema de Gestión de Reclamos en la facultad
+# Módulos del Sistema de Gestión de Reclamos
 
-El objetivo de este proyecto es proveer un clasificador de reclamos entrenado guardado en el archivo pickle "claims_clf.pkl".
+Este directorio contiene los módulos principales del sistema de atención y seguimiento de reclamos para la Facultad de Ingeniería de la UNER. Aquí se implementa la lógica de negocio, acceso a datos, generación de reportes, gráficos y el clasificador de reclamos.
 
-### Dependencias necesarias
+---
 
-- [Scikit-learn](https://scikit-learn.org/stable/index.html): `pip install -U scikit-learn` 
-- [nltk](https://pypi.python.org/pypi/nltk): `pip install nltk`  
-- [Numpy](https://numpy.org/doc/stable/index.html):`pip install numpy`
+## Estructura de carpetas
 
-### Pasos para usar el clasificador 
+- **config.py**: Configuración de la base de datos y la aplicación Flask.
+- **modelos.py**: Definición de los modelos ORM (usuarios, reclamos, etc.).
+- **repositorio.py / repositorio_ABC.py**: Repositorios para acceso y manipulación de datos.
+- **gestor_usuario.py / gestor_reclamos.py / gestor_base_datos.py**: Lógica de negocio para usuarios, reclamos y base de datos.
+- **graficos.py**: Generación de gráficos estadísticos (torta, histograma, nube de palabras).
+- **reportes.py**: Generación de reportes en PDF y HTML.
+- **monticulos.py**: Implementación de montículos para cálculo eficiente de medianas.
+- **classifier.py / clasificador_de_reclamos/**: Clasificador automático de reclamos usando machine learning.
+- **usuarios.py / reclamo.py**: Clases de dominio para usuarios y reclamos.
+- **gestor_imagen_reclamo.py**: Gestión de imágenes asociadas a reclamos.
+- **login.py**: Lógica de autenticación y manejo de sesiones.
+- **text_vectorizer.py**: Utilidades para procesamiento de texto y vectorización.
 
-1- Clonar el repositorio.
+## Dependencias necesarias
 
-2- Instalar las dependencias necesarias en el proyecto donde utilizarás el clasificador
+Instala las siguientes dependencias para ejecutar los módulos correctamente:
 
-2- Copiar los archivos `text_vectorizer.py` y `classifier.py` en la carpeta `modules`de tu proyecto y el archivo `claims_clf.pkl` en la carpeta `data`. 
+- [Flask](https://flask.palletsprojects.com/)
+- [Flask-Login](https://flask-login.readthedocs.io/)
+- [Flask-Session](https://pythonhosted.org/Flask-Session/)
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [Jinja2](https://jinja.palletsprojects.com/)
+- [reportlab](https://www.reportlab.com/dev/docs/)
+- [wordcloud](https://github.com/amueller/word_cloud)
+- [nltk](https://www.nltk.org/)
+- [scikit-learn](https://scikit-learn.org/)
+- [numpy](https://numpy.org/)
+- [cachelib](https://github.com/pallets/cachelib)
+- [pytest](https://docs.pytest.org/)
+- [pytest-cov](https://pytest-cov.readthedocs.io/)
 
-4- Para cargar el clasificador desde el archivo y empezar a clasificar tus reclamos, seguir el siguiente ejemplo:
+Puedes instalar todas las dependencias con:
 
+```bash
+pip install -r requirements.txt
 ```
-import pickle
-
-with open('./data/claims_clf.pkl', 'rb') as archivo:
-  clf  = pickle.load(archivo)
-```
-Al cargar el clasificador desde el archivo, el mismo queda guardado en la variable `clf`, para utilizarlo, simplemente llamar al método clasificar.
-
-```
-reclamos = [
-    "La computadora 1 del laboratorio 3 no enciende", 
-    "El proyector del aula 2 no proyecta la imagen"
-]
-clf.clasificar(reclamos)
-```
-Tener en cuenta que el método `clasificar()` recibe como parámetro una lista de reclamos (lista de strings).
-Las etiquetas que devuelve este clasificador son: `soporte informático`, `secretaría técnica` y `maestranza`.
-
-Ver el ejemplo `eval_claims_clf.py` en la carpeta `apps` para probar el uso del clasificador.
-# Clasificador-de-Reclamos
