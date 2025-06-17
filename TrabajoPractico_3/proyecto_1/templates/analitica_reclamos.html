@@ -50,6 +50,9 @@
                     <h3>Histograma</h3>
                     <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}{{ url_for('static', filename=ruta_histograma) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}Histograma de tiempos de resolución{% else %}No hay datos suficientes para generar el histograma{% endif %}">
                 </div>
+                <p class="explicacion-histograma">
+                    <strong>Frecuencia</strong> indica la cantidad de reclamos que tienen el mismo valor en el eje horizontal en el eje X muestra "Cantidad de Adherentes" y la frecuencia representa cuántos reclamos tienen esa cantidad de adherentes.
+                </p>
                 <div class="flashcard">
                     <h3>Nube de Palabras</h3>
                     <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}{{ url_for('static', filename=ruta_nube) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}Nube de Palabras{% else %}No hay datos suficientes para generar la nube de palabras{% endif %}">
@@ -67,6 +70,9 @@
                         <h3>Histograma</h3>
                         <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}{{ url_for('static', filename=ruta_histograma) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}Histograma de tiempos de resolución{% else %}No hay datos suficientes para generar el histograma{% endif %}">
                     </div>
+                    <p class="explicacion-histograma">
+                    <strong>Frecuencia</strong> indica la cantidad de reclamos que tienen el mismo valor en el eje horizontal en el eje X muestra "Cantidad de Adherentes"y la frecuencia representa cuántos reclamos tienen esa cantidad de adherentes.
+                    </p>
                     <div class="flashcard">
                         <h3>Nube de Palabras</h3>
                         <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}{{ url_for('static', filename=ruta_nube) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}Nube de Palabras{% else %}No hay datos suficientes para generar la nube de palabras{% endif %}">
@@ -85,6 +91,9 @@
                     <h3>Histograma</h3>
                     <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}{{ url_for('static', filename=ruta_histograma) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_histograma %}Histograma de tiempos de resolución{% else %}No hay datos suficientes para generar el histograma{% endif %}">
                 </div>
+                <p class="explicacion-histograma">
+                    <strong>Frecuencia</strong> indica la cantidad de reclamos que tienen el mismo valor en el eje horizontal, en el eje X se muestra "Cantidad de Adherentes" y la frecuencia representa cuántos reclamos tienen esa cantidad de adherentes.
+                </p>
                 <div class="flashcard">
                     <h3>Nube de Palabras</h3>
                     <img src="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}{{ url_for('static', filename=ruta_nube) }}{% else %}#{% endif %}" alt="{% if current_user.rol in ['2', '3', '4'] and ruta_nube %}Nube de Palabras{% else %}No hay datos suficientes para generar la nube de palabras{% endif %}">

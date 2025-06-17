@@ -1237,3 +1237,17 @@ h3 {
     margin-top: 12px;
     word-break: break-word;
 }
+
+.explicacion-histograma {
+    margin: 18px auto 0 auto;
+    max-width: 500px;
+    font-size: 1.07rem;
+    color: #1976d2;
+    background: #f0f4fa;
+    border-left: 5px solid #1976d2;
+    border-radius: 6px;
+    padding: 12px 18px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
+    font-weight: 500;
+}   

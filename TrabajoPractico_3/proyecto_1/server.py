@@ -432,9 +432,6 @@ def manejo_reclamos():
         except Exception as e:
             flash("Hubo un error al obtener los reclamos: " + str(e), "danger")
             reclamos = []
-            
-        #reclamos = gestor_reclamos.buscar_reclamos_por_filtro(usuario=current_user,filtro="clasificacion",valor=dpto)
-
 
     return render_template(
         'manejo_reclamos.html',
