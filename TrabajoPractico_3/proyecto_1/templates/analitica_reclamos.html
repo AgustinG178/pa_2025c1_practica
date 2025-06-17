@@ -93,13 +93,28 @@
 
     </section>
 
-    <h3 class="">Descargar Reportes</h3>
-    <center><a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="enlace-boton">Descargar PDF</a></center>
-    <br>
-    <center><a href="{{ url_for('descargar_reporte', formato='html') }}" class="enlace-boton">Descargar HTML</a></center>
-
-    <div class="volver-contenedor" style="text-align: center; margin: 30px 0;">
-        <a href="{{ url_for('inicio') }}" class="enlace-boton">Volver</a>
+    <div class="reporte-container">
+        <h2>Descargar Reportes</h2>
+        <p class="descargar-reporte-texto">Selecciona el formato en el que deseas descargar el reporte:</p>
+        <div class="botones-reporte">
+            <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="btn btn-reporte btn-pdf">
+                <img src="{{ url_for('static', filename='icons/pdf-icon.png') }}" alt="PDF" class="icono-boton">
+                Descargar en PDF
+            </a>
+            <a href="{{ url_for('descargar_reporte', formato='html') }}" class="btn btn-reporte btn-html">
+                <img src="{{ url_for('static', filename='icons/html-icon.png') }}" alt="HTML" class="icono-boton">
+                Descargar en HTML
+            </a>
+        </div>
     </div>
+
+    <div style="text-align:center;">
+        <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
+    </div>
+    <footer class="pie-de-pagina">
+    <div class="contenedor-footer">
+        <p>© 2025 - Sistema de Reclamos FIUNER</p> <p>Contacto: <a href="mailto:agugrio17@gmail.com">agugrio17@gmail.com</a>/<a href="mailto:NicolasRamirez723@gmail.com">NicolasRamirez723@gmail.com</a> GitHub: <a href="https://github.com/tuusuario" target="_blank">https://github.com/AgustinG178</a> / <a href="https://github.com/NicolasRamirez723", target="_blank">https://github.com/NicolasRamirez723</a></p>
+    </div>
+    </footer>
 </body>
 </html>

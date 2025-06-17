@@ -1124,3 +1124,87 @@ h3 {
     border-bottom: 2px solid #007BFF; /* Línea decorativa debajo */
     font-family: 'Arial', sans-serif; /* Fuente */
 }
+
+.reporte-container {
+    text-align: center;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+}
+
+.reporte-container h2 {
+    font-size: 28px;
+    color: #003366;
+    margin-bottom: 15px;
+}
+
+.reporte-container p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.botones-reporte {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-reporte {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-reporte:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.btn-pdf {
+    background-color: #d32f2f; /* Rojo para PDF */
+}
+
+.btn-pdf:hover {
+    background-color: #b71c1c;
+}
+
+.btn-html {
+    background-color: #1976d2; /* Azul para HTML */
+}
+
+.btn-html:hover {
+    background-color: #0d47a1;
+}
+
+.icono-boton {
+    width: 24px;
+    height: 24px;
+}
+
+.descargar-reporte-texto {
+    font-size: 1.15rem;
+    color: #003366;
+    font-weight: 500;
+    margin-bottom: 28px;
+    margin-top: 8px;
+    letter-spacing: 0.2px;
+    text-align: center;
+    padding: 8px 0;
+    border-bottom: 2px solid #1976d2;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+}
