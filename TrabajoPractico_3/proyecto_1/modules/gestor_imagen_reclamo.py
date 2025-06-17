@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from PIL import Image
 import os
+
 class GestorImagenReclamo(ABC):
     """
     Clase abstracta para gestionar imágenes asociadas a reclamos.

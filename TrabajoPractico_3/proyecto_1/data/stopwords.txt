@@ -1,0 +1,577 @@
+a
+aca
+acá
+ademas
+además
+ahí
+ahi
+ahora
+ajena
+ajenas
+ajeno
+ajenos
+al
+algun
+alguna
+algunas
+algunos
+alguno
+alla
+allá
+alli
+allí
+algunas
+ambos
+ante
+antes
+aquel
+aquella
+aquello
+aqullos
+aqui
+aquí
+arriba
+asi
+así
+atras
+atrás
+aun
+aunque
+ayer
+bajo
+bastante
+bastantes
+bien
+buen
+buena
+buenas
+buenos
+cabe
+cada
+cada uno
+caso
+casi
+cerca
+cierta
+ciertas
+cierto
+ciertos
+claramente
+como
+como sea
+con
+con frecuencia
+con tal que
+con todo
+conmigo
+conseguimos
+correctamente
+conseguir
+consiguió
+consigo
+consigue
+consiguen
+consigues
+consistía
+contigo
+contra
+cual
+cuales
+cualquiera
+cualquier
+cualquieras
+cuan
+cuando
+cuándo
+cuanta
+cuánta
+cuantas
+cuántas
+cuanto
+cuánto
+cuantos
+cuántos
+cuestion
+dado que
+de
+de acuerdo
+de nuevo
+debajo
+debido
+dejar
+del
+delante
+demas
+demás
+demasiada
+demasiadas
+demasiado
+demasiados
+demasié
+dentro
+despacio
+despues
+después
+detras
+detrás
+dia
+día
+dias
+días
+dicha
+dichas
+dicho
+dichos
+digo
+donde
+donde sea
+dos
+dos veces
+durante
+efectivamente
+ejemplo
+el
+él
+ella
+ella misma
+ellas
+ellos
+ellos mismos
+empleais
+empleáis
+emplean
+emplear
+empleas
+empleo
+en
+en cambio
+en cuanto
+en especial
+en fin
+en realidad
+en seguida
+en serio
+en total
+en verdad
+encima
+encuentra
+enfrente
+enseguida
+entera
+enteramente
+entonces
+entre
+entre tanto
+era
+era de esperarse
+eras
+eramos
+éramos
+eran
+eres
+es
+es decir
+esa
+ese
+eso
+esas
+esos
+esta
+está
+esta bien
+esta vez
+estaba
+estado
+estais
+estáis
+estamos
+estan
+están
+estar
+este
+este año
+esto
+estos
+estos días
+estoy
+etc
+excepcion
+excepto
+facil
+fácil
+fin
+fue
+fuera
+fueron
+fui
+fuimos
+general
+generalmente
+gran
+grandes
+gueno
+hace
+hace poco
+haceis
+hacéis
+hacemos
+hacen
+hacer
+hacia
+hacia arriba
+hacia abajo
+hago
+haya
+hayan
+hay
+he
+hemos
+hicimos
+hizo
+hubo
+igual
+incluso
+intenta
+intentas
+intentais
+intentáis
+intentamos
+intentan
+intentar
+intento
+ir
+jamas
+jamás
+junto
+juntos
+la
+largo
+las
+lástima
+le
+lo
+los
+llevaba
+llevan
+llevas
+lleva
+llegó
+luego
+mala
+malas
+malos
+mas
+más
+mayor
+mayoría
+me
+mejor
+menos
+menos que
+menudo
+mi
+mia
+mía
+mias
+mías
+mientras
+mientras tanto
+mio
+mío
+mios
+míos
+mis
+misma
+mismas
+mismo
+mismos
+misma
+modo
+modo alguno
+modo que
+momentos
+mucha
+mucha gente
+muchas
+muchisima
+muchísima
+muchisimas
+muchísimas
+mucho
+muchos
+muchisimo
+muchísimo
+muchisimos
+muchísimos
+muy
+muy bien
+nada
+nadie
+ni
+ningun
+ninguna
+ningunamente
+ninguno
+ningunos
+ningunas
+ningunx
+ninguna parte
+no
+no obstante
+nos
+nosotras
+nosotros
+noche
+nuestra
+nuestras
+nuestro
+nuestros
+nueva
+nuevo
+nunca
+nunca jamás
+ocasión
+oportunidad
+os
+otra
+otra vez
+otras
+otros
+para
+parecer
+pasado
+pero
+pero aun
+poca
+pocas
+poco
+pocos
+podeis
+podéis
+podemos
+poder
+podía
+podíamos
+podrías
+podriais
+podríais
+podriamos
+podríamos
+podrian
+podrían
+podrías
+podría
+podia
+podías
+podian
+podían
+por
+por qué
+porque
+primero
+pronto
+propia
+propio
+próxima
+próximo
+pude
+puede
+pueden
+puedo
+pues
+que
+qué
+querer
+quien
+quién
+quiénes
+quienes
+quiénes
+quienesquiera
+quienquiera
+quizá
+quizas
+quizás
+raramente
+real
+realmente
+recién
+recuerdo
+respecto
+respectivamente
+resulta
+resultó
+revisar
+sabe
+saben
+sabeis
+sabéis
+sabemos
+saber
+salvo
+se
+seguidamente
+seguido
+segun
+según
+semana
+semanas
+ser
+será
+serán
+serás
+sería
+serían
+serías
+si
+sí
+si bien
+si no
+siempre
+siempre que
+siendo
+sin
+sin embargo
+sino
+sino que
+situación
+sobre
+so
+sois
+sola
+solamente
+solas
+solo
+sólo
+solos
+solia
+solía
+solían
+solo que
+somos
+soy
+sr
+sra
+sres
+sta
+su
+suelo
+suele
+suelen
+sus
+suyas
+suyo
+suyos
+suya
+tal
+tal vez
+tales
+tambien
+también
+tampoco
+tan
+tanta
+tanto
+tantas
+tantos
+te
+teneis
+tenéis
+tenemos
+tener
+tenia
+tenía
+teníamos
+tenías
+tenido
+teniendo
+tengo
+ti
+tiempo
+tiene
+tienen
+tiene que
+toda
+todo
+todas
+todos
+todavía
+tomando
+tomar
+total
+totalmente
+trabaja
+trabajas
+trabajais
+trabajáis
+trabajamos
+trabajan
+trabajando
+trabajar
+tras
+trasera
+trasero
+tu
+tú
+tus
+tuve
+tuvimos
+tuvo
+tuya
+tuyo
+tuyas
+tuyos
+ultimo
+último
+un
+una
+unas
+unas cuantas
+uno
+unos
+unos cuantos
+usa
+usais
+usáis
+usamos
+usan
+usando
+usar
+uso
+usted
+usted misma
+ustedes
+ustedes mismos
+va
+va a ser
+vais
+valor
+vamos
+vamos a ver
+varias
+varias veces
+varios
+vaya
+ve
+veces
+veras
+verá
+verdad
+verdadera
+verdaderamente
+vez
+vos
+vosotras
+vosotros
+voy
+voy a
+vuestra
+vuestro
+vuestras
+vuestros
+y
+ya
+ya que
+yo
+yo misma
+yo mismo

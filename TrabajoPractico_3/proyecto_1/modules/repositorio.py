@@ -14,14 +14,13 @@ def crear_repositorio():
     repo_reclamos = RepositorioReclamosSQLAlchemy(session1)
     repo_usuario = RepositorioUsuariosSQLAlchemy(session2)
     return repo_reclamos, repo_usuario
-
 """
 class RepositorioUsuariosSQLAlchemy(Repositorio):
     """Repositorio para gestionar registros de usuarios con SQLAlchemy."""
 
     def __init__(self, session: SessionSQL):
         """Inicializa el repositorio y asegura que la tabla de usuarios exista."""
-        self.__session = session
+        self.__session = session #session es una instancia de SessionSQL
         ModeloUsuario.metadata.create_all(engine)
 
     def guardar_registro(self, usuario: ModeloUsuario):

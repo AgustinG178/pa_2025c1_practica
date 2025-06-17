@@ -89,9 +89,6 @@ class GraficadoraNubePalabras:
         """
         Genera una nube de palabras a partir de los contenidos de los reclamos.
 
-        :param reclamos: Lista de objetos Reclamo o strings con los contenidos de los reclamos.
-        :param nombre_archivo: Nombre del archivo de salida para la nube de palabras.
-        :param subcarpeta: Subcarpeta donde se guardará la imagen.
         """
         # Concatenar todos los contenidos de los reclamos en un solo texto
         texto = " ".join([reclamo.contenido for reclamo in reclamos if reclamo.contenido])
@@ -101,20 +98,21 @@ class GraficadoraNubePalabras:
             print("[!] No hay palabras para generar la nube de palabras.")
             return None
 
+        ruta_stopwords = "data/stopwords.txt"
+        
+        with open(ruta_stopwords, encoding="utf-8") as f:
+            stopwords_personalizadas = {line.strip() for line in f if line.strip()}
+
+
         # Filtrar palabras vacías (stopwords) y caracteres no deseados
         stopwords = set(STOPWORDS)
+        stopwords.update(stopwords_personalizadas)
         palabras = texto.lower().split()
         palabras_filtradas = [
             palabra.strip(".,!?()[]{}\"'") for palabra in palabras if palabra not in stopwords and len(palabra) > 2
         ]
-
-        # Calcular la frecuencia de las palabras
         contador = Counter(palabras_filtradas)
-
-        # Seleccionar las 15 palabras más frecuentes
         palabras_frecuentes = dict(contador.most_common(15))
-
-        # Generar la nube de palabras
         wordcloud = WordCloud(
             width=800,
             height=400,
@@ -122,12 +120,8 @@ class GraficadoraNubePalabras:
             colormap="viridis",
             max_words=15
         ).generate_from_frequencies(palabras_frecuentes)
-
-        # Crear la carpeta de salida si no existe
         ruta_carpeta = os.path.join("static", "graficos", subcarpeta)
         os.makedirs(ruta_carpeta, exist_ok=True)
-
-        # Guardar la imagen de la nube de palabras
         ruta_archivo = os.path.join(ruta_carpeta, nombre_archivo)
         wordcloud.to_file(ruta_archivo)
 
@@ -277,6 +271,3 @@ if __name__ == "__main__":
             print(f"Nube de palabras generada en: {ruta_nube}")
     else:
         print("[!] No se encontraron reclamos para el usuario_id=2. No se generó nube de palabras.")
-
-
-

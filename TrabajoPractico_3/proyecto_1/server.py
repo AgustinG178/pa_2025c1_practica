@@ -1,4 +1,4 @@
-from flask import render_template, flash, request, redirect, url_for, send_file, send_from_directory, abort
+from flask import render_template, flash, request, redirect, url_for, send_file, abort
 from flask_login import login_required, logout_user, current_user, login_user
 from modules.config import app, login_manager, crear_engine   
 from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclamosSQLAlchemy
