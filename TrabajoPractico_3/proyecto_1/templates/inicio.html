@@ -43,8 +43,8 @@
             </div>
         {% endif %}
     {% endwith %}
-    {% if current_user.is_authenticated %}
-        <p class="saludo">
+    {% if not current_user.is_authenticated %}
+                    <p class="saludo">
             Bienvenido {{ current_user.nombre_de_usuario }} al sistema de gestión y seguimiento de reclamos de la Facultad de Ingeniería de la UNER.
         </p>
         <div class="home-container">
@@ -67,6 +67,22 @@
             </aside>
         </div>
     {% endif %}
+    {% if current_user.is_authenticated %}
+        <div class="flashcard-big mensaje-bienvenida-usuario">
+            <h2>¡Bienvenido/a al sistema de reclamos!</h2>
+            <p>
+                Ya puedes crear nuevos reclamos, ver el estado de los existentes o adherirte a reclamos similares.<br>
+                Si necesitas ayuda para usar el sistema, haz clic en la opción <strong>Ayuda</strong> del menú o comunícate con soporte.<br>
+                ¡Gracias por contribuir a mejorar nuestra Facultad!
+            </p>
+        </div>
+    {% endif %}
+    <p class="bienvenida-frase">
+        <em>“Tu participación ayuda a construir una Facultad mejor para todos.”</em>
+    </p>
+    <p class="bienvenida-creadores">
+        <span>👨‍💻</span> Creado por: Agustin Grioni, Nicolas Ramirez
+    </p>
     </main>
 <footer class="pie-de-pagina">
     <div class="contenedor-footer">

@@ -7,7 +7,7 @@ html, body {
     height: 100%;
 }
 main {
-  min-height: calc(100vh - 100px); /* Ajusta 100px al alto aproximado de tu header + footer */
+  min-height: calc(100vh - 240px);; /* Ajusta 100px al alto aproximado de tu header + footer */
   padding-bottom: 20px; /* Espacio extra para que no quede justo */
   box-sizing: border-box;
   flex:1
@@ -1207,4 +1207,33 @@ h3 {
     background: none;
     border-radius: 0;
     box-shadow: none;
+}
+
+.mensaje-bienvenida-usuario {
+    margin: 32px auto 24px auto;
+    max-width: 700px;
+    background: #f5f7fa;
+    border-left: 8px solid #003366;
+    color: #003366;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+}
+.mensaje-bienvenida-usuario h2 {
+    color: #003366;
+    margin-top: 0;
+}
+
+.bienvenida-frase {
+    text-align: center;
+    color: #1976d2;
+    font-size: 1.05rem;
+    margin-top: 18px;
+    font-style: italic;
+}
+
+.bienvenida-creadores {
+    text-align: center;
+    color: #888;
+    font-size: 0.98rem;
+    margin-top: 12px;
+    word-break: break-word;
 }
