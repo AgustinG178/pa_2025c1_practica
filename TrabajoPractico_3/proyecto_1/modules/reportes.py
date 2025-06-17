@@ -430,6 +430,8 @@ class ReporteHTML:
                         <th>Estado</th>
                         <th>Fecha</th>
                         <th>Adherentes</th>
+                        <th>Resuelto en</th>
+                        <th>Tiempo estimado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -443,9 +445,13 @@ class ReporteHTML:
                     <tr>
                         <td>{reclamo.id}</td>
                         <td>{reclamo.contenido}</td>
-                        <td>{reclamo.estado}</td>
+                        <td>
+                            {('<strong style="color: #003366;">{}</strong>'.format(reclamo.estado) if reclamo.estado == "resuelto" else "pendiente")}
+                        </td>
                         <td>{reclamo.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}</td>
                         <td>{reclamo.cantidad_adherentes}</td>
+                        <td>{reclamo.resuelto_en if reclamo.resuelto_en else 'No resuelto'}</td>
+                        <td>{reclamo.tiempo_estimado if reclamo.tiempo_estimado else 'No disponible'}</td>
                     </tr>
                 """
 

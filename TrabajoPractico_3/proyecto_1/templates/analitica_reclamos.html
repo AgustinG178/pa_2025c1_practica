@@ -108,11 +108,11 @@
         <p class="descargar-reporte-texto">Selecciona el formato en el que deseas descargar el reporte:</p>
         <div class="botones-reporte">
             <a href="{{ url_for('descargar_reporte', formato='pdf') }}" class="btn btn-reporte btn-pdf">
-                <img src="{{ url_for('static', filename='icons/pdf-icon.png') }}" alt="PDF" class="icono-boton">
+                <img src="{{ url_for('static', filename='icons/pdf.png') }}" alt="PDF" class="icono-boton">
                 Descargar en PDF
             </a>
             <a href="{{ url_for('descargar_reporte', formato='html') }}" class="btn btn-reporte btn-html">
-                <img src="{{ url_for('static', filename='icons/html-icon.png') }}" alt="HTML" class="icono-boton">
+                <img src="{{ url_for('static', filename='icons/html.png') }}" alt="HTML" class="icono-boton">
                 Descargar en HTML
             </a>
         </div>
