@@ -6,6 +6,10 @@ Para ejecutar los tests y generar un reporte de cobertura de código, sigue esto
 
 **pytest** **--cov**
 
+---
+
+
+
 ## **Por qué [pytest](vscode-file://vscode-app/c:/Users/agugr/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html) genera warnings y por qué no es relevante resolverlos en este contexto**
 
 Durante la ejecución de las pruebas con [pytest](vscode-file://vscode-app/c:/Users/agugr/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/code/electron-sandbox/workbench/workbench.html), se generan ciertos **warnings** relacionados con dependencias externas y configuraciones específicas del entorno. A continuación, se explican las causas de estos warnings y por qué no es necesario resolverlos en el contexto actual del programa:
