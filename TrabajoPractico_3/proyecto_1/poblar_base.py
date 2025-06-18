@@ -5,8 +5,6 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
-from modules.modelos import ModeloReclamo
-
 """
 poblar_base.py
 

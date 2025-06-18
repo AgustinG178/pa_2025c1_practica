@@ -11,7 +11,6 @@ from modules.monticulos import MonticuloMediana
 from modules.reportes import GeneradorReportes, ReporteHTML, ReportePDF
 from modules.graficos import Graficadora, GraficadoraTorta, GraficadoraHistograma, GraficadoraNubePalabras
 from modules.gestor_imagen_reclamo import GestorImagenReclamoPng
-from modules.reclamo import Reclamo
 import os
 import datetime as date
 from modules.monticulos import MonticuloMediana

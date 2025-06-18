@@ -128,7 +128,7 @@ input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
 select:focus {
-    border: 1.5px solid #003366;
+    border-color: 1.5px solid #003366;
     outline: none;
 }
 
