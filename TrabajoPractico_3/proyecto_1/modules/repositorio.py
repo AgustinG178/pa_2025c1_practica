@@ -20,7 +20,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
 
     def __init__(self, session: SessionSQL):
         """Inicializa el repositorio y asegura que la tabla de usuarios exista."""
-        self.__session = session #session es una instancia de SessionSQL
+        self.__session = session #session es una instancia de SessionSQL (note la 's' minúscula)
         ModeloUsuario.metadata.create_all(engine)
 
     def guardar_registro(self, usuario: ModeloUsuario):
@@ -251,36 +251,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
 
 if __name__ == "__main__": #pragma: no cover
-    from modules.config import crear_engine
-
-    # # Crear engine y sesión
-    # engine, Session = crear_engine()
-    # session = Session()
-
-    # # Instanciar el repositorio
-    # repo = RepositorioReclamosSQLAlchemy(session)
-
-    # # Crear reclamo de prueba
-    # reclamo_prueba = Reclamo(
-    #     estado="pendiente",
-    #     fecha_hora=datetime.now(),
-    #     contenido="Reclamo de prueba",
-    #     departamento="soporte",  # o lo que uses para 'departamento_id'
-    #     clasificacion = "general", # o lo que uses para 'clasificacion_id'
-    #     usuario_id=None  # Este campo se asignará manualmente más tarde
-    # )
-
-    # # Asignar usuario_id manualmente (debería coincidir con uno real en la tabla usuarios)
-    # reclamo_prueba.usuario_id = 1
-
-    # # Mapear y guardar
-    # modelo = repo.mapear_reclamo_a_modelo(reclamo_prueba)
-    # repo.guardar_registro(modelo)
-
-    # # Verificar que se guardó correctamente
-    # reclamos_guardados = repo.obtener_todos_los_registros(usuario_id=1)
-    # # for r in reclamos_guardados:
-    # #     print(f"ID: {r.id}, Estado: {r.estado}, Contenido: {r.contenido}, Usuario: {r.usuario_id}")
+    
     engine, Session = crear_engine()
     session = Session()
     repo = RepositorioReclamosSQLAlchemy(session)
