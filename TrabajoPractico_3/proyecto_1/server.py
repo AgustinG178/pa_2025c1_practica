@@ -19,8 +19,8 @@ import pickle
 base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
 base_datos.conectar()
 
-engine, Session = crear_engine()
-sqlalchemy_session = Session()
+engine, Session = crear_engine()  # Session es el sessionmaker
+sqlalchemy_session = Session() # sqlalchemy_session es una instancia de Session
 
 repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
