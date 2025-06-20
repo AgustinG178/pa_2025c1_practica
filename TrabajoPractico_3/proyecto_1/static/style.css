@@ -287,17 +287,15 @@ a.enlace-boton:hover {
 }
 
 .contenedor-flashcards {
-  width: 50vw; /* Ocupa mitad izquierda */
-  margin: 20px 0 0 0;
+  width: 100vw; /* Ocupa mitad izquierda */
+  margin: 20px 0 0 0 auto;
   padding-left: 20px;
 }
 
 .flashcards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 180px; /* Altura fija para que sean más cuadradas */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
-  justify-content: start;
 }
 
 .flashcard {
@@ -397,12 +395,6 @@ a.enlace-boton:hover {
     text-align: center;
     color: #1a237e;
     margin-bottom: 20px;
-}
-
-.flashcards-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
 }
 
 .flashcard {
@@ -1251,3 +1243,4 @@ h3 {
     box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
     font-weight: 500;
 }   
+

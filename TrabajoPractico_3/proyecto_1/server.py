@@ -289,13 +289,13 @@ def descargar_reporte(formato):
     if formato == 'pdf':
         ruta_pdf = 'static/reporte_departamento.pdf'
         reporte_pdf = ReportePDF(generador)
-        reporte_pdf.generarPDF(ruta_pdf, clasificacion_usuario)
+        reporte_pdf.generar(ruta_pdf, clasificacion_usuario)
         return send_file(ruta_pdf, as_attachment=True)
 
     elif formato == 'html':
         ruta_html = 'static/reporte_departamento.html'
         reporte_html = ReporteHTML(generador)
-        reporte_html.exportar_html(ruta_html, clasificacion_usuario)
+        reporte_html.generar(ruta_html, clasificacion_usuario)
         return send_file(ruta_html, as_attachment=True)
 
     else:

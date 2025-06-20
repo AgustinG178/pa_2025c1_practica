@@ -4,12 +4,18 @@ from sqlalchemy import func
 from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
 from collections import Counter
-from jinja2 import Environment, FileSystemLoader
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Table, TableStyle, Paragraph
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+import os
+from abc import ABC, abstractmethod
+from reportlab.platypus import HRFlowable
 
 engine, Session = crear_engine()
 
@@ -195,21 +201,22 @@ class GeneradorReportes:
 
         return medianas
 
-from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import cm
-from reportlab.lib import colors
-import os
+class Reportes(ABC):
+    """Clase abstracta para reportes de reclamos."""
+    
+    @abstractmethod
+    def generar(self, ruta_salida, clasificacion_usuario):
+        """Genera un reporte y lo guarda en la ruta especificada."""
+        pass
 
-class ReportePDF:
+class ReportePDF(Reportes):
     """Genera reportes de reclamos en formato PDF."""
 
     def __init__(self, generador: GeneradorReportes):
         """Inicializa el reporte PDF con un generador de reportes."""
         self.generador = generador
 
-    def generarPDF(self, ruta_salida, clasificacion_usuario):
+    def generar(self, ruta_salida, clasificacion_usuario):
         """Genera y guarda un reporte PDF de reclamos filtrados por clasificación."""
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
@@ -248,16 +255,15 @@ class ReportePDF:
         elementos.append(Spacer(1, 0.25 * cm))
 
         # Línea azul decorativa
-        from reportlab.platypus import HRFlowable
         elementos.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#00509e")))
         elementos.append(Spacer(1, 0.5 * cm))
 
         # Estadísticas con medianas
-        medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
+        mediana = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
         elementos.append(Paragraph(f"Estadísticas del Departamento: {clasificacion_usuario.capitalize()}", estilo_subtitulo))
         elementos.append(Spacer(1, 0.3 * cm))
 
-        for atributo, mediana in medianas.items():
+        for atributo, mediana in mediana.items():
             texto = f"Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}"
             elementos.append(Paragraph(texto, estilo_normal))
 
@@ -275,17 +281,19 @@ class ReportePDF:
             elementos.append(Spacer(1, 0.3 * cm))
 
             # Datos de la tabla
-            datos_tabla = [["ID", "Contenido", "Estado", "Fecha", "Adherentes"]]
+            datos_tabla = [["ID", "Contenido", "Estado", "Fecha", "Adherentes", "Resuelto", "plazo"]]
             for reclamo in reclamos:
                 datos_tabla.append([
                     str(reclamo.id),
                     Paragraph(reclamo.contenido, estilo_normal),
                     reclamo.estado,
                     reclamo.fecha_hora.strftime("%Y-%m-%d %H:%M:%S"),
-                    str(reclamo.cantidad_adherentes or "")
+                    str(reclamo.cantidad_adherentes or ""),
+                    str(reclamo.resuelto_en if reclamo.resuelto_en else "No"),
+                    str(reclamo.tiempo_estimado if reclamo.tiempo_estimado else "---")
                 ])
 
-            tabla = Table(datos_tabla, colWidths=[2 * cm, 8 * cm, 3 * cm, 4 * cm, 3 * cm])
+            tabla = Table(datos_tabla, colWidths=[2 * cm, 5 * cm, 3 * cm, 4 * cm, 2.5 * cm, 2 * cm, 1.5 * cm])
             tabla.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#00509e")),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -302,20 +310,25 @@ class ReportePDF:
                 ('RIGHTPADDING', (0, 0), (-1, -1), 5),
             ]))
             elementos.append(tabla)
+            elementos.append(Spacer(1, 0.5 * cm))
+            
+            estilo_glosario = ParagraphStyle(name="Grosario",fontName="Helvetica",fontSize=9,textColor=colors.grey,leading=11,spaceAfter=6)
+            
+            elementos.append(Paragraph("*Plazo: Tiempo estimado para resolver el reclamo.", estilo_glosario))
 
         # Construir el PDF
         doc.build(elementos)
         print(f"Reporte PDF generado en: {ruta_salida}")
 
 
-class ReporteHTML:
+class ReporteHTML(Reportes):
     """Genera reportes de reclamos en formato HTML."""
 
     def __init__(self, generador: GeneradorReportes):
         """Inicializa el reporte HTML con un generador de reportes."""
         self.generador = generador
 
-    def exportar_html(self, ruta_salida, clasificacion_usuario):
+    def generar(self, ruta_salida, clasificacion_usuario):
         """Genera y guarda un reporte HTML de reclamos filtrados por clasificación."""
         import os
 
@@ -449,6 +462,6 @@ if __name__ == '__main__':  # pragma: no cover
 
     # Reporte en PDF
     reporte_pdf = ReportePDF(generador)
-    reporte_pdf.generarPDF("data/salida_reporte.pdf", "maestranza")
+    reporte_pdf.generar("data/salida_reporte.pdf", "maestranza")
 
 
