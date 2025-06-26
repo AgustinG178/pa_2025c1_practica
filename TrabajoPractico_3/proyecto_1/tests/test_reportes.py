@@ -97,7 +97,7 @@ class TestGeneradorReportes(unittest.TestCase):
         doc_mock = MagicMock()
         mock_doc_template.return_value = doc_mock
 
-        self.reporte_pdf.generarPDF("test_output/reporte.pdf", "maestranza")
+        self.reporte_pdf.generar("test_output/reporte.pdf", "maestranza")
         doc_mock.build.assert_called_once()
         mock_makedirs.assert_called_once()
         self.assertTrue(mock_paragraph.called)

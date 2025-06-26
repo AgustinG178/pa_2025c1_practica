@@ -19,8 +19,8 @@ import pickle
 base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
 base_datos.conectar()
 
-engine, Session = crear_engine()
-sqlalchemy_session = Session()
+engine, Session = crear_engine()  # Session es el sessionmaker
+sqlalchemy_session = Session() # sqlalchemy_session es una instancia de Session
 
 repo_usuarios = RepositorioUsuariosSQLAlchemy(sqlalchemy_session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(sqlalchemy_session)
@@ -289,13 +289,13 @@ def descargar_reporte(formato):
     if formato == 'pdf':
         ruta_pdf = 'static/reporte_departamento.pdf'
         reporte_pdf = ReportePDF(generador)
-        reporte_pdf.generarPDF(ruta_pdf, clasificacion_usuario)
+        reporte_pdf.generar(ruta_pdf, clasificacion_usuario)
         return send_file(ruta_pdf, as_attachment=True)
 
     elif formato == 'html':
         ruta_html = 'static/reporte_departamento.html'
         reporte_html = ReporteHTML(generador)
-        reporte_html.exportar_html(ruta_html, clasificacion_usuario)
+        reporte_html.generar(ruta_html, clasificacion_usuario)
         return send_file(ruta_html, as_attachment=True)
 
     else:
