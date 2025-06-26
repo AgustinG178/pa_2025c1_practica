@@ -58,7 +58,7 @@
                     <tr>
                         <th>ID Reclamo</th>
                         <th>ID Usuario Creador</th>
-                        <th>Usuarios Adheridos</th>
+                        <th>Ids Usuarios Adheridos </th>
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
                         <th>Tiempo Estimado</th>
@@ -71,12 +71,10 @@
                             <td>{{ reclamo.id }}</td>
                             <td>{{ reclamo.usuario_id }}</td>
                             <td>
-                                {% if reclamo.cantidad_adherentes == 1 %}
+                                {% if reclamo.cantidad_adherentes == 0 %}
                                     Sin adherentes
                                 {% else %}
-                                    {% for id_usuario in reclamo.adherentes_ids %}
-                                        <p>Adherente ID: {{ id_usuario }}</p>
-                                    {% endfor %}
+                                    {{ reclamo.usuarios | map(attribute='id') | join(', ') }}
                                 {% endif %}
                             </td>
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>

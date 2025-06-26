@@ -84,6 +84,7 @@ class ModeloReclamo(Base):
         back_populates="reclamos"
     )
 
+
     reclamos_usuarios = Table(
         'reclamos_usuarios',
         Base.metadata,
@@ -95,3 +96,13 @@ class ModeloReclamo(Base):
         return f"Reclamo: ID = {self.id}, Estado = {self.estado}, Fecha y hora = {self.fecha_hora}, Contenido = {self.contenido}, Usuario ID = {self.usuario_id}, Clasificación = {self.clasificacion}, Tiempo estimado = {self.tiempo_estimado}, Resuelto en = {self.resuelto_en}"
 
 
+if __name__ == "__main__":
+    usuario_1 = ModeloUsuario(nombre="nico",apellido="ramirez",email="nico@gmail.com",nombre_de_usuario="nicora",contraseña=1234,rol=0,claustro="estudiante")
+    usuario_2 = ModeloUsuario(nombre="agus",apellido="ramirez",email="agus@gmail.com",nombre_de_usuario="agusra",contraseña=1234,rol=0,claustro="estudiante")
+
+    reclamo_prueba = ModeloReclamo(id=1,contenido="prueba",clasificacion="maestranza",usuario_id=usuario_1.id)
+
+    
+    reclamo_prueba.usuarios.append(usuario_2)
+
+    print(reclamo_prueba.usuarios[0].nombre)

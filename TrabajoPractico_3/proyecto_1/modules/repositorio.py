@@ -53,6 +53,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
 
     def obtener_registro_por_filtro(self, campo, valor,mapeo=True, campo2=None, valor2=None):
         """Obtiene un registro de usuario según uno o dos filtros especificados."""
+        
         query = self.__session.query(ModeloUsuario).filter(getattr(ModeloUsuario, campo) == valor)
         if campo2 and valor2:
             query = query.filter(getattr(ModeloUsuario, campo2) == valor2)
@@ -164,11 +165,11 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session.add(modelo_reclamo)
         self.__session.commit()
 
-    def obtener_registro_por_filtro(self, filtro, valor):
+    def obtener_registro_por_filtro(self, filtro, valor,mapeo=True):
         """Obtiene un reclamo aplicando un filtro; puede devolverlo mapeado o como modelo."""
         modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
 
-        return self.mapear_modelo_a_reclamo(modelo) 
+        return self.mapear_modelo_a_reclamo(modelo) if mapeo else modelo
 
     def obtener_registros_por_filtro(self, filtro,valor):
         
