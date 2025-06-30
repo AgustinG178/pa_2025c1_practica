@@ -8,13 +8,13 @@ class Usuario:
         """
         Inicializa una nueva instancia de Usuario.
         """
-        self.nombre = nombre
-        self.apellido = apellido
-        self.email = email
-        self.nombre_de_usuario = nombre_de_usuario
-        self.contraseña = contraseña
-        self.rol = rol
-        self.claustro = claustro
+        self.__nombre = nombre
+        self.__apellido = apellido
+        self.__email = email
+        self.__nombre_de_usuario = nombre_de_usuario
+        self.__contraseña = contraseña
+        self.__rol = rol
+        self.__claustro = claustro
         self.__id = id
 
     @property

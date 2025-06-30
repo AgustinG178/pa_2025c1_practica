@@ -398,8 +398,8 @@ def manejo_reclamos():
             elif accion == "actualizar" and not tiempo_estimado:
                 flash("El tiempo estimado es obligatorio para pasar un reclamo de pendiente --> en proceso","danger")
 
-            elif accion == "eliminar":
-                gestor_reclamos.invalidar_reclamo(usuario=current_user, reclamo_id=selected_id)
+            elif accion == "invalidar":
+                gestor_reclamos.invalidar_reclamo( reclamo_id=selected_id)
                 # Eliminar imagen solo si existe el archivo
                 import os
                 ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{selected_id}.png")

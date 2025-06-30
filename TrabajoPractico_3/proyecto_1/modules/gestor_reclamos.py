@@ -41,7 +41,6 @@ class GestorReclamo:
             modelo_reclamo = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo)
             self.repositorio_reclamo.guardar_registro(modelo_reclamo=modelo_reclamo)
 
-
     def devolver_reclamo(self,reclamo_id) ->Reclamo:
 
         """
@@ -66,8 +65,7 @@ class GestorReclamo:
                 return self.repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor)
             except Exception as e:
                 raise e  # Lanza el error en vez de retornarlo
-
-        
+       
     def devolver_reclamos_base(self,usuario:FlaskLoginUser):
 
         """
@@ -153,9 +151,7 @@ class GestorReclamo:
 
         except AttributeError:
             return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
-        
-
-        
+             
     def agregar_adherente(self, reclamo_id, usuario:ModeloUsuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
@@ -182,7 +178,6 @@ class GestorReclamo:
         if isinstance(cantidad,int):
 
             return self.repositorio_reclamo.obtener_ultimos_reclamos(limit=cantidad)
-
 
     def modificar_reclamo(self,reclamo_modificado:Reclamo):
 

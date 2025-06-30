@@ -316,10 +316,8 @@ class ReportePDF(Reportes):
             
             elementos.append(Paragraph("*Plazo: Tiempo estimado para resolver el reclamo.", estilo_glosario))
 
-        # Construir el PDF
         doc.build(elementos)
         print(f"Reporte PDF generado en: {ruta_salida}")
-
 
 class ReporteHTML(Reportes):
     """Genera reportes de reclamos en formato HTML."""
@@ -332,20 +330,16 @@ class ReporteHTML(Reportes):
         """Genera y guarda un reporte HTML de reclamos filtrados por clasificación."""
         import os
 
-        # Asegúrate de que la carpeta existe
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
 
-        # Obtener estadísticas
         medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
 
-        # Obtener reclamos filtrados
         reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
             filtro="clasificacion", valor=clasificacion_usuario
         )
 
-        # Crear el contenido HTML
         html = f"""
         <!DOCTYPE html>
         <html lang="es">
@@ -391,13 +385,11 @@ class ReporteHTML(Reportes):
             <ul>
         """
 
-        # Agregar estadísticas al HTML
         for atributo, mediana in medianas.items():
             html += f"<li>Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}</li>"
 
         html += "</ul>"
 
-        # Agregar tabla de reclamos
         html += """
             <h2>Listado de Reclamos</h2>
             <table>
@@ -440,7 +432,6 @@ class ReporteHTML(Reportes):
         </html>
         """
 
-        # Guardar el archivo HTML
         with open(ruta_salida, "w", encoding="utf-8") as archivo:
             archivo.write(html)
 

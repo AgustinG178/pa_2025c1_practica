@@ -113,7 +113,7 @@ class MonticuloMediana():
     def __init__(self, datos):
         self.datos = datos
         self.monto_minimo = MonticuloBinario(es_maximo=False)  # mayores
-        self.monto_maximo = MonticuloBinario(es_maximo=True)   # menoes
+        self.monto_maximo = MonticuloBinario(es_maximo=True)   # menores
 
         self._construir_monticulos()
 
@@ -127,7 +127,6 @@ class MonticuloMediana():
         else:
             self.monto_minimo.insertar(valor)
 
-        # Balancear
         if len(self.monto_maximo) > len(self.monto_minimo) + 1:
             self.monto_minimo.insertar(self.monto_maximo.extraer())
         elif len(self.monto_minimo) > len(self.monto_maximo):
@@ -155,7 +154,13 @@ if __name__ == "__main__":
     mediana = monticulo_mediana.obtener_mediana()
     print("Mediana calculada con montículos:", mediana)
 
-    # Probamos insertar un nuevo dato
+    print("Contenido del montículo máximo (menores):", [-x for x in monticulo_mediana.monto_maximo.montos])
+    print("Contenido del montículo mínimo (mayores):", monticulo_mediana.monto_minimo.montos)
+
     monticulo_mediana.insertar(25)
     print("Mediana después de insertar 25:", monticulo_mediana.obtener_mediana())
+
+    print("Nuevo contenido del montículo máximo (menores):", [-x for x in monticulo_mediana.monto_maximo.montos])
+    print("Nuevo contenido del montículo mínimo (mayores):", monticulo_mediana.monto_minimo.montos)
+
 
