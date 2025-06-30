@@ -151,24 +151,36 @@ class GestorReclamo:
 
         except AttributeError:
             return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
+<<<<<<< HEAD
              
     def agregar_adherente(self, reclamo_id, usuario:ModeloUsuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
 
         modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)
+=======
+        
+
+        
+    def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
+        #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
+        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id,mapeo=False)
+>>>>>>> 3910290448a59811ddf4ead41479c188985cc7ac
 
         if reclamo_a_adherir is None:
             raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")
-        if usuario in modelo_reclamo_adherir.usuarios:
+        if usuario in reclamo_a_adherir.usuarios:
             raise ValueError("El usuario ya está adherido a este reclamo.")
-        
-        reclamo_a_adherir.cantidad_adherentes += 1
-        
-        
-        modelo_reclamo_adherir.usuarios.append(usuario)
-        self.repositorio_reclamo.commit()
 
+        reclamo_a_adherir.cantidad_adherentes += 1
+
+        try:
+            reclamo_a_adherir.usuarios.append(usuario)
+            self.repositorio_reclamo.commit()
+        except Exception as e:
+            print(f"No fue posible adherir al usuario, error {e}")
+
+        
     def obtener_ultimos_reclamos(self,cantidad:int):
         """
         Se devuelven los ultimos n reclamos de la base de datos 
@@ -202,10 +214,14 @@ if __name__ == "__main__": #pragma: no cover
     #gestor = GestorReclamo(repositorio, clasificador)
     repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
     repositorio_reclamos = RepositorioReclamosSQLAlchemy(session)
+
     gestor_reclamo =GestorReclamo(repositorio_reclamo=repositorio_reclamos)
     # 3. Crear usuario y reclamo en DB para la prueba
-    usuario = repo_usuarios.obtener_registro_por_filtros(nombre_de_usuario = "esteban")
-    print("[DEBUG] Usuario creado:", usuario)
+
+    usuario_1 =  repo_usuarios.obtener_registro_por_filtro(campo = "nombre_de_usuario" , valor = "esteban")
+    usuario_2 =  repo_usuarios.obtener_registro_por_filtro(campo = "nombre_de_usuario" , valor = "nicora")
+
+    print("[DEBUG] Usuario creado:", usuario_1)
     #session.add(usuario)
     print("[DEBUG] Usuario agregado a la sesión.")
     #session.commit()  # para que usuario.id se genere
@@ -216,27 +232,37 @@ if __name__ == "__main__": #pragma: no cover
         fecha_hora=datetime.now(),
         contenido="Reclamo prueba",
         clasificacion="soporte informático",
-        usuario_id=usuario.id
+        usuario_id=usuario_1.id
     )
     modelo_r = repositorio_reclamos.mapear_reclamo_a_modelo(reclamo)
     repositorio_reclamos.guardar_registro(modelo_r)
     print("[DEBUG] Reclamo creado:", modelo_r)
-    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id) #pragma: no cover 
+    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id)
 
-    # 4. Probar agregar adherente
-    #resultado = gestor.agregar_adherente(modelo_r.id, usuario)
-    #print(resultado)
+    # Recuperar el reclamo desde la sesión para trabajar con relaciones
+    modelo_r_db = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
+
+    # Probar agregar adherente
+    modelo_usuario = repo_usuarios.buscar_usuario(nombre_de_usuario=usuario_2.nombre_de_usuario)
+    resultado = gestor_reclamo.agregar_adherente(modelo_r_db.id, modelo_usuario)
+
+    # Volver a consultar para ver los usuarios adheridos
+    reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
+    print([u.nombre_de_usuario for u in reclamo_actualizado.usuarios])
 
     # Opcional: verificar si el usuario está adherido realmente
-    reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
+    """reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
     assert reclamo_actualizado.cantidad_adherentes > 0, "El reclamo no tiene adherentes."
     print("Prueba OK, usuario adherido al reclamo.")
+    """
 
 
-    ultimos_reclamos = gestor_reclamo.obtener_ultimos_reclamos(cantidad=4)
+    #ultimos_reclamos = gestor_reclamo.obtener_ultimos_reclamos(cantidad=4)
     
-    for reclamo in ultimos_reclamos:
-        print(reclamo)
+    #for reclamo in ultimos_reclamos:
+    #   print(reclamo)
+
+
     # except Exception as e:
     #     print("Error al agregar adherente:", e)
 
