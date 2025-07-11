@@ -22,7 +22,7 @@ class GestorBaseDatos:
         Crea una nueva sesión para interactuar con la base de datos.
         """
         self.session = self.Session()
-        return self.session is not None  # 👈 ESTA LÍNEA ES LA CLAVE
+        return self.session is not None
 
     def guardar_usuario(self, usuario):
         self.session.add(usuario)

@@ -66,18 +66,6 @@ class GestorUsuarios:
         if not usuario:
             raise ValueError("Usuario no encontrado")
         return usuario
-
-    def generar_reporte_usuario(self, tipo_reporte, *args, **kwargs):
-        """
-        Genera un reporte de usuarios en el formato especificado (pdf o html).
-        Lanza ValueError si el tipo de reporte no es soportado.
-        """
-        if tipo_reporte == "pdf":
-            return "Reporte PDF generado para usuarios"
-        elif tipo_reporte == "html":
-            return "Reporte HTML generado para usuarios"
-        else:
-            raise ValueError("Tipo de reporte no soportado")
         
     def cargar_usuario(self, nombre_de_usuario):
         """

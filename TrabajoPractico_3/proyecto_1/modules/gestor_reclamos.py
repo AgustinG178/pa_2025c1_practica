@@ -4,7 +4,6 @@ from modules.config import crear_engine
 from datetime import datetime, UTC
 from modules.login import FlaskLoginUser
 from modules.modelos import ModeloReclamo,ModeloUsuario
-import random
 from datetime import date
 
 #session = crear_engine()
@@ -22,7 +21,7 @@ class GestorReclamo:
         self.repositorio_reclamo = repositorio_reclamo
 
     def crear_reclamo(self, usuario:FlaskLoginUser, descripcion: str, clasificacion: str):
-        # acepta cualquier objeto con atributo id, por ejemplo
+        # acepta cualquier objeto con atributo id
         if not hasattr(usuario, 'id') or not descripcion:
             raise ValueError("Verificar que los datos ingresados sean correctos")
         p_reclamo = Reclamo(
@@ -151,21 +150,17 @@ class GestorReclamo:
 
         except AttributeError:
             return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
-<<<<<<< HEAD
              
     def agregar_adherente(self, reclamo_id, usuario:ModeloUsuario):
         
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
 
-        modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)
-=======
-        
+        modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)        
 
         
     def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
         #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id,mapeo=False)
->>>>>>> 3910290448a59811ddf4ead41479c188985cc7ac
 
         if reclamo_a_adherir is None:
             raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")

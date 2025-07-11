@@ -2,12 +2,6 @@ from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.reportes import GeneradorReportes
 from modules.config import crear_engine
 
-"""
-Este módulo utiliza el módulo estándar 'heapq' de Python para implementar operaciones eficientes sobre montículos (heaps).
-'heapq' permite gestionar listas como montículos binarios, proporcionando inserciones, extracciones y consultas de mínimos en tiempo logarítmico.
-Esto es útil para calcular estadísticas como la mediana, el máximo y el mínimo de manera eficiente, especialmente en grandes volúmenes de datos.
-"""
-
 class Estadisticas:
     """Clase base para calcular estadísticas básicas sobre una lista de datos."""
 

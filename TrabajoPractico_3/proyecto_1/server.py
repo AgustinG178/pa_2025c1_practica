@@ -156,11 +156,8 @@ def adherirse(reclamo_id_adherido):
         flash("Reclamo creado exitosamente.", "success")
     elif accion == "adherir":
         try:
-
             usuario_a_adherirse = gestor_usuarios.buscar_usuario(filtro="id",valor=current_user.id,mapeo=False)
-
             gestor_reclamos.agregar_adherente(usuario=usuario_a_adherirse,reclamo_id=reclamo_id_adherido)
-            
             # Eliminar imagen solo si existe el archivo
 
             ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{reclamo_id_creado}.png")
@@ -168,7 +165,7 @@ def adherirse(reclamo_id_adherido):
             if os.path.exists(ruta_imagen):
                 gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=reclamo_id_creado)
 
-            gestor_reclamos.invalidar_reclamo(reclamo_id=reclamo_id_creado)
+            gestor_reclamos.guardar_reclamo(reclamo_id=reclamo_id_creado)
 
             flash("Te adheriste al reclamo correctamente.", "success")
         except ValueError as e:
@@ -400,7 +397,6 @@ def manejo_reclamos():
 
             elif accion == "invalidar":
                 gestor_reclamos.invalidar_reclamo( reclamo_id=selected_id)
-                # Eliminar imagen solo si existe el archivo
                 import os
                 ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{selected_id}.png")
                 if os.path.exists(ruta_imagen):
