@@ -12,7 +12,6 @@ class TestRepositorioUsuariosSQLAlchemyCobertura(unittest.TestCase):
         engine, Session = crear_engine()
         cls.session = Session()
         cls.repo = RepositorioUsuariosSQLAlchemy(cls.session)
-        repo = RepositorioUsuariosSQLAlchemy(cls.session)
 
     def setUp(self):
         self.session.query(ModeloUsuario).delete()   
@@ -35,31 +34,18 @@ class TestRepositorioUsuariosSQLAlchemyCobertura(unittest.TestCase):
         self.repo.modificar_registro(modelo)  # No debe lanzar error, solo no hace nada
 
     def test_obtener_modelo_por_id_no_existente(self):
-        self.assertIsNone(self.repo.obtener_modelo_por_id(9999))
+        self.assertIsNone(self.repo.obtener_registro_por_filtros(**{"id":9999}))
 
     def test_obtener_registro_por_filtro_no_existente(self):
-        self.assertIsNone(self.repo.obtener_registro_por_filtro("nombre", "noexiste"))
+        self.assertIsNone(self.repo.obtener_registro_por_filtros(**{"nombre":"no existe"}))
 
-    def test_obtener_registro_por_filtros_no_existente(self):
-        self.assertIsNone(self.repo.obtener_registro_por_filtros(nombre="noexiste"))
-
-    # def test_map_modelo_a_entidad(self):
-    #     modelo = ModeloUsuario(
-    #         nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab",
-    #         contraseña="123", rol=0, claustro=0
-    #     )
-    #     self.session.add(modelo)
-    #     self.session.commit()
-    #     entidad = self.repo.__map_modelo_a_entidad(modelo)
-    #     self.assertIsInstance(entidad, Usuario)
-    #     self.assertEqual(entidad.nombre, "A")
 
     def test_map_entidad_a_modelo(self):
         usuario = Usuario(
             nombre="A", apellido="B", email="a@b.com", nombre_de_usuario="ab",
             contraseña="123", rol=0, claustro=0, id=1
         )
-        modelo = self.repo._map_entidad_a_modelo(usuario)
+        modelo = self.repo.map_entidad_a_modelo(usuario)
         self.assertIsInstance(modelo, ModeloUsuario)
 
     def test_eliminar_registro_por_id_no_existente(self):
@@ -68,7 +54,7 @@ class TestRepositorioUsuariosSQLAlchemyCobertura(unittest.TestCase):
 
     def test_buscar_usuario(self):
         # Debe devolver None si no existe
-        self.assertIsNone(self.repo.buscar_usuario(nombre="noexiste"))
+        self.assertIsNone(self.repo.obtener_registro_por_filtros(**{"nombre":"usuario no existe"}))
 
 class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
     @classmethod
@@ -111,12 +97,11 @@ class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
 
     def test_obtener_registro_por_filtro_no_existente(self):
     # Este test no debe lanzar errores si no existe el reclamo
-        try:
-            resultado = self.repo.obtener_registro_por_filtro("id", 9999)
-        except AttributeError as e:
-            self.assertIn("NoneType", str(e))  # Confirma que la excepción es por None
-        else:
-            self.assertIsNone(resultado)
+        with self.assertRaises(ValueError) as contexto:
+            self.repo.obtener_registro_por_filtros(**{"id":9999})
+
+        self.assertIn("NoneType", str(contexto.exception))
+
 
     def test_eliminar_registro_por_id_no_existente(self):
         self.repo.eliminar_registro_por_id(9999)  # No debe lanzar error
@@ -124,9 +109,6 @@ class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
     def test_buscar_similares(self):
         # No hay reclamos, debe devolver lista vacía
         self.assertEqual(self.repo.buscar_similares("ninguna", 9999), [])
-
-    def test_obtener_por_id_no_existente(self):
-        self.assertIsNone(self.repo.obtener_por_id(9999))
 
     def test_obtener_registros_por_filtro_no_existente(self):
         self.assertEqual(self.repo.obtener_registros_por_filtro("clasificacion", "noexiste"), [])
@@ -172,9 +154,9 @@ class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
             id=1, estado="pendiente", fecha_hora=datetime.now(),
             contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
+        modelo = self.repo.map_entidad_a_modelo(reclamo)
         self.assertIsInstance(modelo, ModeloReclamo)
-        reclamo2 = self.repo.mapear_modelo_a_reclamo(modelo)
+        reclamo2 = self.repo.map_modelo_a_entidad(modelo)
         self.assertIsInstance(reclamo2, Reclamo)
 
     def test_actualizar_reclamo(self):
@@ -182,24 +164,15 @@ class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
             id=None, estado="pendiente", fecha_hora=datetime.now(),
             contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
         )
-        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
+        modelo = self.repo.map_entidad_a_modelo(reclamo)
         self.repo.guardar_registro(modelo)
         reclamo_db = self.repo.obtener_todos_los_registros()[0]
-        reclamo_db_entidad = self.repo.mapear_modelo_a_reclamo(reclamo_db)
+        reclamo_db_entidad = self.repo.map_modelo_a_entidad(reclamo_db)
         reclamo_db_entidad.estado = "resuelto"
         self.repo.modificar_registro(reclamo_db_entidad)
-        reclamo_mod = self.repo.obtener_por_id(reclamo_db_entidad.id)
+        reclamo_mod = self.repo.obtener_registro_por_filtros(**{"id":reclamo_db.id})
         self.assertEqual(reclamo_mod.estado, "resuelto")
 
-    def test_obtener_ultimos_reclamos(self):
-        reclamo = Reclamo(
-            id=None, estado="pendiente", fecha_hora=datetime.now(),
-            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
-        )
-        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
-        self.repo.guardar_registro(modelo)
-        ultimos = self.repo.obtener_ultimos_reclamos(limit=1)
-        self.assertTrue(len(ultimos) >= 0)
 
 if __name__ == "__main__":
     unittest.main()

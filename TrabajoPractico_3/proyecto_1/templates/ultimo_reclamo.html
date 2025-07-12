@@ -37,16 +37,19 @@
         {% if similares %}
             <div class="flashcards-grid">
                 {% for r in similares %}
-                    <div class="flashcard">
-                        <p class="texto-reclamo">{{ r.contenido }}</p>
-                        <form method="post" action="{{ url_for('adherirse', reclamo_id_adherido=r.id) }}">
-                            <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
-                            <input type="hidden" name="reclamo_id_adherido" value="{{ r.id }}">
-                            <div style="text-align: center;">
-                                <button type="submit" name="accion" value="adherir">Adherirse</button>
-                            </div>
-                        </form>
-                    </div>
+                    {% if r.usuario_id != current_user.id%}
+                        
+                        <div class="flashcard">
+                            <p class="texto-reclamo">{{ r.contenido }}</p>
+                            <form method="post" action="{{ url_for('adherirse', reclamo_id_adherido=r.id) }}">
+                                <input type="hidden" name="reclamo_id_creado" value="{{ reclamo.id }}">
+                                <input type="hidden" name="reclamo_id_adherido" value="{{ r.id }}">
+                                <div style="text-align: center;">
+                                    <button type="submit" name="accion" value="adherir">Adherirse</button>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         {% else %}

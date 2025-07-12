@@ -119,11 +119,12 @@ if __name__ == "__main__":
     print("Base de datos limpiada.")
 """
     # Crear usuarios
+    usuarios_creados = []
     for u in usuarios_info:
         try:
             rol = u.get("rol", 0)
             claustro = u.get("claustro", "Estudiante")
-            
+            print(f"{u["nombre"]}")
             gestor_usuarios.registrar_nuevo_usuario(
                 nombre=u["nombre"],
                 apellido=u["apellido"],
@@ -133,6 +134,10 @@ if __name__ == "__main__":
                 rol=rol,
                 claustro=claustro,
             )
+            
+
+            usuario_bd_creado = gestor_usuarios.buscar_usuario(filtro="nombre",valor=u["nombre"])
+            usuarios_creados.append(usuario_bd_creado)
             print(f"✔ Usuario creado: {u['usuario']}")
         except Exception as e:
             print(f"✖ Usuario '{u['usuario']}' ya existe o error: {e}")
@@ -147,6 +152,7 @@ if __name__ == "__main__":
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
             # Generar resuelto_en aleatorio o None
+
             resuelto_en = randint(1, 30) if randint(0, 1) else None
             estado = "resuelto" if resuelto_en is not None else "pendiente"
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
@@ -154,13 +160,21 @@ if __name__ == "__main__":
             reclamo = gestor_reclamos.crear_reclamo(
                 usuario=usuario,
                 descripcion=desc,
-                clasificacion=clasificacion
+                clasificador=clf
             )
 
-            modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
+            modelo = repo_reclamos.map_entidad_a_modelo(reclamo)
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
-            modelo.cantidad_adherentes = randint(0,35)  # Simular adherentes
+            
+            modelo.cantidad_adherentes = randint(0,5)  # Simular adherentes
+            if modelo.cantidad_adherentes != 0:
+
+                for i in range(0, modelo.cantidad_adherentes):
+                    usuario_adherente_aleatorio = choice(usuarios_db)
+                    if usuario_adherente_aleatorio not in modelo.usuarios:
+                        modelo.usuarios.append(usuario_adherente_aleatorio)
+                
             modelo.tiempo_estimado = randint(1, 10) if estado == "pendiente" else 0
             modelo.resuelto_en = resuelto_en
 

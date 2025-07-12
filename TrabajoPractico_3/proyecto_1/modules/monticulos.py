@@ -1,52 +1,9 @@
 from modules.repositorio import RepositorioReclamosSQLAlchemy
-from modules.reportes import GeneradorReportes
-from modules.config import crear_engine
 
-"""
-Este módulo utiliza el módulo estándar 'heapq' de Python para implementar operaciones eficientes sobre montículos (heaps).
-'heapq' permite gestionar listas como montículos binarios, proporcionando inserciones, extracciones y consultas de mínimos en tiempo logarítmico.
-Esto es útil para calcular estadísticas como la mediana, el máximo y el mínimo de manera eficiente, especialmente en grandes volúmenes de datos.
-"""
 
-class Estadisticas:
-    """Clase base para calcular estadísticas básicas sobre una lista de datos."""
-
-    def __init__(self, datos):
-        """Inicializa la clase con una lista de datos."""
-        self.datos = datos
-
-    def obtener_mediana(self):
-        """Calcula y devuelve la mediana de los datos."""
-        if not self.datos:
-            return None
-        datos_ordenados = sorted(self.datos)
-        n = len(datos_ordenados)
-        medio = n // 2
-        if n % 2 == 0:
-            return (datos_ordenados[medio - 1] + datos_ordenados[medio]) / 2
-        else:
-            return datos_ordenados[medio]
-
-    def obtener_maximo(self):
-        """Devuelve el valor máximo de los datos."""
-        if not self.datos:
-            return None
-        return max(self.datos)
-
-    def obtener_minimo(self):
-        """Devuelve el valor mínimo de los datos."""
-        if not self.datos:
-            return None
-        return min(self.datos)
-
-    def obtener_promedio(self):
-        """Calcula y devuelve el promedio de los datos."""
-        if not self.datos:
-            return None
-        return sum(self.datos) / len(self.datos)
 
 class MonticuloBinario:
-    """Implementa un montículo binario mínimo o máximo sin usar 'heapq'."""
+    """Implementa un montículo binario mínimo o máximo."""
 
     def __init__(self, es_maximo=False):
         self.montos = []
@@ -104,11 +61,15 @@ class MonticuloBinario:
             self.montos[i], self.montos[menor] = self.montos[menor], self.montos[i]
             i = menor
 
+
     def __len__(self):
         return len(self.montos)
     
-class MonticuloMediana():
-    """Extiende Estadisticas para mantener la mediana usando montículos personalizados."""
+class MonticuloMediana:
+    """
+    Se construye un montículo binario sobre el cual se calcula su mediana, al igual que se pueden
+    agregar  datos
+    """
 
     def __init__(self, datos):
         self.datos = datos
@@ -140,7 +101,10 @@ class MonticuloMediana():
         else:
             return self.monto_maximo.top()
 
+
 if __name__ == "__main__":
+    from modules.reportes import GeneradorReportes
+    from modules.config import crear_engine
     enigne, Session = crear_engine()
     session = Session()
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)

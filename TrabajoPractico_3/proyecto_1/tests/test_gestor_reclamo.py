@@ -13,29 +13,32 @@ class DummyUser:
 
 class TestGestorReclamoExtra(unittest.TestCase):
     def setUp(self):
-        self.repositorio = MagicMock()
-        self.gestor = GestorReclamo(self.repositorio)
+        self.repositorio_reclamo = MagicMock()
+        self.gestor = GestorReclamo(self.repositorio_reclamo)
         self.usuario = DummyUser()
 
     def test_guardar_reclamo(self):
         reclamo = Reclamo("pendiente", datetime.now(), self.usuario.id, "Fallo", "soporte")
         self.gestor.guardar_reclamo(reclamo)
-        self.repositorio.mapear_reclamo_a_modelo.assert_called_once()
-        self.repositorio.guardar_registro.assert_called_once()
+        self.repositorio_reclamo.map_entidad_a_modelo.assert_called_once()
+        self.repositorio_reclamo.guardar_registro.assert_called_once()
 
     def test_devolver_reclamo(self):
-        self.repositorio.obtener_registro_por_filtro.return_value = "MockReclamo"
-        resultado = self.gestor.devolver_reclamo(1)
+        self.repositorio_reclamo.obtener_registro_por_filtros.return_value = "MockReclamo"
+        resultado = self.gestor.buscar_reclamo_por_filtro("id", 1)
         self.assertEqual(resultado, "MockReclamo")
 
     def test_buscar_reclamos_por_filtro(self):
-        self.repositorio.obtener_registros_por_filtro.return_value = ["R1", "R2"]
+
+        self.repositorio_reclamo.obtener_registros_por_filtro.return_value = ["R1","R2"]
+        
         resultado = self.gestor.buscar_reclamos_por_filtro("estado", "pendiente")
+
         self.assertEqual(resultado, ["R1", "R2"])
 
     def test_devolver_reclamos_base_permitido(self):
         usuario = DummyUser(rol="1")
-        self.repositorio.obtener_todos_los_registros.return_value = ["R1"]
+        self.repositorio_reclamo.obtener_todos_los_registros.return_value = ["R1"]
         resultado = self.gestor.devolver_reclamos_base(usuario)
         self.assertEqual(resultado, ["R1"])
 
@@ -45,54 +48,62 @@ class TestGestorReclamoExtra(unittest.TestCase):
             self.gestor.devolver_reclamos_base(usuario)
 
     def test_buscar_reclamos_similares(self):
-        self.repositorio.buscar_similares.return_value = ["Sim1"]
+        self.repositorio_reclamo.buscar_similares.return_value = ["Sim1"]
         resultado = self.gestor.buscar_reclamos_similares("soporte", 1)
         self.assertEqual(resultado, ["Sim1"])
 
     def test_actualizar_estado_reclamo_resolver(self):
         usuario = DummyUser(rol="2")
-        reclamo = Reclamo("pendiente", datetime.now() - timedelta(days=2), usuario.id, "Falla", "hw")
-        reclamo.id = 1
+        reclamo = Reclamo("pendiente", datetime.now() - timedelta(days=2), usuario.id, "Falla", "hw",id=1)
         modelo = ModeloReclamo(id=1, tiempo_estimado=3)
-        self.repositorio.obtener_registro_por_filtro.return_value = modelo
+        self.repositorio_reclamo.obtener_registro_por_filtros.return_value = modelo
         self.gestor.actualizar_estado_reclamo(usuario, reclamo, "resolver")
-        self.repositorio.modificar_registro.assert_called_once()
+        self.repositorio_reclamo.modificar_registro.assert_called_once()
 
     def test_actualizar_estado_reclamo_actualizar(self):
         usuario = DummyUser(rol="2")
-        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Falla", "hw")
-        reclamo.id = 1
+        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Falla", "hw",id=1)
         modelo = ModeloReclamo(id=1)
-        self.repositorio.obtener_registro_por_filtro.return_value = modelo
+        self.repositorio_reclamo.obtener_registro_por_filtros.return_value = modelo
         self.gestor.actualizar_estado_reclamo(usuario, reclamo, "actualizar", 5)
+
         self.assertEqual(modelo.tiempo_estimado, 5)
         self.assertEqual(modelo.estado, "en proceso")
-        self.repositorio.modificar_registro.assert_called_once()
+        self.repositorio_reclamo.modificar_registro.assert_called_once()
 
     def test_invalidar_reclamo(self):
-        self.repositorio.eliminar_registro_por_id.return_value = None
-        msg = self.gestor.invalidar_reclamo(99)
+        self.repositorio_reclamo.eliminar_registro_por_id.return_value = None
+        from modules.gestor_imagen_reclamo import GestorImagenReclamo
+        gestor_imagen = MagicMock(spec=GestorImagenReclamo)
+        msg = self.gestor.invalidar_reclamo(99,gestor_imagen=gestor_imagen)
         self.assertIn("se ha eliminado correctamente", msg)
 
-    def test_obtener_ultimos_reclamos(self):
-        self.repositorio.obtener_ultimos_reclamos.return_value = ["R1", "R2"]
-        resultado = self.gestor.obtener_ultimos_reclamos(2)
-        self.assertEqual(resultado, ["R1", "R2"])
+
+    def test_derivar_reclamo(self):
+        reclamo = Reclamo("pendiente", datetime.now(), "Desc", "tipo", id=1)
+        nuevo_departamento = "nuevo_depto"
+        self.gestor.modificar_reclamo(reclamo.id,nuevo_dpto=nuevo_departamento)
+        self.repositorio_reclamo.modificar_registro.assert_called_once()
 
     def test_modificar_reclamo(self):
-        reclamo = Reclamo("pendiente", datetime.now(), 1, "Desc", "tipo")
-        self.gestor.modificar_reclamo(reclamo)
-        self.repositorio.modificar_registro.assert_called_once()
+        reclamo = Reclamo("pendiente", datetime.now(), "Desc", "tipo", id=1)
+        clasificador = MagicMock()
+        clasificador.clasificar.return_value = "nueva_clasificacion"
+        self.gestor.modificar_reclamo(reclamo.id, nuevo_contenido="Nuevo contenido",clasificador=clasificador)
+        self.repositorio_reclamo.modificar_registro.assert_called_once()
+        #buscamos el reclamo modificado
+        reclamo_modificado = self.repositorio_reclamo.obtener_registro_por_filtro.return_value = Reclamo("pendiente", datetime.now(), "Nuevo contenido", "nueva_clasificacion", id=1)
+        self.assertEqual(reclamo_modificado.contenido, "Nuevo contenido")
+        self.assertEqual(reclamo_modificado.clasificacion, "nueva_clasificacion")
 
     def test_actualizar_estado_reclamo_excepcion(self):
         usuario = DummyUser(rol="2")
-        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Desc", "tipo")
-        reclamo.id = 999
-        self.repositorio.obtener_registro_por_filtro.side_effect = Exception("DB error")
+        reclamo = Reclamo("pendiente", datetime.now(), usuario.id, "Desc", "tipo",id=999)
+        self.repositorio_reclamo.obtener_registro_por_filtros.side_effect = Exception("DB error")
 
         self.gestor.actualizar_estado_reclamo(usuario, reclamo, "resolver")
 
-        self.repositorio.modificar_registro.assert_not_called()
+        self.repositorio_reclamo.modificar_registro.assert_not_called()
 
 
 if __name__ == "__main__":

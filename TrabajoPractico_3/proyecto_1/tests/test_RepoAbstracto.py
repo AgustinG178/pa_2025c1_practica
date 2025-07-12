@@ -23,11 +23,19 @@ class TestRepositorioAbstracto(unittest.TestCase):
                 return [] #pragma: no cover
             def modificar_registro(self, entidad_modificada):
                 pass #pragma: no cover
-            def obtener_registro_por_filtro(self, filtro, valor):
+            def obtener_registro_por_filtros(self,**kgwargs):
+            
+                return None #pragma: no cover
+            def obtener_registros_por_filtro(self, filtro, valor, mapeo=True):
                 return None #pragma: no cover
             def eliminar_registro_por_id(self, id):
                 pass #pragma: no cover
+            def map_entidad_a_modelo(entidad):
+                pass #pragma: no cover
 
+            def map_modelo_a_entidad(entidad):
+                pass #pragma: no cover
+            
         # Esta sí debe instanciar sin problemas
         repo = RepoCompleto()
         self.assertIsInstance(repo, RepoCompleto)

@@ -1,9 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from modules.modelos import ModeloReclamo
 from sqlalchemy import func
 from modules.config import crear_engine
 from modules.repositorio import RepositorioReclamosSQLAlchemy
-from collections import Counter
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet
@@ -16,6 +15,7 @@ from reportlab.lib import colors
 import os
 from abc import ABC, abstractmethod
 from reportlab.platypus import HRFlowable
+from reportlab.platypus import Image
 
 engine, Session = crear_engine()
 
@@ -26,7 +26,7 @@ session = Session()
 class GeneradorReportes:
     """Genera estadísticas y datos para reportes de reclamos."""
 
-    def __init__(self, repositorio_reclamos):
+    def __init__(self, repositorio_reclamos:RepositorioReclamosSQLAlchemy):
         """Inicializa el generador con un repositorio de reclamos."""
         self.repositorio_reclamos = repositorio_reclamos
 
@@ -59,7 +59,7 @@ class GeneradorReportes:
 
     def reclamos_recientes(self, dias=7):
         """Devuelve una lista de reclamos creados en los últimos `dias` días."""
-        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
         ).all()
@@ -82,7 +82,7 @@ class GeneradorReportes:
 
     def reclamos_recientes_filtrado(self, clasificacion, dias=7):
         """Devuelve una lista de reclamos recientes filtrados por clasificación."""
-        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
         return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite,
             ModeloReclamo.clasificacion == clasificacion
@@ -103,9 +103,9 @@ class GeneradorReportes:
             return None
 
         mapa_roles = {
-            '1': 'soporte informático',
-            '2': 'secretaría técnica',
-            '3': 'maestranza'
+            '2': 'soporte informático',
+            '3': 'secretaría técnica',
+            '4': 'maestranza'
         }
         return mapa_roles.get(rol)
 
@@ -120,25 +120,24 @@ class GeneradorReportes:
             ModeloReclamo.estado,
             func.count(ModeloReclamo.id)
         ).filter(func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()).group_by(ModeloReclamo.estado).all()
-
         return dict(query)
 
     def obtener_datos_para_histograma(self, rol):
-        """Obtiene los datos necesarios para un histograma, filtrados por rol."""
+        """Obtiene los datos necesarios para un histograma, filtrados por rol. Devuelve la lista de cantidad de adherentes."""
         clasificacion = self.clasificacion_por_rol(rol)
         if clasificacion is None:
-            return {}
+            return []
 
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()
         ).all()
-
-        agrupados_por_mes = Counter([r.fecha_hora.month for r in reclamos if r.fecha_hora])
-        return dict(agrupados_por_mes)
+        adherentes = [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
+        return adherentes
     
+
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
         """Obtiene las cantidades de adherentes de reclamos recientes, opcionalmente filtrados por clasificación."""
-        fecha_limite = datetime.utcnow() - timedelta(days=dias)
+        fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
         query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
         )
@@ -149,7 +148,7 @@ class GeneradorReportes:
         
     def mediana_tiempo_resolucion(self, clasificacion=None):
         """Calcula la mediana del tiempo de resolución de reclamos resueltos, opcionalmente filtrados."""
-        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
+        from modules.monticulos import MonticuloMediana  
 
         # Filtrar reclamos resueltos
         query = self.repositorio_reclamos.session.query(ModeloReclamo.resuelto_en).filter(
@@ -159,7 +158,6 @@ class GeneradorReportes:
             query = query.filter(ModeloReclamo.clasificacion == clasificacion)
 
         resultados = query.all()
-        print("Resultados de la consulta:", resultados)
 
         tiempos_resueltos = [reclamo.resuelto_en for reclamo in query if reclamo.resuelto_en is not None]
 
@@ -173,15 +171,16 @@ class GeneradorReportes:
 
     def calcular_mediana(self, atributo, clasificacion=None):
         """Calcula la mediana de un atributo de los reclamos, opcionalmente filtrados."""
-        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
+        from modules.monticulos import MonticuloMediana  
 
         # Filtrar reclamos
         query = self.repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo))
         if clasificacion:
-            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion) 
 
         # Obtener valores válidos del atributo
-        valores = [r[0] for r in query.all() if r[0] is not None]
+        valores = [r[0] for r in query.all() if r[0] is not None and r[0] ]
+        
 
         # Verificar si hay datos
         if not valores:
@@ -193,13 +192,18 @@ class GeneradorReportes:
 
     def calcular_medianas_atributos(self, clasificacion=None):
         """Calcula la mediana de atributos relevantes de los reclamos."""
+        
         atributos_relevantes = ['cantidad_adherentes', 'tiempo_estimado', 'resuelto_en']
         medianas = {}
 
         for atributo in atributos_relevantes:
+
             medianas[atributo] = self.calcular_mediana(atributo, clasificacion)
 
+
+
         return medianas
+
 
 class Reportes(ABC):
     """Clase abstracta para reportes de reclamos."""
@@ -207,7 +211,7 @@ class Reportes(ABC):
     @abstractmethod
     def generar(self, ruta_salida, clasificacion_usuario):
         """Genera un reporte y lo guarda en la ruta especificada."""
-        pass
+        raise NotImplementedError
 
 class ReportePDF(Reportes):
     """Genera reportes de reclamos en formato PDF."""
@@ -216,12 +220,14 @@ class ReportePDF(Reportes):
         """Inicializa el reporte PDF con un generador de reportes."""
         self.generador = generador
 
+
     def generar(self, ruta_salida, clasificacion_usuario):
         """Genera y guarda un reporte PDF de reclamos filtrados por clasificación."""
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
 
+        
         doc = SimpleDocTemplate(
             ruta_salida, pagesize=A4,
             leftMargin=2 * cm, rightMargin=2 * cm,
@@ -258,7 +264,13 @@ class ReportePDF(Reportes):
         elementos.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#00509e")))
         elementos.append(Spacer(1, 0.5 * cm))
 
-        # Estadísticas con medianas
+        # Estadísticas con medianas, promedios y cantidad de reclamos
+        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
+            filtro="clasificacion",valor=clasificacion_usuario
+        )
+
+        promedio_adherentes = sum([reclamo.cantidad_adherentes for reclamo in reclamos])/len(reclamos) if reclamos else 0
+        cantidad_total_reclamos = len(reclamos)
         mediana = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
         elementos.append(Paragraph(f"Estadísticas del Departamento: {clasificacion_usuario.capitalize()}", estilo_subtitulo))
         elementos.append(Spacer(1, 0.3 * cm))
@@ -266,13 +278,24 @@ class ReportePDF(Reportes):
         for atributo, mediana in mediana.items():
             texto = f"Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}"
             elementos.append(Paragraph(texto, estilo_normal))
+        texto_promedio_adherentes = f"Promedio adherentes: {round(promedio_adherentes,2)}"
+        texto_cantidad_reclamos = f"Cantidad Total de reclamos: {cantidad_total_reclamos}"
 
+        elementos.append(Paragraph(texto_promedio_adherentes,estilo_normal))
+        elementos.append(Paragraph(texto_cantidad_reclamos,estilo_normal))
         elementos.append(Spacer(1, 1 * cm))
 
-        # Listado de reclamos
-        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
-            filtro="clasificacion", valor=clasificacion_usuario
-        )
+        # Gráficos
+        ruta_torta = f"static/graficos/{clasificacion_usuario}/torta_estado_{clasificacion_usuario}.png"
+        ruta_histograma = f"static/graficos/{clasificacion_usuario}/histograma_{clasificacion_usuario}.png"
+        if os.path.exists(ruta_torta):
+            elementos.append(Paragraph("Gráfico de Torta:", estilo_subtitulo))
+            elementos.append(Image(ruta_torta, width=300, height=300))
+            elementos.append(Spacer(1, 0.5 * cm))
+        if os.path.exists(ruta_histograma):
+            elementos.append(Paragraph("Histograma:", estilo_subtitulo))
+            elementos.append(Image(ruta_histograma, width=400, height=250))
+            elementos.append(Spacer(1, 0.5 * cm))
 
         if not reclamos:
             elementos.append(Paragraph("No hay reclamos para esta clasificación.", estilo_normal))
@@ -313,7 +336,7 @@ class ReportePDF(Reportes):
             elementos.append(Spacer(1, 0.5 * cm))
             
             estilo_glosario = ParagraphStyle(name="Grosario",fontName="Helvetica",fontSize=9,textColor=colors.grey,leading=11,spaceAfter=6)
-            
+
             elementos.append(Paragraph("*Plazo: Tiempo estimado para resolver el reclamo.", estilo_glosario))
 
         doc.build(elementos)
@@ -326,6 +349,13 @@ class ReporteHTML(Reportes):
         """Inicializa el reporte HTML con un generador de reportes."""
         self.generador = generador
 
+    
+    #transformamos la imagen en binario a texto plano con base64, de esta manera los datos pueden ser transmitidos o almacenados en sistemas que solo aceptan texto,como HTML.
+    def convertir_imagen_a_base64(self,ruta_imagen):
+        import base64
+        with open(ruta_imagen, "rb") as f:
+            return base64.b64encode(f.read()).decode("utf-8")
+        
     def generar(self, ruta_salida, clasificacion_usuario):
         """Genera y guarda un reporte HTML de reclamos filtrados por clasificación."""
         import os
@@ -334,11 +364,25 @@ class ReporteHTML(Reportes):
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
 
+        ruta_torta = f"static/graficos/{clasificacion_usuario}/torta_estado_{clasificacion_usuario}.png"    
+        ruta_histograma = f"static/graficos/{clasificacion_usuario}/histograma_{clasificacion_usuario}.png"
+
+        img_torta_base64 = self.convertir_imagen_a_base64(ruta_torta)
+        img_histograma_base64 = self.convertir_imagen_a_base64(ruta_histograma)
+
         medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
 
-        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
-            filtro="clasificacion", valor=clasificacion_usuario
+        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(filtro="clasificacion",valor=clasificacion_usuario
+            
         )
+        
+
+        promedio_adherentes = sum([reclamo.cantidad_adherentes for reclamo in reclamos])/len(reclamos) if reclamos else 0
+        cantidad_total_reclamos = len(reclamos)
+
+        texto_promedio_adherentes = f"Promedio adherentes: {round(promedio_adherentes,2)}"
+        texto_cantidad_reclamos = f"Cantidad Total de reclamos: {cantidad_total_reclamos}"
+
 
         html = f"""
         <!DOCTYPE html>
@@ -388,6 +432,9 @@ class ReporteHTML(Reportes):
         for atributo, mediana in medianas.items():
             html += f"<li>Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}</li>"
 
+        for texto in texto_promedio_adherentes,texto_cantidad_reclamos:
+           html += f"<li>{texto}</li>" 
+
         html += "</ul>"
 
         html += """
@@ -428,6 +475,13 @@ class ReporteHTML(Reportes):
         html += """
                 </tbody>
             </table>
+        """
+        html += f"<h2>Gráfico de Torta</h2>"
+        html += f'<img src="data:image/png;base64,{img_torta_base64}" alt="Gráfico de Torta">'
+
+        html += f"<h2>Histograma</h2>"
+        html += f'<img src="data:image/png;base64,{img_histograma_base64}" alt="Histograma">'        
+        html += """
         </body>
         </html>
         """
@@ -449,7 +503,13 @@ if __name__ == '__main__':  # pragma: no cover
     # Mediana para una clasificación específica
     mediana_maestranza = generador.mediana_tiempo_resolucion(clasificacion="maestranza")
     print("Mediana del tiempo de resolución para maestranza:", mediana_maestranza)
-   # print("Cantidad total de reclamos:", generador.cant_reclamos())
+    print("Cantidad total de reclamos:", generador.cantidad_total_reclamos())
+
+
+    # Test para calcular_medianas_atributos ignorando ceros
+    print("[TEST] Ejecutando calcular_medianas_atributos para 'maestranza' (ignorando ceros):")
+    medianas_test = generador.calcular_medianas_atributos(clasificacion="maestranza")
+    print("[TEST] Resultado calcular_medianas_atributos (ignorando ceros):", medianas_test)
 
     # Reporte en PDF
     reporte_pdf = ReportePDF(generador)

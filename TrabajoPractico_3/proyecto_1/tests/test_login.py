@@ -12,25 +12,15 @@ class DummyCurrentUser:
         self.is_authenticated = is_authenticated
 
 class DummyRepo:
-    def buscar_usuario(self, **kwargs):
-        if kwargs.get("nombre_de_usuario") == "existe":
-            usuario = MagicMock()
-            usuario.id = 1
-            usuario.nombre = "Juan"
-            usuario.apellido = "Perez"
-            usuario.email = "juan@x.com"
-            usuario.nombre_de_usuario = "existe"
-            usuario.contraseña = "1234"
-            usuario.rol = 2
-            usuario.claustro = "estudiante"
-            return usuario
-        return None
-
+    def obtener_registro_por_filtros(self,**kgwargs):
+        """Simula la obtención de un usuario por filtro."""
+        if kgwargs["nombre_de_usuario"] == "existe":
+            return Usuario(id=1, nombre="Juan", apellido="Perez", email="pruebadummy",contraseña="1234", nombre_de_usuario="existe", rol=2, claustro="estudiante")
 class TestFlaskLoginUser(unittest.TestCase):
     """Tests para la clase FlaskLoginUser."""
 
     def setUp(self):
-        usuario = MagicMock()
+        usuario = MagicMock(spec=   Usuario)
         usuario.id = 1
         usuario.nombre = "Juan"
         usuario.apellido = "Perez"
@@ -45,11 +35,6 @@ class TestFlaskLoginUser(unittest.TestCase):
         """Verifica que get_id retorna el id como string."""
         self.assertEqual(self.user.get_id(), "1")
 
-    def test_str(self):
-        """Verifica la representación en string del usuario."""
-        s = str(self.user)
-        self.assertIn("Juan", s)
-        self.assertIn("Perez", s)
 
     def test_is_authenticated(self):
         """Verifica que is_authenticated retorna True."""

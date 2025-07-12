@@ -1,14 +1,12 @@
 from modules.usuarios import Usuario
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
-from modules.gestor_base_datos import GestorBaseDatos
-
-
+from modules.reportes import Reportes
 class GestorUsuarios:
-    def __init__(self, repositorio_usuario: RepositorioUsuariosSQLAlchemy):
+    def __init__(self, repositorio:RepositorioUsuariosSQLAlchemy):
         """
         Inicializa el gestor de usuarios con el repositorio proporcionado.
         """
-        self.repositorio = repositorio_usuario
+        self.repositorio = repositorio
 
         """
         Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
@@ -16,26 +14,17 @@ class GestorUsuarios:
 
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
-        if self.repositorio.obtener_registro_por_filtro("email", email):
+        if self.repositorio.obtener_registro_por_filtros(mapeo=True,**{"email":email}):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
         usuario = Usuario(nombre, apellido, email, nombre_de_usuario, password, rol, claustro)
-        modelo_usuario = self.repositorio._map_entidad_a_modelo(usuario) 
+        print("[DEBUG] registrar usuarios")
+        
+        modelo_usuario = self.repositorio.map_entidad_a_modelo(usuario) 
+        modelo_usuario.nombre
         self.repositorio.guardar_registro(modelo_usuario)
 
 
-    def autenticar_usuario(self, nombre_de_usuario, password):
-        """
-        Autentica un usuario por nombre de usuario y contraseña.
-        Lanza ValueError si el usuario no está registrado o la contraseña es incorrecta.
-        """
-        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario, "contraseña", password)
-        if not usuario:
-            raise ValueError("El usuario no está registrado")
-        if usuario.contraseña != password:
-            raise ValueError("Contraseña incorrecta")
-        return usuario
-        
-    def actualizar_usuario(self, usuario_modificado):
+    def actualizar_usuario(self, usuario_modificado:Usuario):
 
         """
         Actualiza los datos de un usuario existente en la base de datos.
@@ -45,14 +34,14 @@ class GestorUsuarios:
             raise ValueError("El usuario modificado debe tener un id")
         
         #Se mapea el usuario modificado a uno del modelo de la base de datos
-        self.repositorio.modificar_registro(self.repositorio._map_entidad_a_modelo(usuario_modificado))
+        self.repositorio.modificar_registro(self.repositorio.map_entidad_a_modelo(usuario_modificado))
 
     def eliminar_usuario(self, usuario_id):
         """
         Elimina un usuario de la base de datos por su id.
         Lanza ValueError si el usuario no existe.
         """
-        usuario = self.repositorio.obtener_registro_por_filtro("id", usuario_id)
+        usuario = self.repositorio.obtener_registro_por_filtros(**{id:usuario_id})
         if not usuario:
             raise ValueError("Usuario no encontrado")
         self.repositorio.eliminar_registro_por_id(usuario_id)
@@ -62,77 +51,27 @@ class GestorUsuarios:
         Busca un usuario por un filtro y valor dados.
         Lanza ValueError si el usuario no existe.
         """
-        usuario = self.repositorio.obtener_registro_por_filtro(filtro, valor,mapeo=mapeo)
+        usuario = self.repositorio.obtener_registro_por_filtros(mapeo=mapeo,**{f"{filtro}":valor})
         if not usuario:
             raise ValueError("Usuario no encontrado")
         return usuario
 
-    def generar_reporte_usuario(self, tipo_reporte, *args, **kwargs):
+    def generar_reporte_usuario(self, tipo_reporte, ruta_salida,clasificacion_usuario,reporte:Reportes):
         """
         Genera un reporte de usuarios en el formato especificado (pdf o html).
         Lanza ValueError si el tipo de reporte no es soportado.
         """
-        if tipo_reporte == "pdf":
-            return "Reporte PDF generado para usuarios"
-        elif tipo_reporte == "html":
-            return "Reporte HTML generado para usuarios"
-        else:
-            raise ValueError("Tipo de reporte no soportado")
-        
-    def cargar_usuario(self, nombre_de_usuario):
-        """
-        Carga un usuario por su nombre de usuario.
-        Lanza ValueError si el usuario no existe.
-        """
-        usuario = self.repositorio.obtener_registro_por_filtro("nombre_de_usuario", nombre_de_usuario)
-        if not usuario:
-            raise ValueError("Usuario no encontrado")
-        return usuario
-if __name__ == "__main__":
-    session = GestorBaseDatos("sqlite:///data/base_datos.db")
-    session.conectar()
-    repo = RepositorioUsuariosSQLAlchemy(session=session.session)
-    gestor = GestorUsuarios(repo)
+        try:
 
-    nombre_usuario = "tupapacitoXD_123"
+            if tipo_reporte == "pdf":
+                reporte.generar(ruta_salida=ruta_salida,clasificacion_usuario=clasificacion_usuario)
+                return "Reporte PDF generado para usuarios"
 
-    #Intentamos registrar el usuario si no existe
-    """Registrar Usuario anda correctamente"""
-    try:
-        gestor.registrar_nuevo_usuario(
-            nombre="nicolas",
-            apellido="ramirez",
-            email="ramiresn@gmail.com",
-            nombre_de_usuario=nombre_usuario,
-            password="1234",
-            rol=0,
-            claustro="estudiante"
-        )
-        print("Usuario registrado correctamente")
-    except Exception as e:
-        print(f"No se registró nuevo usuario (probablemente ya existe): {e}")
+            elif tipo_reporte == "html":
+                reporte.generar(ruta_salida=ruta_salida,clasificacion_usuario=clasificacion_usuario)
+                return "Reporte HTML generado para usuarios"
+            else:
+                raise ValueError("Tipo de reporte no soportado. Use 'pdf' o 'html'.")
+        except Exception as e:
+            raise Exception(f"Error {e} al generar el reporte.")
 
-    #Intentamos autenticar al usuario
-    """Autenticar Usuario anda correctamente"""
-    try:
-        usuario_autenticado = gestor.autenticar_usuario(nombre_usuario, "1234")
-        print("Usuario autenticado correctamente:")
-        print(usuario_autenticado)
-    except Exception as e:
-        print(f"Error al autenticar usuario: {e}")
-    #Intentamos actualizar el usuario
-    try:
-        usuario_modificado = Usuario(
-            id=usuario_autenticado['id'],  # Asegúrate de que el ID esté presente
-            nombre="nicolas",
-            apellido="Ramírez",
-            email="ramirezn@gmail.com",
-            nombre_de_usuario=nombre_usuario,
-            contraseña="1234",
-            rol=0,
-            claustro="estudiante"
-        )
-        gestor.actualizar_usuario(usuario_modificado)
-        print("Usuario actualizado correctamente")
-    except Exception as e:
-        print(f"Error al actualizar usuario: {e}")

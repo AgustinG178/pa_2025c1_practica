@@ -1,12 +1,22 @@
-from flask_login import login_user, logout_user, login_required, current_user
+from flask_login import login_user, logout_user, login_required, current_user,UserMixin
 from flask import abort
 from functools import wraps
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_base_datos import GestorBaseDatos
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
 from modules.modelos import ModeloUsuario
-class FlaskLoginUser:
+class FlaskLoginUser(UserMixin):
     def __init__(self, usuario:ModeloUsuario):
+        """
+        Clase adaptadora para integrar un usuario de la base de datos con Flask-Login.
+
+        Esta clase envuelve una instancia de ModeloUsuario y expone los atributos necesarios
+        para la autenticación y gestión de sesiones de usuario en Flask. Permite acceder a los
+        datos del usuario autenticado a través de current_user en las vistas protegidas.
+
+        Es el objeto al cual llamamos cuando en el server se pide algún atributo del usuario, por ejemplo nombre o rol.
+        Sus atributos son públicos (o la mayoría) ya que UserMixin posee métodos que necesitan atributos públicos.
+        """
         self._usuario = usuario  # Guardo la instancia ORM original
         self.id = usuario.id
         self.nombre = usuario.nombre
@@ -17,27 +27,11 @@ class FlaskLoginUser:
         self.rol = usuario.rol
         self.claustro = usuario.claustro
         self.id = usuario.id  # Aseguramos que id sea un atributo de la clase
+        
         if not hasattr(self, 'id'):
             raise ValueError("El usuario debe tener un id")
 
-    def get_id(self):
-        return str(self.id)
 
-    def __str__(self):
-        return f"FlaskLoginUser(id={self.id}, nombre={self.nombre}, apellido={self.apellido}, email={self.email}, nombre_de_usuario={self.nombre_de_usuario}, rol={self.rol})"
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-    
     @property
     def contraseña(self):
         return self._contraseña
@@ -76,13 +70,13 @@ class GestorLogin:
         return current_user.is_authenticated
 
     def autenticar(self, nombre_de_usuario, contraseña):
-        usuario = self.repositorio_usuario.buscar_usuario(nombre_de_usuario=nombre_de_usuario)
+        usuario = self.repositorio_usuario.obtener_registro_por_filtros(**{"nombre_de_usuario":nombre_de_usuario})
         if usuario and usuario.contraseña == contraseña:
             return usuario
         return None
 
     def login_usuario(self, nombre_de_usuario, password):
-        dicc_usuario = self.repositorio_usuario.obtener_registro_por_filtro(filtro="nombre_de_usuario",valor=nombre_de_usuario).to_dict()
+        dicc_usuario = self.repositorio_usuario.obtener_registro_por_filtros(**{"nombre_de_usuario":nombre_de_usuario}).to_dict()
 
         if dicc_usuario and dicc_usuario["password"] == password:  # Mejora: usar hash seguro
             user = FlaskLoginUser(dicc_usuario)
@@ -110,7 +104,7 @@ class GestorLogin:
 
 if __name__ == "__main__":
     # Configuración de la base de datos y repositorio
-    base_datos = GestorBaseDatos("sqlite:///data/base_datos.db")
+    base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
     base_datos.conectar()
     sqlalchemy_session = base_datos.session
 
@@ -119,10 +113,12 @@ if __name__ == "__main__":
     gestor_login = GestorLogin(repo_usuarios)
 
     # Prueba de autenticación
-    nombre_de_usuario = "tupapacitoXD_123"
+    nombre_de_usuario = "maestranza"
     password = "1234"
-    usuario = gestor_login.autenticar(nombre_de_usuario, password)
+    usuario = gestor_login.autenticar(nombre_de_usuario, contraseña=password)
+  
     if usuario:
         print(f"Login exitoso para: {usuario.nombre_de_usuario}")
+        
     else:
         print("Login fallido: credenciales incorrectas")

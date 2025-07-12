@@ -1,10 +1,6 @@
 import unittest
 from datetime import datetime
 from modules.reclamo import Reclamo
-from modules.gestor_reclamos import GestorReclamo
-from modules.usuarios import Usuario
-from modules.repositorio import RepositorioReclamosSQLAlchemy, RepositorioUsuariosSQLAlchemy
-from modules.config import crear_engine
 
 class TestReclamo(unittest.TestCase):
     """Tests para la clase Reclamo."""
@@ -29,18 +25,6 @@ class TestReclamo(unittest.TestCase):
         self.assertEqual(self.reclamo.usuario_id, 123)
         self.assertIsNone(self.reclamo.id)
         
-    def test_repr(self):
-        """Verifica la representación oficial (__repr__) del objeto Reclamo."""
-        esperado = ("Reclamo(estado=pendiente, fecha_hora=2025-06-09 15:30:00, contenido=El equipo no funciona, "
-                    "clasificacion=soporte informático, usuario_id=123)")  
-        self.assertEqual(repr(self.reclamo), esperado)
-
-    def test_str(self):
-        """Verifica la representación informal (__str__) del objeto Reclamo."""
-        esperado = ("Reclamo: El equipo no funciona | Estado: pendiente | Fecha: 2025-06-09 15:30:00 | "
-                    "Clasificación: soporte informático | Usuario ID: 123")  
-        self.assertEqual(str(self.reclamo), esperado)
-
     def test_id_opcional(self):
         """Verifica que se puede asignar un id opcional al crear un reclamo."""
         reclamo_con_id = Reclamo(

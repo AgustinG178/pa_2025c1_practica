@@ -3,6 +3,7 @@ from wordcloud import WordCloud, STOPWORDS
 from collections import Counter
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 class GraficadoraTorta:
     def graficar(self, datos: dict, nombre_archivo:str, subcarpeta:str):
@@ -45,11 +46,17 @@ class GraficadoraHistograma:
 
         # Crear el histograma
         plt.figure(figsize=(10, 6))
-        plt.hist(datos, bins=10, color="#00509e", edgecolor="black", alpha=0.7)
+        valores_unicos = sorted(set(datos))
+        if len(valores_unicos) > 1:
+            bins = np.arange(min(valores_unicos), max(valores_unicos) + 2) - 0.5
+        else:
+            bins = [valores_unicos[0] - 0.5, valores_unicos[0] + 0.5]
+        plt.hist(datos, bins=bins, color="#00509e", edgecolor="black", alpha=0.7, rwidth=0.8)
         plt.title(titulo)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.grid(axis="y", linestyle="--", alpha=0.7)
+        plt.xticks(valores_unicos)
 
         # Crear la carpeta de salida si no existe
         ruta_carpeta = os.path.join("static", "graficos", subcarpeta)
@@ -91,6 +98,7 @@ class GraficadoraNubePalabras:
 
         """
         # Concatenar todos los contenidos de los reclamos en un solo texto
+
         texto = " ".join([reclamo.contenido for reclamo in reclamos if reclamo.contenido])
 
         # Verificar si el texto está vacío
@@ -101,6 +109,7 @@ class GraficadoraNubePalabras:
         ruta_stopwords = "data/stopwords.txt"
         
         with open(ruta_stopwords, encoding="utf-8") as f:
+
             stopwords_personalizadas = {line.strip() for line in f if line.strip()}
 
 
@@ -111,6 +120,7 @@ class GraficadoraNubePalabras:
         palabras_filtradas = [
             palabra.strip(".,!?()[]{}\"'") for palabra in palabras if palabra not in stopwords and len(palabra) > 2
         ]
+        
         contador = Counter(palabras_filtradas)
         palabras_frecuentes = dict(contador.most_common(15))
         wordcloud = WordCloud(
@@ -138,6 +148,11 @@ class Graficadora:
         self.graficadora_nube = graficadora_nube
 
     def graficar_todo(self, reclamos, clasificacion=None, es_secretario_tecnico=False):
+        """
+         Se frabrican todos los gráficos (histograma,torta y nube de palabras) asociados a un departamento 
+         o de todos los reclamos si es un secretario tecnico
+        """
+
         rutas = {}
 
         if es_secretario_tecnico:
@@ -146,14 +161,14 @@ class Graficadora:
             rutas["torta"] = self.graficadora_torta.graficar(
                 datos_estado, "torta_estado_general.png", subcarpeta
             )
-            # SOLO usar reclamos que vienen como parámetro
+           
         else:
-            subcarpeta = clasificacion.replace(" ", "_")
+            subcarpeta = clasificacion
             datos_estado = self.generador_reportes.cantidad_reclamos_por_estado_filtrado(clasificacion)
             rutas["torta"] = self.graficadora_torta.graficar(
                 datos_estado, f"torta_estado_{subcarpeta}.png", subcarpeta
             )
-            # SOLO usar reclamos que vienen como parámetro
+    
 
         # Asegurarse que reclamos no esté vacío
         if not reclamos:
@@ -227,8 +242,8 @@ class Graficadora:
         Devuelve la clasificación correspondiente a un rol.
         """
         clasificaciones = {
-            "2": "secretaría técnica",
-            "3": "soporte informático",
+            "2": "soporte informático",
+            "3": "secretaría técnica",
             "4": "maestranza"
         }
         return clasificaciones.get(rol)
@@ -251,8 +266,8 @@ if __name__ == "__main__":
 
     # Roles por los que queremos generar gráficos
     roles = {
-        '2': 'soporte_informatico',
-        '3': 'secretario_tecnico',
+        '2': 'soporte informático',
+        '3': 'secretaría técnica',
         '4': 'maestranza'
     }
 
@@ -263,7 +278,7 @@ if __name__ == "__main__":
 
     print("Todos los gráficos fueron generados exitosamente.")
 
-    reclamos = repositorio.obtener_todos_los_registros(usuario_id=2)
+    reclamos = repositorio.obtener_todos_los_registros()
     if reclamos:
         graficadora_nube = GraficadoraNubePalabras()
         ruta_nube = graficadora_nube.generar_nube_palabras(reclamos)

@@ -20,8 +20,12 @@
         <section class="opciones-ayuda">
             <h2 class="subtitulo-ayuda">Opciones del Dashboard</h2>
             <ul class="lista-opciones-ayuda">
-                <li><strong>Listar Reclamos:</strong> Permite visualizar todos los reclamos de la base de datos.</li>
-                {% if current_user.rol in ['2', '3', '4'] %}
+                {% if current_user.rol in '0'%}
+                    <li><strong>Listar Reclamos:</strong> Permite visualizar todos los reclamos en la facultad hasta el momento.</li>
+                {% elif current_user.rol == '1'%}
+                    <li><strong>RECLAMOS FIUNER</strong>Visualiza todos los reclamos en la base de datos</li>
+
+                {% elif current_user.rol in ['2', '3', '4'] %}
                     <li><strong>Analítica:</strong> Muestra estadísticas sobre los reclamos, incluyendo gráficos circulares, medianas de tiempos de resolución y una nube de palabras clave.</li>
                     <li><strong>Manejar Reclamos:</strong> Permite listar los reclamos del departamento, cambiar su estado y asignar tiempos de resolución.</li>
                 {% endif %}
@@ -34,13 +38,13 @@
             <h2 class="subtitulo-ayuda">Cómo usar el sistema</h2>
             <ol class="lista-ayuda">
                 <li class="item-ayuda">Inicia sesión con tu usuario y contraseña.</li>
-                <li class="item-ayuda">Accede al panel correspondiente a tu departamento.</li>
-                <li class="item-ayuda">Utiliza las opciones disponibles para gestionar los reclamos y consultar estadísticas.</li>
+                <li class="item-ayuda">Utice las pestañas para crear o visualizar sus reclamos.</li>
                 {% if current_user.rol == '1' %}
                     <li class="item-ayuda">Si necesitas derivar un reclamo, utiliza la opción disponible en el panel de Secretaría Técnica.</li>
                 {% endif %}
                 {% if current_user.rol in ['2', '3', '4'] %}
                     <li class="item-ayuda">Genera reportes en formato HTML o PDF desde la opción de Analítica.</li>
+                    <li class="item-ayuda">Utiliza las opciones disponibles para gestionar los reclamos y consultar estadísticas.</li>
                 {% endif %}
             </ol>
         </section>
@@ -48,8 +52,8 @@
         <section class="contacto-ayuda">
             <h2 class="subtitulo-ayuda">Contacto</h2>
             <p class="texto-ayuda">Si tienes dudas o problemas con el sistema, puedes contactar al equipo de soporte técnico.</p>
-            <p class="texto-ayuda"><strong>Email:</strong> agugrio17@gmail.com</p>
-            <p class="texto-ayuda"><strong>Teléfono:</strong> +54 3498 461017</p>
+            <p class="texto-ayuda"><strong>Email:</strong> agugrio17@gmail.com/nicoramirez@gmail.com</p>
+            <p class="texto-ayuda"><strong>Teléfono:</strong> +54 3498 461017/ +54 3435 133723</p>
         </section>
     </main>
 

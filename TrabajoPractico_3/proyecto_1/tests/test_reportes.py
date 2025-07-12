@@ -2,14 +2,17 @@ import unittest
 from unittest.mock import MagicMock, patch
 from modules.reportes import ReportePDF, GeneradorReportes
 from modules.modelos import ModeloReclamo
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class DummyRepo:
     def __init__(self):
         self.session = MagicMock()
 
-    def obtener_registros_por_filtro(self, filtro, valor):
+    def obtener_reclamos_por_filtro(self, filtro, valor):
         return []
+class DummyReclamo:
+    def __init__(self, cantidad_adherentes):
+        self.cantidad_adherentes = cantidad_adherentes
 
 class TestGeneradorReportes(unittest.TestCase):
     def setUp(self):
@@ -54,17 +57,19 @@ class TestGeneradorReportes(unittest.TestCase):
         self.assertEqual(self.generador.listar_clasificaciones_unicas(), ["soporte", "tecnica"])
 
     def test_clasificacion_por_rol(self):
-        self.assertEqual(self.generador.clasificacion_por_rol("1"), "soporte informático")
-        self.assertEqual(self.generador.clasificacion_por_rol("2"), "secretaría técnica")
-        self.assertEqual(self.generador.clasificacion_por_rol("3"), "maestranza")
-        self.assertIsNone(self.generador.clasificacion_por_rol("4"))
+        self.assertEqual(self.generador.clasificacion_por_rol("2"), "soporte informático")
+        self.assertEqual(self.generador.clasificacion_por_rol("3"), "secretaría técnica")
+        self.assertEqual(self.generador.clasificacion_por_rol("4"), "maestranza")
+        self.assertIsNone(self.generador.clasificacion_por_rol("1"))
 
     def test_obtener_datos_para_histograma(self):
-        reclamo1 = MagicMock(fecha_hora=datetime(2025, 6, 1))
-        reclamo2 = MagicMock(fecha_hora=datetime(2025, 6, 15))
-        self.repo.session.query.return_value.filter.return_value.all.return_value = [reclamo1, reclamo2]
-        datos = self.generador.obtener_datos_para_histograma("1")
-        self.assertEqual(datos, {6: 2})
+
+        reclamos_simulados = [DummyReclamo(6), DummyReclamo(2), DummyReclamo(None)]
+
+        self.repo.session.query.return_value.filter.return_value.all.return_value = reclamos_simulados
+
+        datos = self.generador.obtener_datos_para_histograma("2")
+        self.assertEqual(datos, [6,2])
 
     def test_mediana_tiempo_resolucion(self):
         dummy = MagicMock(resuelto_en=10)

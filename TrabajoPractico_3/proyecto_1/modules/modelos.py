@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Table
 from sqlalchemy.orm import relationship, DeclarativeBase
-from datetime import datetime, UTC
-from modules.config import crear_engine
+from datetime import datetime
 
 """
 relationship() crea una relación entre dos clases en SQLAlchemy, como por ejemplo uno-a-muchos o muchos-a-muchos.  

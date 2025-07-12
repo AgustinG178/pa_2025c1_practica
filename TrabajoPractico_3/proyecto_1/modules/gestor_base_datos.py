@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modules.modelos import Base
-from modules.reclamo import Reclamo
+
 
 """Se encarga de la conexión, las sesiones y las operaciones CRUD (crear, leer, actualizar, borrar) usando los modelos. Es el "puente" entre la logica del programa y la base de datos."""
 
@@ -23,29 +23,12 @@ class GestorBaseDatos:
         """
         self.session = self.Session()
         return self.session is not None  # 👈 ESTA LÍNEA ES LA CLAVE
-
-    def guardar_usuario(self, usuario):
-        self.session.add(usuario)
-        self.session.commit()
-
-    def guardar_reclamo(self, reclamo):
-        self.session.add(reclamo)
-        self.session.commit()
-
-    def actualizar_reclamo(self, reclamo_actualizado: Reclamo):
-        self.session.merge(reclamo_actualizado)
-        self.session.commit()
-
-    def obtener_reclamos(self, **filtros):
-        query = self.session.query(Reclamo)
-        for attr, value in filtros.items():
-            query = query.filter(getattr(Reclamo, attr) == value)
-        return query.all()
-
-    def obtener_reclamo_por_id(self, reclamo_id):
-        return self.session.query(Reclamo).filter_by(id=reclamo_id)
-
+    
     def desconectar(self):
+
+        """
+        Sesiona la sesión actual y cierra la conexión a la base de datos.
+        """
         if self.session:
             self.session.close()
             self.session = None

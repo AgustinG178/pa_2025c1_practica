@@ -62,7 +62,7 @@
                         <th>Fecha/Hora</th>
                         <th>Estado</th>
                         <th>Tiempo Estimado</th>
-                        <th>Tiempo hasta resolver (dias)</th>
+                        <th>Tiempo hasta resolverse (dias)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +71,7 @@
                             <td>{{ reclamo.id }}</td>
                             <td>{{ reclamo.usuario_id }}</td>
                             <td>
-                                {% if reclamo.cantidad_adherentes == 0 %}
+                                {% if not reclamo.usuarios %}
                                     Sin adherentes
                                 {% else %}
                                     {{ reclamo.usuarios | map(attribute='id') | join(', ') }}
@@ -80,12 +80,12 @@
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>{{ reclamo.estado }}</td>
                             <td>
-                                {% if reclamo.estado == 'pendiente' %}
+                                {% if reclamo.estado == 'en proceso' %}
                                     {{ reclamo.tiempo_estimado }}
-                                {% elif reclamo.tiempo_estimado == 0 %}
-                                    ya resuelto
+                                {% elif reclamo.estado == 'resuelto' %}
+                                    RESUELTO
                                 {% else %}
-                                    {{ reclamo.tiempo_estimado }}
+                                    ---
                                 {% endif %}
                             </td>
                             <td>

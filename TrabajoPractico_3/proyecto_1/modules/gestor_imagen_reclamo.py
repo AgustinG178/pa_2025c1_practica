@@ -14,7 +14,7 @@ class GestorImagenReclamo(ABC):
 
     def guardar_imagen(self, reclamo_id, imagen):
         """
-        Guarda una imagen asociada a un reclamo.
+        Guarda una imagen asociada a un reclamo (sobreescribe la imagen anterior si ya existia).
         
         :param reclamo_id: ID del reclamo al que se asocia la imagen.
         :param imagen: Imagen a guardar (puede ser un archivo o un objeto de imagen).
@@ -58,12 +58,17 @@ class GestorImagenReclamoPng(GestorImagenReclamo):
         """
         Se elimina una imagen asociada a un reclamo (por ejemplo, cuando damos por invalido y lo eliminamos)
         """
+
         try:
 
+            
             ruta = os.path.join(self.__direccion_archivo,f"{reclamo_id}.png")
-            os.remove(ruta)
-            print(f"Se removió correctamente la imagen asociada al reclamo {reclamo_id}")
+            if ruta:
 
+                os.remove(ruta)
+                print(f"Se removió correctamente la imagen asociada al reclamo {reclamo_id}")
+            else:
+                print(f"El reclamo de id {reclamo_id} no tiene imagen asociada")
         except Exception as e:
 
             print(f"Error al elimar la imagen: {e}")

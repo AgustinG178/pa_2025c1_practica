@@ -24,7 +24,24 @@
                 <p><strong>Promedio de Adherentes:</strong> {{ promedio_adherentes }}</p>
             </div>
             <div class="flashcard">
-                <p><strong>Mediana de tiempo en resolver reclamos (días):</strong> {{ mediana }}</p>
+                <p><strong>Mediana de tiempo en resolver reclamos (días):</strong> 
+                    {%if mediana_resolucion%}
+                        {{mediana_resolucion}}
+                    {%else%}
+                        No hay datos para calcular la mediana
+                    {% endif %}
+                </p>
+            </div>                                                                  
+
+            <div class="flashcard">
+                <p><strong>Mediana de tiempo estimado en reclamos (días):</strong> 
+                    {%if mediana_estimado%}
+                        {{mediana_estimado}}
+                    {%else%}
+                        No hay datos para calcular la mediana
+                    {% endif %}
+                </p>
+            
             </div>
         </div>
     </section>

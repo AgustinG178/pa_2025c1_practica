@@ -32,7 +32,7 @@
                     <select id="nuevo_dpto" name="nuevo_dpto" required>
                         <option value="" disabled selected>Seleccione el nuevo departamento</option>
         
-                        {% for clasificacion in ['maestranza','secretaria tecnica','soporte informatico'] %}
+                        {% for clasificacion in ['maestranza','secretaría técnica','soporte informático'] %}
 
                             {% if clasificacion != reclamo.clasificacion %}
                                 <option value="{{clasificacion}}">{{clasificacion}}</option>

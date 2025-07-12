@@ -311,17 +311,6 @@ a.enlace-boton:hover {
   font-size: 1.1em;
 }
 
-.flashcard::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 8px;       /* Ancho de la barra azul */
-  height: 100%;
-  background-color: #003366; /* Azul oscuro */
-  border-radius: 8px 0 0 8px;
-}
-
 .flashcard p {
   margin: 6px 0;
   padding-left: 16px; /* Para que el texto no quede pegado a la barra azul */

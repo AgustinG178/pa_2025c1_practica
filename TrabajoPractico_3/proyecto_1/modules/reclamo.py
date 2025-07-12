@@ -1,7 +1,9 @@
 from datetime import datetime
 
 class Reclamo:
-    """Clase para instanciar los reclamos echos por los usuarios"""
+    """
+    Clase para instanciar los reclamos echos por los usuarios, guarda los atributos de un reclamo
+    """
     def __init__(self, estado: str, fecha_hora: datetime, contenido: str, clasificacion: str, usuario_id: int = None, **kwargs):
         self.__id = kwargs.get("id")  # se agrega solo si está presente
         self.__estado = estado
@@ -13,16 +15,10 @@ class Reclamo:
         self.__tiempo_estimado = kwargs.get("tiempo_estimado")
         self.__resuelto_en = kwargs.get("resuelto_en")
 
+
     @property
     def id(self):
         return self.__id
-    
-    @id.setter
-    def id(self, nuevo_id):
-        if isinstance(nuevo_id, int) and nuevo_id > 0:
-            self.__id = nuevo_id
-        else:
-            raise ValueError("El ID debe ser un entero positivo.")
     
     @property
     def estado(self):
@@ -30,10 +26,10 @@ class Reclamo:
     
     @estado.setter
     def estado(self, nuevo_estado):
-        if nuevo_estado in ["pendiente", "en_proceso", "resuelto", "invalidado"]:
+        if nuevo_estado in ["pendiente", "en proceso", "resuelto", "invalidado"]:
             self.__estado = nuevo_estado
         else:
-            raise ValueError("Estado inválido. Debe ser 'pendiente', 'en_proceso', 'resuelto' o 'invalidado'.")
+            raise ValueError("Estado inválido. Debe ser 'pendiente', 'en proceso', 'resuelto' o 'invalidado'.")
         
     @property
     def fecha_hora(self):
@@ -111,10 +107,4 @@ class Reclamo:
             self.__resuelto_en = nuevo_tiempo
         else:
             raise ValueError("El tiempo de resolución debe ser un entero no negativo.") 
-
-    def __repr__(self):
-        return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"
-
-    def __str__(self):
-        return f"Reclamo: {self.contenido} | Estado: {self.estado} | Fecha: {self.fecha_hora} | Clasificación: {self.clasificacion} | Usuario ID: {self.usuario_id}"
     

@@ -34,7 +34,7 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
         """Devuelve todos los registros de usuarios en la base de datos."""
         return self.__session.query(ModeloUsuario).all()
     
-    def modificar_registro(self, usuario_modificado):
+    def modificar_registro(self, usuario_modificado:ModeloUsuario):
         """Modifica los datos de un usuario existente en la base de datos."""
         if not isinstance(usuario_modificado, ModeloUsuario):
             raise ValueError("El parámetro no es una instancia de la clase ModeloUsuario")
@@ -47,31 +47,30 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             usuario_db.contraseña = usuario_modificado.contraseña
             self.__session.commit()
 
-    def obtener_modelo_por_id(self, id):
-        """Devuelve una instancia del modelo de usuario según el ID."""
-        return self.__session.query(ModeloUsuario).filter_by(id=id).first()
+    def obtener_registro_por_filtros(self, mapeo=True, **kgwargs):
 
-    def obtener_registro_por_filtro(self, campo, valor,mapeo=True, campo2=None, valor2=None):
-        """Obtiene un registro de usuario según uno o dos filtros especificados."""
+        try:
+            
+            modelo = self.__session.query(ModeloUsuario).filter_by(**kgwargs).first()
+            if modelo:
+                return self.map_modelo_a_entidad(modelo) if mapeo else modelo
+        except Exception as e:
+            raise ValueError(f"Error al obtener registro: {e}")
         
-        query = self.__session.query(ModeloUsuario).filter(getattr(ModeloUsuario, campo) == valor)
-        if campo2 and valor2:
-            query = query.filter(getattr(ModeloUsuario, campo2) == valor2)
-        modelo = query.first()
-        if modelo and mapeo:
-            return self.__map_modelo_a_entidad(modelo)
+    def obtener_registros_por_filtro(self, filtro, valor, mapeo=True):
         
-        return modelo
+        try:
+            modelos = self.__session.query(ModeloUsuario).filter_by(**{filtro: valor}).all()
 
-    def obtener_registro_por_filtros(self, **filtros):
-        """Devuelve un registro de usuario aplicando múltiples filtros."""
-        modelo = self.__session.query(ModeloUsuario).filter_by(**filtros).first()
-        if modelo:
-            return self.__map_modelo_a_entidad(modelo)
-        return None
+            if mapeo:
+                return [self.map_modelo_a_entidad(modelo) for modelo in modelos]
 
-    def __map_modelo_a_entidad(self, modelo: ModeloUsuario):
-        """Convierte un modelo de SQLAlchemy en una entidad de dominio."""
+            else:
+                return modelos        
+        except Exception as e:
+            raise ValueError(f"Error al obtener el registro filtrado por: {filtro}:{valor}, {e}")
+        
+    def map_modelo_a_entidad(self, modelo: ModeloUsuario):
         return Usuario(
             nombre=modelo.nombre,
             apellido=modelo.apellido,
@@ -83,8 +82,8 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             id=modelo.id
         )
 
-    def _map_entidad_a_modelo(self, entidad: Usuario):
-        """Convierte una entidad de dominio en un modelo de SQLAlchemy."""
+    def map_entidad_a_modelo(self, entidad: Usuario):
+    
         return ModeloUsuario(
             nombre=entidad.nombre,
             apellido=entidad.apellido,
@@ -102,11 +101,6 @@ class RepositorioUsuariosSQLAlchemy(Repositorio):
             self.__session.delete(usuario)
             self.__session.commit()
 
-    def buscar_usuario(self, **kwargs):
-        """Busca un usuario por uno o más campos específicos."""
-        return self.__session.query(ModeloUsuario).filter_by(**kwargs).first()
-
-
 class RepositorioReclamosSQLAlchemy(Repositorio):
 
     """Repositorio para gestionar reclamos en la base de datos."""
@@ -116,17 +110,84 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         self.__session = session
         ModeloReclamo.metadata.create_all(engine)
 
-    def commit(self):
-        """Confirma los cambios realizados en la sesión."""
-        self.__session.commit()
 
     @property
     def session(self):
-        """Devuelve la sesión activa de SQLAlchemy."""
         return self.__session
+    def commit(self):
+        """
+        Se realiza un commit en la sesión SQL.
+        """
+        self.__session.commit()
 
-    @staticmethod
-    def mapear_reclamo_a_modelo(reclamo: Reclamo) -> ModeloReclamo:
+
+    def guardar_registro(self, modelo_reclamo: ModeloReclamo):
+        """Guarda un nuevo reclamo en la base de datos."""
+        if not isinstance(modelo_reclamo, ModeloReclamo):
+            raise ValueError("El parámetro debe ser un ModeloReclamo")
+        self.__session.add(modelo_reclamo)
+        self.__session.commit()
+        
+    def obtener_todos_los_registros(self):
+        """Devuelve todos los reclamos en la base de datos."""
+        modelos_reclamos_bd = self.__session.query(ModeloReclamo).all()
+        return [self.map_modelo_a_entidad(modelo) for modelo in modelos_reclamos_bd ]
+
+    def modificar_registro(self, reclamo_a_modificar: Reclamo):
+        if not isinstance(reclamo_a_modificar, Reclamo):
+            raise ValueError("El parámetro no es una instancia de la clase Reclamo")
+
+        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.id).first()
+        if not reclamo_db:
+            raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.id}")
+
+        reclamo_db.estado = reclamo_a_modificar.estado
+        reclamo_db.contenido = reclamo_a_modificar.contenido
+        reclamo_db.clasificacion = reclamo_a_modificar.clasificacion
+        reclamo_db.tiempo_estimado = reclamo_a_modificar.tiempo_estimado
+
+        reclamo_db.resuelto_en = reclamo_a_modificar.resuelto_en
+
+        self.__session.commit()
+
+
+
+    def obtener_registro_por_filtros(self,mapeo=True, **kgwargs):
+
+        try:
+
+            modelo = self.__session.query(ModeloReclamo).filter_by(**kgwargs).first()
+
+            return self.map_modelo_a_entidad(modelo) if mapeo else modelo
+
+        except Exception as e:
+
+            raise ValueError(f"Error al obtener el registro filtrado por: {kgwargs}, {e}")
+  
+    def obtener_registros_por_filtro(self, filtro,valor,mapeo=True):
+        
+        """
+        Obtiene todos los registros que coinciden con un filtro específico.
+        """
+        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
+        return [self.map_modelo_a_entidad(modelo) for modelo in modelos] if mapeo else modelos
+        
+    def map_modelo_a_entidad(self,modelo:ModeloReclamo):
+        """Convierte un modelo de SQLAlchemy en una entidad Reclamo."""
+        return Reclamo(
+            id=modelo.id,
+            estado=modelo.estado,
+            fecha_hora=modelo.fecha_hora,
+            contenido=modelo.contenido,
+            usuario_id=modelo.usuario_id,
+            clasificacion=modelo.clasificacion,
+            cantidad_adherentes=modelo.cantidad_adherentes,
+            tiempo_estimado = modelo.tiempo_estimado,
+            resuelto_en = modelo.resuelto_en
+        )
+
+
+    def map_entidad_a_modelo(self,reclamo: Reclamo) -> ModeloReclamo:
         """Convierte una entidad Reclamo a su modelo equivalente."""
         kwargs = {}
         if hasattr(reclamo, 'id') and reclamo.id is not None:
@@ -143,70 +204,14 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             **kwargs
         )
 
-    @staticmethod
-    def mapear_modelo_a_reclamo(modelo: ModeloReclamo) -> Reclamo:
-        """Convierte un modelo de SQLAlchemy en una entidad Reclamo."""
-        return Reclamo(
-            id=modelo.id,
-            estado=modelo.estado,
-            fecha_hora=modelo.fecha_hora,
-            contenido=modelo.contenido,
-            usuario_id=modelo.usuario_id,
-            clasificacion=modelo.clasificacion,
-            cantidad_adherentes=modelo.cantidad_adherentes,
-            tiempo_estimado = modelo.tiempo_estimado,
-            resuelto_en = modelo.resuelto_en
-        )
-
-    def guardar_registro(self, modelo_reclamo: ModeloReclamo):
-        """Guarda un nuevo reclamo en la base de datos."""
-        if not isinstance(modelo_reclamo, ModeloReclamo):
-            raise ValueError("El parámetro debe ser un ModeloReclamo")
-        self.__session.add(modelo_reclamo)
-        self.__session.commit()
-
-    def obtener_registro_por_filtro(self, filtro, valor,mapeo=True):
-        """Obtiene un reclamo aplicando un filtro; puede devolverlo mapeado o como modelo."""
-        modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
-
-        return self.mapear_modelo_a_reclamo(modelo) if mapeo else modelo
-
-    def obtener_registros_por_filtro(self, filtro,valor):
-        
-        """
-        Obtiene todos los registros que coinciden con un filtro específico.
-        """
-        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
-
-    def obtener_todos_los_registros(self):
-        """Devuelve todos los reclamos en la base de datos."""
-        modelos_reclamos_bd = self.__session.query(ModeloReclamo).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos_reclamos_bd ]
-
-    def modificar_registro(self, reclamo_a_modificar: Reclamo):
-        if not isinstance(reclamo_a_modificar, Reclamo):
-            raise ValueError("El parámetro no es una instancia de la clase Reclamo")
-
-        reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.id).first()
-        if not reclamo_db:
-            raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.id}")
-
-        reclamo_db.estado = reclamo_a_modificar.estado
-        reclamo_db.contenido = reclamo_a_modificar.contenido
-        reclamo_db.clasificacion = reclamo_a_modificar.clasificacion
-        reclamo_db.tiempo_estimado = reclamo_a_modificar.tiempo_estimado
-        # Actualizar también el campo resuelto_en
-        reclamo_db.resuelto_en = reclamo_a_modificar.resuelto_en
-
-        self.__session.commit()
-
     def eliminar_registro_por_id(self, id):
         """Elimina un reclamo por su ID."""
         reclamo = self.__session.query(ModeloReclamo).filter_by(id=id).first()
         if reclamo:
             self.__session.delete(reclamo)
             self.__session.commit()
+    
+
 
     def buscar_similares(self, clasificacion, reclamo_id):
         """Busca reclamos con la misma clasificación excluyendo un ID específico."""
@@ -217,46 +222,13 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             .all()
         )
 
-    def obtener_ultimos_reclamos(self, limit=4):
-        """Devuelve los últimos reclamos ordenados por fecha de creación."""
-        print("[DEBUG] Tipo de self.__session:", type(self.__session))
-        print("[DEBUG] Contenido de self.__session:", self.__session)
-        return (
-            self.__session.query(ModeloReclamo)
-            .order_by(ModeloReclamo.fecha_hora.desc())
-            .limit(limit)
-            .all()
-        )
+    def ultimo_reclamo_creado_por_usuario(self, usuario_id):
 
-    def obtener_por_id(self, id_reclamo):
-
-        """Obtiene un reclamo según su ID."""
-
-        return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
-
-    def obtener_registros_por_filtro(self, filtro,valor):
-        
-        """
-        Obtiene todos los registros que coinciden con un filtro específico.
-        """
-        from sqlalchemy import func
-        if filtro == "clasificacion":
-            return self.session.query(ModeloReclamo).filter(
-                func.lower(ModeloReclamo.clasificacion) == valor.lower().strip()
-            ).all()
-        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
-
-        ultimos_modelos_reclamo = self.__session.query(ModeloReclamo).order_by(ModeloReclamo.fecha_hora.desc()).limit(limit).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in ultimos_modelos_reclamo]
-
-
+        return self.__session.query(ModeloReclamo).filter_by(usuario_id=usuario_id).order_by(ModeloReclamo.id.desc()).first()
+    
+    
 if __name__ == "__main__": #pragma: no cover
     
     engine, Session = crear_engine()
     session = Session()
     repo = RepositorioReclamosSQLAlchemy(session)
-    ultimos = repo.obtener_ultimos_reclamos(limit=4)
-    print(f"Últimos {len(ultimos)} reclamos:")
-    for r in ultimos:
-        print(f"ID: {r.id} - Contenido: {r.contenido} - Fecha: {r.fecha_hora} - Clasificación: {r.clasificacion}")

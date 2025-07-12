@@ -50,11 +50,7 @@ class TestUsuario(unittest.TestCase):
 
         self.usuario.claustro = "estudiante"
         self.assertEqual(self.usuario.claustro, "estudiante")
-
-    def test_str(self):
-        """Verifica la representación __str__ del usuario."""
-        self.assertIn("Juan", str(self.usuario))
-
+        
     def test_id_lectura(self):
         """Verifica que se puede leer el id pero no modificarlo (solo lectura)."""
         self.assertEqual(self.usuario.id, 1)
