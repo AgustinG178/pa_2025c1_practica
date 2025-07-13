@@ -2,11 +2,11 @@ from modules.usuarios import Usuario
 from modules.repositorio import RepositorioUsuariosSQLAlchemy
 from modules.reportes import Reportes
 class GestorUsuarios:
-    def __init__(self, repositorio:RepositorioUsuariosSQLAlchemy):
+    def __init__(self, repositorio_usuarios:RepositorioUsuariosSQLAlchemy):
         """
         Inicializa el gestor de usuarios con el repositorio proporcionado.
         """
-        self.repositorio = repositorio
+        self.__repositorio_usuarios = repositorio_usuarios
 
         """
         Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
@@ -14,14 +14,14 @@ class GestorUsuarios:
 
 
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
-        if self.repositorio.obtener_registro_por_filtros(mapeo=True,**{"email":email}):
+        if self.__repositorio_usuarios.obtener_registro_por_filtros(mapeo=True,**{"email":email}):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
         usuario = Usuario(nombre, apellido, email, nombre_de_usuario, password, rol, claustro)
         print("[DEBUG] registrar usuarios")
         
-        modelo_usuario = self.repositorio.map_entidad_a_modelo(usuario) 
+        modelo_usuario = self.__repositorio_usuarios.map_entidad_a_modelo(usuario) 
         modelo_usuario.nombre
-        self.repositorio.guardar_registro(modelo_usuario)
+        self.__repositorio_usuarios.guardar_registro(modelo_usuario)
 
 
     def actualizar_usuario(self, usuario_modificado:Usuario):
@@ -34,24 +34,24 @@ class GestorUsuarios:
             raise ValueError("El usuario modificado debe tener un id")
         
         #Se mapea el usuario modificado a uno del modelo de la base de datos
-        self.repositorio.modificar_registro(self.repositorio.map_entidad_a_modelo(usuario_modificado))
+        self.__repositorio_usuarios.modificar_registro(self.__repositorio_usuarios.map_entidad_a_modelo(usuario_modificado))
 
     def eliminar_usuario(self, usuario_id):
         """
         Elimina un usuario de la base de datos por su id.
         Lanza ValueError si el usuario no existe.
         """
-        usuario = self.repositorio.obtener_registro_por_filtros(**{id:usuario_id})
+        usuario = self.__repositorio_usuarios.obtener_registro_por_filtros(**{id:usuario_id})
         if not usuario:
             raise ValueError("Usuario no encontrado")
-        self.repositorio.eliminar_registro_por_id(usuario_id)
+        self.__repositorio_usuarios.eliminar_registro_por_id(usuario_id)
 
     def buscar_usuario(self, filtro, valor,mapeo=True):
         """
         Busca un usuario por un filtro y valor dados.
         Lanza ValueError si el usuario no existe.
         """
-        usuario = self.repositorio.obtener_registro_por_filtros(mapeo=mapeo,**{f"{filtro}":valor})
+        usuario = self.__repositorio_usuarios.obtener_registro_por_filtros(mapeo=mapeo,**{f"{filtro}":valor})
         if not usuario:
             raise ValueError("Usuario no encontrado")
         return usuario

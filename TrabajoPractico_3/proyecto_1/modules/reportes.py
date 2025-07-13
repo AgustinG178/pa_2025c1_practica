@@ -28,15 +28,15 @@ class GeneradorReportes:
 
     def __init__(self, repositorio_reclamos:RepositorioReclamosSQLAlchemy):
         """Inicializa el generador con un repositorio de reclamos."""
-        self.repositorio_reclamos = repositorio_reclamos
+        self._repositorio_reclamos = repositorio_reclamos
 
     def cantidad_total_reclamos(self):
         """Devuelve el total de reclamos en la base de datos."""
-        return self.repositorio_reclamos.session.query(ModeloReclamo).count()
+        return self._repositorio_reclamos.session.query(ModeloReclamo).count()
 
     def cantidad_reclamos_por_estado(self):
         """Devuelve un diccionario con la cantidad de reclamos por estado."""
-        query = self.repositorio_reclamos.session.query(
+        query = self._repositorio_reclamos.session.query(
             ModeloReclamo.estado, 
             func.count(ModeloReclamo.id)
         ).group_by(ModeloReclamo.estado).all()
@@ -44,7 +44,7 @@ class GeneradorReportes:
 
     def cantidad_reclamos_por_clasificacion(self):
         """Devuelve un diccionario con la cantidad de reclamos por clasificación."""
-        query = self.repositorio_reclamos.session.query(
+        query = self._repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion,
             func.count(ModeloReclamo.id)
         ).group_by(ModeloReclamo.clasificacion).all()
@@ -52,7 +52,7 @@ class GeneradorReportes:
 
     def cantidad_promedio_adherentes(self):
         """Devuelve el promedio de adherentes por reclamo, o 0 si no hay reclamos."""
-        query = self.repositorio_reclamos.session.query(
+        query = self._repositorio_reclamos.session.query(
             func.avg(ModeloReclamo.cantidad_adherentes)
         ).scalar()
         return query or 0
@@ -60,21 +60,21 @@ class GeneradorReportes:
     def reclamos_recientes(self, dias=7):
         """Devuelve una lista de reclamos creados en los últimos `dias` días."""
         fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
-        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+        reclamos = self._repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
         ).all()
         return reclamos
 
     def reclamos_por_usuario(self, usuario_id):
         """Devuelve una lista de reclamos creados por un usuario específico."""
-        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
+        reclamos = self._repositorio_reclamos.session.query(ModeloReclamo).filter_by(
             usuario_id=usuario_id
         ).all()
         return reclamos
     
     def cantidad_reclamos_por_estado_filtrado(self, clasificacion):   
         """Devuelve un dict con la cantidad de reclamos por estado, filtrados por clasificación."""
-        query = self.repositorio_reclamos.session.query(
+        query = self._repositorio_reclamos.session.query(
             ModeloReclamo.estado,
             func.count(ModeloReclamo.id)
         ).filter_by(clasificacion=clasificacion).group_by(ModeloReclamo.estado).all()
@@ -83,14 +83,14 @@ class GeneradorReportes:
     def reclamos_recientes_filtrado(self, clasificacion, dias=7):
         """Devuelve una lista de reclamos recientes filtrados por clasificación."""
         fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
-        return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+        return self._repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite,
             ModeloReclamo.clasificacion == clasificacion
         ).all()
         
     def listar_clasificaciones_unicas(self):
         """Devuelve una lista de clasificaciones únicas de reclamos."""
-        clasificaciones = self.repositorio_reclamos.session.query(
+        clasificaciones = self._repositorio_reclamos.session.query(
             ModeloReclamo.clasificacion
         ).distinct().all()
         return [c[0] for c in clasificaciones]
@@ -116,7 +116,7 @@ class GeneradorReportes:
         if clasificacion is None:
             return {}
 
-        query = self.repositorio_reclamos.session.query(
+        query = self._repositorio_reclamos.session.query(
             ModeloReclamo.estado,
             func.count(ModeloReclamo.id)
         ).filter(func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()).group_by(ModeloReclamo.estado).all()
@@ -128,7 +128,7 @@ class GeneradorReportes:
         if clasificacion is None:
             return []
 
-        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+        reclamos = self._repositorio_reclamos.session.query(ModeloReclamo).filter(
             func.lower(ModeloReclamo.clasificacion) == clasificacion.lower()
         ).all()
         adherentes = [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
@@ -138,7 +138,7 @@ class GeneradorReportes:
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
         """Obtiene las cantidades de adherentes de reclamos recientes, opcionalmente filtrados por clasificación."""
         fecha_limite = datetime.now(timezone.utc) - timedelta(days=dias)
-        query = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
+        query = self._repositorio_reclamos.session.query(ModeloReclamo).filter(
             ModeloReclamo.fecha_hora >= fecha_limite
         )
         if clasificacion:
@@ -151,7 +151,7 @@ class GeneradorReportes:
         from modules.monticulos import MonticuloMediana  
 
         # Filtrar reclamos resueltos
-        query = self.repositorio_reclamos.session.query(ModeloReclamo.resuelto_en).filter(
+        query = self._repositorio_reclamos.session.query(ModeloReclamo.resuelto_en).filter(
             ModeloReclamo.estado == 'resuelto'
         )
         if clasificacion:
@@ -174,7 +174,7 @@ class GeneradorReportes:
         from modules.monticulos import MonticuloMediana  
 
         # Filtrar reclamos
-        query = self.repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo))
+        query = self._repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo))
         if clasificacion:
             query = query.filter(ModeloReclamo.clasificacion == clasificacion) 
 
@@ -265,7 +265,7 @@ class ReportePDF(Reportes):
         elementos.append(Spacer(1, 0.5 * cm))
 
         # Estadísticas con medianas, promedios y cantidad de reclamos
-        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
+        reclamos = self.generador._repositorio_reclamos.obtener_registros_por_filtro(
             filtro="clasificacion",valor=clasificacion_usuario
         )
 
@@ -372,7 +372,7 @@ class ReporteHTML(Reportes):
 
         medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
 
-        reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(filtro="clasificacion",valor=clasificacion_usuario
+        reclamos = self.generador._repositorio_reclamos.obtener_registros_por_filtro(filtro="clasificacion",valor=clasificacion_usuario
             
         )
         

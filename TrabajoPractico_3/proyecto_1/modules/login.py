@@ -17,13 +17,13 @@ class FlaskLoginUser(UserMixin):
         Es el objeto al cual llamamos cuando en el server se pide algún atributo del usuario, por ejemplo nombre o rol.
         Sus atributos son públicos (o la mayoría) ya que UserMixin posee métodos que necesitan atributos públicos.
         """
-        self._usuario = usuario  # Guardo la instancia ORM original
+        self.__usuario = usuario  # Guardo la instancia ORM original
         self.id = usuario.id
         self.nombre = usuario.nombre
         self.apellido = usuario.apellido
         self.email = usuario.email
         self.nombre_de_usuario = usuario.nombre_de_usuario
-        self._contraseña = usuario.contraseña
+        self._contraseña = usuario.contraseña #Atributo protegido, solo debería utilizarse dentro de la propia clase o en clases heredadas
         self.rol = usuario.rol
         self.claustro = usuario.claustro
         self.id = usuario.id  # Aseguramos que id sea un atributo de la clase
@@ -38,7 +38,9 @@ class FlaskLoginUser(UserMixin):
     
     @property
     def usuario_orm(self):
-        return self._usuario  # Devuelve la instancia ORM original
+        return self.__usuario  # Devuelve la instancia ORM original
+        
+    
 
     def rol_to_dpto (self):
         """

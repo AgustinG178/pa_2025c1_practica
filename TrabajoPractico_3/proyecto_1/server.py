@@ -21,7 +21,7 @@ base_datos.conectar()
 
 repo_usuarios = RepositorioUsuariosSQLAlchemy(base_datos.session)
 repo_reclamos = RepositorioReclamosSQLAlchemy(base_datos.session)
-gestor_usuarios = GestorUsuarios(repositorio=repo_usuarios)
+gestor_usuarios = GestorUsuarios(repositorio_usuarios=repo_usuarios)
 gestor_login = GestorLogin(repositorio_usuario=repo_usuarios)
 gestor_imagenes_reclamos = GestorImagenReclamoPng()
 reportes = GeneradorReportes(repo_reclamos)
@@ -130,7 +130,9 @@ def crear_reclamos():
             #Ahora tomamos el reclamo de la bd para utilizar su id
             reclamo_creado = gestor_reclamos.ultimo_reclamo_creado_por_usuario(usuario=current_user)
             #Guardamos su imagen 
-            gestor_reclamos.añadir_imagen_reclamo(gestor_imagen=gestor_imagenes_reclamos,reclamo_id=reclamo_creado.id,imagen=imagen)
+            if imagen:
+
+                gestor_reclamos.añadir_imagen_reclamo(gestor_imagen=gestor_imagenes_reclamos,reclamo_id=reclamo_creado.id,imagen=imagen)
 
             reclamos_similares = gestor_reclamos.buscar_reclamos_similares(clasificacion=reclamo_creado.clasificacion,reclamo_id=reclamo_creado.id)
 
@@ -151,12 +153,11 @@ def adherirse(reclamo_id_adherido):
         flash("Reclamo creado exitosamente.", "success")
     elif accion == "adherir":
         try:
-            usuario_a_adherirse = gestor_usuarios.buscar_usuario(filtro="id",valor=current_user.id,mapeo=False)
         
-
-            gestor_reclamos.agregar_adherente(usuario=usuario_a_adherirse,reclamo_id=reclamo_id_adherido,repositorio_usuarios=repo_usuarios)
+            gestor_reclamos.agregar_adherente(usuario=current_user,reclamo_id=reclamo_id_adherido,repositorio_usuarios=repo_usuarios)
             
             gestor_reclamos.invalidar_reclamo(reclamo_id=reclamo_id_creado,gestor_imagen=gestor_imagenes_reclamos)
+
 
 
             flash("Te adheriste al reclamo correctamente.", "success")
@@ -167,6 +168,7 @@ def adherirse(reclamo_id_adherido):
         except IntegrityError:
             flash("Ya estás adherido a este reclamo.", "warning")
             base_datos.session.rollback()
+
 
     return redirect(url_for('inicio_usuario'))
 
@@ -395,12 +397,8 @@ def manejo_reclamos():
             elif accion == "actualizar" and not tiempo_estimado:
                 flash("El tiempo estimado es obligatorio para pasar un reclamo de pendiente --> en proceso","danger")
             elif accion == "invalidar":
-                gestor_reclamos.invalidar_reclamo( reclamo_id=selected_id)
-                # Eliminar imagen solo si existe el archivo
-                import os
-                ruta_imagen = os.path.join('static', 'Imagenes Reclamos', f"{selected_id}.png")
-                if os.path.exists(ruta_imagen):
-                    gestor_imagenes_reclamos.eliminar_imagen(reclamo_id=selected_id)
+                gestor_reclamos.invalidar_reclamo( reclamo_id=selected_id,gestor_imagen=gestor_imagenes_reclamos)
+
                 flash("Reclamo eliminado exitosamente.", "success")
         except Exception as e:
             flash(f"Error al procesar el reclamo: {e}", "danger")

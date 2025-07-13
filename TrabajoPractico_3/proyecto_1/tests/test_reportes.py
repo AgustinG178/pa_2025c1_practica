@@ -93,7 +93,7 @@ class TestGeneradorReportes(unittest.TestCase):
                 cantidad_adherentes=3,
             )
         ]
-        self.generador.repositorio_reclamos.obtener_registros_por_filtro = MagicMock(return_value=reclamos_mock)
+        self.generador._repositorio_reclamos.obtener_registros_por_filtro = MagicMock(return_value=reclamos_mock)
         self.generador.calcular_medianas_atributos = MagicMock(return_value={
             "cantidad_adherentes": 3,
             "tiempo_estimado": 5,

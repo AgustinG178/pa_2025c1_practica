@@ -16,7 +16,7 @@ class GestorReclamo:
     """
 
     def __init__(self, repositorio_reclamo: RepositorioReclamosSQLAlchemy):
-        self.repositorio_reclamo = repositorio_reclamo
+        self.__repositorio_reclamo = repositorio_reclamo
 
 
     def crear_reclamo(self, usuario:FlaskLoginUser, descripcion: str,clasificador):
@@ -45,9 +45,9 @@ class GestorReclamo:
     def guardar_reclamo(self,p_reclamo:Reclamo):
         if isinstance(p_reclamo,Reclamo):
 
-            modelo_reclamo = self.repositorio_reclamo.map_entidad_a_modelo(reclamo=p_reclamo)
+            modelo_reclamo = self.__repositorio_reclamo.map_entidad_a_modelo(reclamo=p_reclamo)
 
-            self.repositorio_reclamo.guardar_registro(modelo_reclamo=modelo_reclamo)
+            self.__repositorio_reclamo.guardar_registro(modelo_reclamo=modelo_reclamo)
 
     def buscar_reclamo_por_filtro(self,filtro,valor) ->Reclamo:
 
@@ -56,13 +56,13 @@ class GestorReclamo:
         """
         try:
 
-            return self.repositorio_reclamo.obtener_registro_por_filtros(**{filtro:valor})
+            return self.__repositorio_reclamo.obtener_registro_por_filtros(**{filtro:valor})
     
         except Exception as e:
             
             print(f"Error: {e} a la hora de devolver el reclamo")
             
-    def buscar_reclamos_por_filtro(self,mapeo=True, filtro=None, valor=None):
+    def buscar_reclamos_por_filtro(self,filtro=None, valor=None,mapeo=True ):
 
         """
         Se devuelven todos los reclamos que correspondan con el filtro ingresado.
@@ -70,7 +70,7 @@ class GestorReclamo:
         if filtro and valor:
             try:
 
-                return self.repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor,mapeo=mapeo)
+                return self.__repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor,mapeo=mapeo)
             except Exception as e:
                 raise e  # Lanza el error en vez de retornarlo
        
@@ -83,7 +83,7 @@ class GestorReclamo:
         usuario.__dict__
 
         if int(usuario.rol) == 1:
-            return self.repositorio_reclamo.obtener_todos_los_registros()
+            return self.__repositorio_reclamo.obtener_todos_los_registros()
         
         raise PermissionError(f"El usuario {usuario.nombre_de_usuario} no posee los permisos para realizar dicha petición")
     
@@ -95,7 +95,7 @@ class GestorReclamo:
         if clasificacion and reclamo_id:
             try:
 
-                return self.repositorio_reclamo.buscar_similares(clasificacion=clasificacion,reclamo_id=reclamo_id)
+                return self.__repositorio_reclamo.buscar_similares(clasificacion=clasificacion,reclamo_id=reclamo_id)
             except Exception as e:
 
                 print(f"Error: {e} al intentar buscar similares")
@@ -110,7 +110,7 @@ class GestorReclamo:
 
         if int(usuario.rol) in [2,3,4]:  #Los roles estan definidos en FlaskLoginUser
             try:
-                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo.id})
+                reclamo_a_modificar = self.__repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo.id})
 
                 if accion == "resolver":
                     reclamo_a_modificar.estado = "resuelto"
@@ -119,7 +119,7 @@ class GestorReclamo:
                         dias = 0
                         reclamo_a_modificar.resuelto_en = dias
                         reclamo_a_modificar.tiempo_estimado = None
-                        self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+                        self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                         return
                     
                     if hasattr(reclamo, 'fecha_hora') and isinstance(reclamo.fecha_hora, datetime):
@@ -129,7 +129,7 @@ class GestorReclamo:
                     reclamo_a_modificar.resuelto_en = dias
                     reclamo_a_modificar.resuelto_en = dias
 
-                    self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+                    self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                     return
                 
                 elif accion == "actualizar":
@@ -137,7 +137,7 @@ class GestorReclamo:
 
                     reclamo_a_modificar.estado = "en proceso"
                     reclamo_a_modificar.tiempo_estimado = int(tiempo_estimado)
-                    self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+                    self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                     return
                 
             except Exception as e:
@@ -153,9 +153,9 @@ class GestorReclamo:
 
         try:
 
-            self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
+            self.__repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
 
-
+            print(f"[DEBUG] Reclamo de id {reclamo_id} eliminado correctamente")
             gestor_imagen.eliminar_imagen(reclamo_id=reclamo_id)
 
             return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
@@ -167,8 +167,9 @@ class GestorReclamo:
         
     def agregar_adherente(self, reclamo_id, usuario: FlaskLoginUser,repositorio_usuarios:RepositorioUsuariosSQLAlchemy):
         #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
-        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtros(mapeo=False,**{"id":reclamo_id})
+        reclamo_a_adherir = self.__repositorio_reclamo.obtener_registro_por_filtros(mapeo=False,**{"id":reclamo_id})
 
+        print(f"Modelo Reclamo id: {reclamo_a_adherir.id}")
         if reclamo_a_adherir is None:
             raise ValueError(f"El reclamo con ID {reclamo_id} no existe.")
         if usuario in reclamo_a_adherir.usuarios:
@@ -177,15 +178,14 @@ class GestorReclamo:
         reclamo_a_adherir.cantidad_adherentes += 1
         #devolvemos el modelo usuario del usuario actual
 
-        modelo_usuario = repositorio_usuarios.obtener_registro_por_filtros(**{"id":usuario.id})
+        modelo_usuario = repositorio_usuarios.obtener_registro_por_filtros(**{"id":usuario.id},mapeo=False)
+    
+        if modelo_usuario in reclamo_a_adherir.usuarios:
+            raise ValueError("El usuario ya se encuentra adherido al reclamo")
+        
+        reclamo_a_adherir.usuarios.append(modelo_usuario)
+        self.__repositorio_reclamo.commit()
 
-
-        try:
-            reclamo_a_adherir.usuarios.append(modelo_usuario)
-            self.repositorio_reclamo.commit()
-
-        except Exception as e:
-            print(f"No fue posible adherir al usuario, error {e}")
 
         
     def modificar_reclamo(self,reclamo_id,clasificador=None,gestor_imagen:GestorImagenReclamo=None,nuevo_contenido=None,nuevo_dpto=None, imagen:FileStorage=None):
@@ -193,14 +193,14 @@ class GestorReclamo:
         """
         Se modifica un reclamo, si se ingresa un nuevo departamento significa que fue derivado, caso contrario simplemente se actualiza su contenido y clasificacion
         """
-        reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo_id})
+        reclamo_a_modificar = self.__repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo_id})
 
         if nuevo_dpto:
 
 
             reclamo_a_modificar.clasificacion = nuevo_dpto
 
-            self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+            self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
 
             print(f"El reclamo de id {reclamo_id} ha sido correctamente derivado al departamento {nuevo_dpto}")
             return
@@ -211,7 +211,7 @@ class GestorReclamo:
             reclamo_a_modificar.clasificacion = clasificador.clasificar([nuevo_contenido])[0]
 
 
-            self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+            self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
 
             print(f"El reclamo de id {reclamo_id} ha sido modificado correctamente")
 
@@ -226,7 +226,7 @@ class GestorReclamo:
         Devuelve el último reclamo creado por el usuario
         """
 
-        return self.repositorio_reclamo.ultimo_reclamo_creado_por_usuario(usuario_id=usuario.id)
+        return self.__repositorio_reclamo.ultimo_reclamo_creado_por_usuario(usuario_id=usuario.id)
     
     def añadir_imagen_reclamo(self, gestor_imagen:GestorImagenReclamo ,reclamo_id,imagen: FileStorage = None):
 

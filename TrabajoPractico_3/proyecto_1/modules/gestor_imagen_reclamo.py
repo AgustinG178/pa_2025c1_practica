@@ -63,7 +63,7 @@ class GestorImagenReclamoPng(GestorImagenReclamo):
 
             
             ruta = os.path.join(self.__direccion_archivo,f"{reclamo_id}.png")
-            if ruta:
+            if os.path.exists(ruta):
 
                 os.remove(ruta)
                 print(f"Se removió correctamente la imagen asociada al reclamo {reclamo_id}")
