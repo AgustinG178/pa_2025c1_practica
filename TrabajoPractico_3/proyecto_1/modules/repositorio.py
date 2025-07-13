@@ -170,7 +170,11 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         Obtiene todos los registros que coinciden con un filtro específico.
         """
         modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
-        return [self.map_modelo_a_entidad(modelo) for modelo in modelos] if mapeo else modelos
+        if not mapeo:
+            return modelos
+        else:
+
+            return [self.map_modelo_a_entidad(modelo) for modelo in modelos]
         
     def map_modelo_a_entidad(self,modelo:ModeloReclamo):
         """Convierte un modelo de SQLAlchemy en una entidad Reclamo."""

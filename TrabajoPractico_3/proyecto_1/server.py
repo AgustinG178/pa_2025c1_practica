@@ -372,7 +372,7 @@ def manejo_reclamos():
         flash("No tienes permisos para acceder.", "danger")
         return redirect(url_for('index'))
 
-    reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion",valor=dpto)
+    reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion",valor=dpto,mapeo=False)
     selected_id = None
 
     if request.method == "POST":
@@ -406,11 +406,14 @@ def manejo_reclamos():
             flash(f"Error al procesar el reclamo: {e}", "danger")
 
         try:
-            reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion", valor=dpto)
+            #Pasamos los reclamos como ModeloReclamo para que se pueda acceder a la variable usuarios y mostrar los ids de usuarios adheridos
+            reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion", valor=dpto,mapeo=False)
+    
         except Exception as e:
             flash("Hubo un error al obtener los reclamos: " + str(e), "danger")
             reclamos = []
 
+        
     return render_template(
         'manejo_reclamos.html',
         reclamos=reclamos,

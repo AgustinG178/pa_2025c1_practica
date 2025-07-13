@@ -62,7 +62,7 @@ class GestorReclamo:
             
             print(f"Error: {e} a la hora de devolver el reclamo")
             
-    def buscar_reclamos_por_filtro(self, filtro=None, valor=None):
+    def buscar_reclamos_por_filtro(self,mapeo=True, filtro=None, valor=None):
 
         """
         Se devuelven todos los reclamos que correspondan con el filtro ingresado.
@@ -70,7 +70,7 @@ class GestorReclamo:
         if filtro and valor:
             try:
 
-                return self.repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor,mapeo=True)
+                return self.repositorio_reclamo.obtener_registros_por_filtro(filtro=filtro, valor=valor,mapeo=mapeo)
             except Exception as e:
                 raise e  # Lanza el error en vez de retornarlo
        
