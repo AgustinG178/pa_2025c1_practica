@@ -3,6 +3,10 @@ from wordcloud import WordCloud, STOPWORDS
 from collections import Counter
 import os
 import matplotlib.pyplot as plt
+import matplotlib
+from stop_words import get_stop_words
+
+matplotlib.use('Agg')
 
 class GraficadoraTorta:
     def graficar(self, datos: dict, nombre_archivo:str, subcarpeta:str):
@@ -104,9 +108,21 @@ class GraficadoraNubePalabras:
             stopwords_personalizadas = {line.strip() for line in f if line.strip()}
 
 
-        # Filtrar palabras vacías (stopwords) y caracteres no deseados
+        # Filtrar palabras vacías (stopwords) y caracteres no deseados del modulo stop-words
+        stopwords_libreria = set(get_stop_words('spanish'))
         stopwords = set(STOPWORDS)
-        stopwords.update(stopwords_personalizadas)
+        stopwords.update(stopwords_libreria)
+        palabras = texto.lower().split()
+        palabras_filtradas = [
+            palabra.strip(".,!?()[]{}\"'") for palabra in palabras if palabra not in stopwords and len(palabra) > 2
+        ]
+        # Agregar stopwords propias 
+        ruta_stopwords = "data/stopwords.txt"
+        if os.path.exists(ruta_stopwords):
+            with open(ruta_stopwords, encoding="utf-8") as f:
+                stopwords_personalizadas = {line.strip() for line in f if line.strip()}
+            stopwords.update(stopwords_personalizadas)
+
         palabras = texto.lower().split()
         palabras_filtradas = [
             palabra.strip(".,!?()[]{}\"'") for palabra in palabras if palabra not in stopwords and len(palabra) > 2

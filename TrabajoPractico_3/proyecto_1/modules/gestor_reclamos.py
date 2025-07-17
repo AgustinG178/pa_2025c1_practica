@@ -106,49 +106,32 @@ class GestorReclamo:
         similares = [reclamos_existentes[i] for i in indices_similares if similitudes[i] > 0.1]
         return similares
 
-    def actualizar_estado_reclamo(self, usuario: FlaskLoginUser, reclamo: Reclamo,accion:str,tiempo_estimado:int=None):
-
-        """
-        Se actualiza el estado de un reclamo, solo lo es capaz de realizarlo un Jefe de Departamento
-        """
-
-        if int(usuario.rol) in [2,3,4]:  #Los roles estan definidos en FlaskLoginUser
+    def actualizar_estado_reclamo(self, usuario: FlaskLoginUser, reclamo: Reclamo, accion: str, tiempo_estimado: int = None):
+        if int(usuario.rol) in [2, 3, 4]:
             try:
-                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id)
-
+                reclamo_a_modificar = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo.id, mapeo=False)
                 if accion == "resolver":
                     reclamo_a_modificar.estado = "resuelto"
-                    # Se resuelve el reclamo directamente, sin pasarlo de pendiente --> proceso
-                    if reclamo_a_modificar.tiempo_estimado is None:
-                        dias = 0
-                        reclamo_a_modificar.resuelto_en = dias
-                        self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
-                        return
-                    
+                    reclamo_a_modificar.tiempo_estimado = None
                     if hasattr(reclamo, 'fecha_hora') and isinstance(reclamo.fecha_hora, datetime):
                         dias = (date.today() - reclamo.fecha_hora.date()).days
                     else:
-                        dias = None  
+                        dias = None
                     reclamo_a_modificar.resuelto_en = dias
                     self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                     print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
                     return
                 elif accion == "actualizar":
-                    
-
                     reclamo_a_modificar.estado = "en proceso"
                     reclamo_a_modificar.tiempo_estimado = tiempo_estimado
                     self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
                     print(f"[DEBUG] Reclamo actualizado: {reclamo_a_modificar} correctamente")
                     return
-                
-
             except Exception as e:
                 print(f"[DEBUG] Error {e} al actualizar estado del reclamo")
                 return
-
         raise PermissionError("El usuario no posee los permisos para realizar dicha modificación")
-
+    
     def invalidar_reclamo(self,reclamo_id: int):
         """
         Se elimina un reclamo (accediendo a este con su id) asociado a un usuario.
@@ -183,7 +166,7 @@ class GestorReclamo:
 
         try:
             reclamo_a_adherir.usuarios.append(usuario)
-            self.repositorio_reclamo.commit()
+            self.repositorio_reclamo.session.commit()
         except Exception as e:
             print(f"No fue posible adherir al usuario, error {e}")
         

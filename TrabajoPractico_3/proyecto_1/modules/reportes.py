@@ -16,6 +16,7 @@ from reportlab.lib import colors
 import os
 from abc import ABC, abstractmethod
 from reportlab.platypus import HRFlowable
+import statistics
 
 engine, Session = crear_engine()
 
@@ -172,24 +173,21 @@ class GeneradorReportes:
         return monticulo.obtener_mediana()
 
     def calcular_mediana(self, atributo, clasificacion=None):
-        """Calcula la mediana de un atributo de los reclamos, opcionalmente filtrados."""
-        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
-
-        # Filtrar reclamos
-        query = self.repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo))
+        """
+        Calcula la mediana de un atributo numérico de los reclamos, opcionalmente filtrados por clasificación.
+        """
         if clasificacion:
-            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
-
-        # Obtener valores válidos del atributo
-        valores = [r[0] for r in query.all() if r[0] is not None]
-
-        # Verificar si hay datos
+            reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(clasificacion=clasificacion).all()
+        else:
+            reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).all()
+        valores = [
+            float(getattr(r, atributo))
+            for r in reclamos
+            if getattr(r, atributo) is not None
+        ]
         if not valores:
             return None
-
-        # Calcular la mediana usando MonticuloMediana
-        monticulo = MonticuloMediana(valores)
-        return monticulo.obtener_mediana()
+        return statistics.median(valores)
 
     def calcular_medianas_atributos(self, clasificacion=None):
         """Calcula la mediana de atributos relevantes de los reclamos."""
@@ -441,18 +439,26 @@ class ReporteHTML(Reportes):
 if __name__ == '__main__':  # pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
     generador = GeneradorReportes(repo_reclamos)
+    
+    clasificacion = "soporte informático"
 
-    # Mediana para todos los reclamos resueltos
-    mediana_general = generador.mediana_tiempo_resolucion()
-    print("Mediana general del tiempo de resolución:", mediana_general)
+    mediana = generador.calcular_mediana("tiempo_estimado", clasificacion)
+    print("Mediana de tiempo_estimado:", mediana)
 
-    # Mediana para una clasificación específica
-    mediana_maestranza = generador.mediana_tiempo_resolucion(clasificacion="maestranza")
-    print("Mediana del tiempo de resolución para maestranza:", mediana_maestranza)
-   # print("Cantidad total de reclamos:", generador.cant_reclamos())
+    # Si quieres ver todas las medianas relevantes:
+    medianas = generador.calcular_medianas_atributos(clasificacion)
+    print("Medianas de atributos:", medianas)
 
-    # Reporte en PDF
+    # Pruebas de generación de reportes
+    ruta_reporte_pdf = "reporte_prueba.pdf"
+    ruta_reporte_html = "reporte_prueba.html"
+
     reporte_pdf = ReportePDF(generador)
-    reporte_pdf.generar("data/salida_reporte.pdf", "maestranza")
+    reporte_pdf.generar(ruta_reporte_pdf, clasificacion)
+
+    reporte_html = ReporteHTML(generador)
+    reporte_html.generar(ruta_reporte_html, clasificacion)
+
+
 
 
