@@ -6,6 +6,7 @@ from modules.login import FlaskLoginUser
 from modules.modelos import ModeloReclamo,ModeloUsuario
 from datetime import date
 from modules.text_vectorizer import TextVectorizer
+from sklearn.metrics import classification_report
 
 #session = crear_engine()
 #repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -103,7 +104,11 @@ class GestorReclamo:
         similitudes = cosine_similarity(vector_nuevo, vectores_existentes)[0]
         indices_similares = np.argsort(similitudes)[::-1][:top_n]
 
-        similares = [reclamos_existentes[i] for i in indices_similares if similitudes[i] > 0.1]
+        umbral_dinamico = np.percentile(similitudes, 75)
+        similares = [reclamos_existentes[i] for i in indices_similares if similitudes[i] > umbral_dinamico]
+        
+        similares.pop[0]  # Eliminar el reclamo mismo si está en la lista
+        
         return similares
 
     def actualizar_estado_reclamo(self, usuario: FlaskLoginUser, reclamo: Reclamo, accion: str, tiempo_estimado: int = None):
