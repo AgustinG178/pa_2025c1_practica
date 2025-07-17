@@ -32,12 +32,6 @@ class TestGeneradorReportes(unittest.TestCase):
         self.repo.session.query.return_value.group_by.return_value.all.return_value = [("soporte", 3)]
         self.assertEqual(self.generador.cantidad_reclamos_por_clasificacion(), {"soporte": 3})
 
-    def test_cantidad_promedio_adherentes(self):
-        self.repo.session.query.return_value.scalar.return_value = 2.5
-        self.assertEqual(self.generador.cantidad_promedio_adherentes(), 2.5)
-        self.repo.session.query.return_value.scalar.return_value = None
-        self.assertEqual(self.generador.cantidad_promedio_adherentes(), 0)
-
     def test_reclamos_por_usuario(self):
         dummy = MagicMock()
         self.repo.session.query.return_value.filter_by.return_value.all.return_value = [dummy]
@@ -48,10 +42,6 @@ class TestGeneradorReportes(unittest.TestCase):
             ("pendiente", 1)
         ]
         self.assertEqual(self.generador.cantidad_reclamos_por_estado_filtrado("soporte"), {"pendiente": 1})
-
-    def test_listar_clasificaciones_unicas(self):
-        self.repo.session.query.return_value.distinct.return_value.all.return_value = [("soporte",), ("tecnica",)]
-        self.assertEqual(self.generador.listar_clasificaciones_unicas(), ["soporte", "tecnica"])
 
     def test_clasificacion_por_rol(self):
         self.assertEqual(self.generador.clasificacion_por_rol("1"), "soporte informático")

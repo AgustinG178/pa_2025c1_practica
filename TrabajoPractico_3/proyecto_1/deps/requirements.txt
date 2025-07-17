@@ -11,3 +11,5 @@ numpy
 cachelib
 pytest
 pytest-cov
+numpy
+stop-words

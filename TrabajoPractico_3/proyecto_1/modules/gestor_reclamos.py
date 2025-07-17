@@ -83,9 +83,11 @@ class GestorReclamo:
     def buscar_reclamos_similares(self, descripcion: str, clasificacion: str, top_n: int = 10):
         from sklearn.metrics.pairwise import cosine_similarity
         import numpy as np
-    
         """
         Retorna los reclamos más similares al texto dado usando similitud de coseno (es una medida que calcula el ángulo entre dos vectores para determinar cuán similares son en dirección).
+        """
+        """El percentil 70 se adapta automáticamente a la distribución actual de las similitudes. Si en un caso las similitudes son muy altas (por ejemplo, todos los reclamos son parecidos), el umbral sube. Si son muy bajas, baja. Esto evita falsos positivos o negativos.
+        la decision de usar el percentil 70 es arbitraria, pero se basa en la idea de que queremos capturar una buena cantidad de similitudes sin incluir demasiados casos marginales. pero dado que la base de datos es arbitraria, puede que en algunos casos no funcione como se espera. o que no aparezcan demasiados reclamos similares bajo el contexto del reclamo ingresado.
         """
         reclamos_existentes = self.repositorio_reclamo.obtener_todos_los_registros()
         if clasificacion:
@@ -104,10 +106,10 @@ class GestorReclamo:
         similitudes = cosine_similarity(vector_nuevo, vectores_existentes)[0]
         indices_similares = np.argsort(similitudes)[::-1][:top_n]
 
-        umbral_dinamico = np.percentile(similitudes, 75)
+        umbral_dinamico = np.percentile(similitudes, 70)
         similares = [reclamos_existentes[i] for i in indices_similares if similitudes[i] > umbral_dinamico]
         
-        similares.pop[0]  # Eliminar el reclamo mismo si está en la lista
+        similares.pop(0)  # Eliminar el reclamo mismo, dado que al estar en la base de datos, siempre será el más similar a sí mismo.
         
         return similares
 
@@ -146,17 +148,10 @@ class GestorReclamo:
 
             self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
 
-
             return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
 
         except AttributeError:
-            return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"
-             
-    def agregar_adherente(self, reclamo_id, usuario:ModeloUsuario):
-        
-        reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
-
-        modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)        
+            return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"      
         
     def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
         #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
