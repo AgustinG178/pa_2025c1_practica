@@ -51,21 +51,6 @@ class GeneradorReportes:
         ).group_by(ModeloReclamo.clasificacion).all()
         return dict(query)
 
-    def cantidad_promedio_adherentes(self):
-        """Devuelve el promedio de adherentes por reclamo, o 0 si no hay reclamos."""
-        query = self.repositorio_reclamos.session.query(
-            func.avg(ModeloReclamo.cantidad_adherentes)
-        ).scalar()
-        return query or 0
-
-    def reclamos_recientes(self, dias=7):
-        """Devuelve una lista de reclamos creados en los últimos `dias` días."""
-        fecha_limite = datetime.utcnow() - timedelta(days=dias)
-        reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter(
-            ModeloReclamo.fecha_hora >= fecha_limite
-        ).all()
-        return reclamos
-
     def reclamos_por_usuario(self, usuario_id):
         """Devuelve una lista de reclamos creados por un usuario específico."""
         reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(
@@ -81,21 +66,6 @@ class GeneradorReportes:
         ).filter_by(clasificacion=clasificacion).group_by(ModeloReclamo.estado).all()
         return dict(query)
 
-    def reclamos_recientes_filtrado(self, clasificacion, dias=7):
-        """Devuelve una lista de reclamos recientes filtrados por clasificación."""
-        fecha_limite = datetime.utcnow() - timedelta(days=dias)
-        return self.repositorio_reclamos.session.query(ModeloReclamo).filter(
-            ModeloReclamo.fecha_hora >= fecha_limite,
-            ModeloReclamo.clasificacion == clasificacion
-        ).all()
-        
-    def listar_clasificaciones_unicas(self):
-        """Devuelve una lista de clasificaciones únicas de reclamos."""
-        clasificaciones = self.repositorio_reclamos.session.query(
-            ModeloReclamo.clasificacion
-        ).distinct().all()
-        return [c[0] for c in clasificaciones]
-
     def clasificacion_por_rol(self, rol):
         """Devuelve la clasificación asociada a un rol específico."""
         try:
@@ -110,7 +80,6 @@ class GeneradorReportes:
         }
         return mapa_roles.get(rol)
 
-    
     def obtener_datos_para_torta(self, rol):
         """Obtiene los datos necesarios para un gráfico de torta, filtrados por rol."""
         clasificacion = self.clasificacion_por_rol(rol)
