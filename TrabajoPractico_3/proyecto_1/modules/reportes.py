@@ -164,7 +164,6 @@ class GeneradorReportes:
 
         tiempos_resueltos = [reclamo.resuelto_en for reclamo in query if reclamo.resuelto_en is not None]
 
-        # Verificar si hay datos
         if not tiempos_resueltos:
             return None
 
@@ -173,31 +172,27 @@ class GeneradorReportes:
         return monticulo.obtener_mediana()
 
     def calcular_mediana(self, atributo, clasificacion=None):
-        """
-        Calcula la mediana de un atributo numérico de los reclamos, opcionalmente filtrados por clasificación.
-        """
+        """Calcula la mediana de un atributo específico, opcionalmente filtrando por clasificación."""
+        from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
+
+        query = self.repositorio_reclamos.session.query(getattr(ModeloReclamo, atributo)).filter(
+            ModeloReclamo.estado == 'resuelto'
+        )
         if clasificacion:
-            reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).filter_by(clasificacion=clasificacion).all()
-        else:
-            reclamos = self.repositorio_reclamos.session.query(ModeloReclamo).all()
-        valores = [
-            float(getattr(r, atributo))
-            for r in reclamos
-            if getattr(r, atributo) is not None
-        ]
+            query = query.filter(ModeloReclamo.clasificacion == clasificacion)
+
+        resultados = query.all()
+        print("Resultados de la consulta:", resultados)
+
+        valores = [r[0] for r in resultados if r[0] is not None]
+
         if not valores:
             return None
-        return statistics.median(valores)
 
-    def calcular_medianas_atributos(self, clasificacion=None):
-        """Calcula la mediana de atributos relevantes de los reclamos."""
-        atributos_relevantes = ['cantidad_adherentes', 'tiempo_estimado', 'resuelto_en']
-        medianas = {}
+        # Calcular la mediana usando MonticuloMediana
+        monticulo = MonticuloMediana(valores)
+        return monticulo.obtener_mediana()
 
-        for atributo in atributos_relevantes:
-            medianas[atributo] = self.calcular_mediana(atributo, clasificacion)
-
-        return medianas
 
 class Reportes(ABC):
     """Clase abstracta para reportes de reclamos."""
@@ -211,11 +206,9 @@ class ReportePDF(Reportes):
     """Genera reportes de reclamos en formato PDF."""
 
     def __init__(self, generador: GeneradorReportes):
-        """Inicializa el reporte PDF con un generador de reportes."""
         self.generador = generador
 
     def generar(self, ruta_salida, clasificacion_usuario):
-        """Genera y guarda un reporte PDF de reclamos filtrados por clasificación."""
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
@@ -256,14 +249,20 @@ class ReportePDF(Reportes):
         elementos.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#00509e")))
         elementos.append(Spacer(1, 0.5 * cm))
 
-        # Estadísticas con medianas
-        mediana = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
+        # Estadísticas con medianas usando métodos específicos
         elementos.append(Paragraph(f"Estadísticas del Departamento: {clasificacion_usuario.capitalize()}", estilo_subtitulo))
         elementos.append(Spacer(1, 0.3 * cm))
 
-        for atributo, mediana in mediana.items():
-            texto = f"Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}"
-            elementos.append(Paragraph(texto, estilo_normal))
+        # Usar calcular_mediana para cantidad_adherentes y resuelto_en
+        mediana_adherentes = self.generador.calcular_mediana("cantidad_adherentes", clasificacion=clasificacion_usuario)
+        mediana_resuelto_en = self.generador.calcular_mediana("resuelto_en", clasificacion=clasificacion_usuario)
+
+        # Usar mediana_tiempo_resolucion para tiempo_estimado
+        mediana_tiempo_estimado = self.generador.mediana_tiempo_resolucion(clasificacion=clasificacion_usuario)
+
+        elementos.append(Paragraph(f"Mediana de Cantidad adherentes: {mediana_adherentes if mediana_adherentes is not None else 'No disponible'}", estilo_normal))
+        elementos.append(Paragraph(f"Mediana de Tiempo estimado: {mediana_tiempo_estimado if mediana_tiempo_estimado is not None else 'No disponible'}", estilo_normal))
+        elementos.append(Paragraph(f"Mediana de Resuelto en: {mediana_resuelto_en if mediana_resuelto_en is not None else 'No disponible'}", estilo_normal))
 
         elementos.append(Spacer(1, 1 * cm))
 
@@ -317,22 +316,24 @@ class ReportePDF(Reportes):
         doc.build(elementos)
         print(f"Reporte PDF generado en: {ruta_salida}")
 
+
 class ReporteHTML(Reportes):
     """Genera reportes de reclamos en formato HTML."""
 
     def __init__(self, generador: GeneradorReportes):
-        """Inicializa el reporte HTML con un generador de reportes."""
         self.generador = generador
 
     def generar(self, ruta_salida, clasificacion_usuario):
-        """Genera y guarda un reporte HTML de reclamos filtrados por clasificación."""
         import os
 
         carpeta = os.path.dirname(ruta_salida)
         if carpeta:
             os.makedirs(carpeta, exist_ok=True)
 
-        medianas = self.generador.calcular_medianas_atributos(clasificacion=clasificacion_usuario)
+        # Calcular medianas usando métodos específicos
+        mediana_adherentes = self.generador.calcular_mediana("cantidad_adherentes", clasificacion=clasificacion_usuario)
+        mediana_resuelto_en = self.generador.calcular_mediana("resuelto_en", clasificacion=clasificacion_usuario)
+        mediana_tiempo_estimado = self.generador.mediana_tiempo_resolucion(clasificacion=clasificacion_usuario)
 
         reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
             filtro="clasificacion", valor=clasificacion_usuario
@@ -383,8 +384,9 @@ class ReporteHTML(Reportes):
             <ul>
         """
 
-        for atributo, mediana in medianas.items():
-            html += f"<li>Mediana de {atributo.replace('_', ' ').capitalize()}: {mediana if mediana is not None else 'No disponible'}</li>"
+        html += f"<li>Mediana de Cantidad adherentes: {mediana_adherentes if mediana_adherentes is not None else 'No disponible'}</li>"
+        html += f"<li>Mediana de Tiempo estimado: {mediana_tiempo_estimado if mediana_tiempo_estimado is not None else 'No disponible'}</li>"
+        html += f"<li>Mediana de Resuelto en: {mediana_resuelto_en if mediana_resuelto_en is not None else 'No disponible'}</li>"
 
         html += "</ul>"
 
@@ -406,7 +408,7 @@ class ReporteHTML(Reportes):
         """
 
         if not reclamos:
-            html += "<tr><td colspan='5'>No hay reclamos para esta clasificación.</td></tr>"
+            html += "<tr><td colspan='7'>No hay reclamos para esta clasificación.</td></tr>"
         else:
             for reclamo in reclamos:
                 html += f"""
@@ -440,24 +442,14 @@ if __name__ == '__main__':  # pragma: no cover
     repo_reclamos = RepositorioReclamosSQLAlchemy(session)
     generador = GeneradorReportes(repo_reclamos)
     
-    clasificacion = "soporte informático"
+    clasificacion = "maestranza"
 
-    mediana = generador.calcular_mediana("tiempo_estimado", clasificacion)
-    print("Mediana de tiempo_estimado:", mediana)
-
-    # Si quieres ver todas las medianas relevantes:
-    medianas = generador.calcular_medianas_atributos(clasificacion)
-    print("Medianas de atributos:", medianas)
-
-    # Pruebas de generación de reportes
-    ruta_reporte_pdf = "reporte_prueba.pdf"
-    ruta_reporte_html = "reporte_prueba.html"
-
-    reporte_pdf = ReportePDF(generador)
-    reporte_pdf.generar(ruta_reporte_pdf, clasificacion)
-
-    reporte_html = ReporteHTML(generador)
-    reporte_html.generar(ruta_reporte_html, clasificacion)
+    mediana_cant_adh = generador.calcular_mediana("cantidad_adherentes", clasificacion)
+    mediana_tiempo = generador.mediana_tiempo_resolucion(clasificacion)
+    mediana_resuelto = generador.calcular_mediana("resuelto_en", clasificacion)
+    print("Mediana cantidad_adherentes:", mediana_cant_adh)
+    print("Mediana tiempo_estimado:", mediana_tiempo)
+    print("Mediana resuelto_en:", mediana_resuelto)
 
 
 
