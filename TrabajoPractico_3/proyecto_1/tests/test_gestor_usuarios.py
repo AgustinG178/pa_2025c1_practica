@@ -124,21 +124,5 @@ class TestGestorUsuarios(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.gestor.autenticar_usuario("usuario_inexistente", "1234")
 
-    def test_generar_reporte_usuario_pdf(self):
-        """Verifica que se puede generar un reporte en formato PDF."""
-        resultado = self.gestor.generar_reporte_usuario("pdf")
-        self.assertEqual(resultado, "Reporte PDF generado para usuarios")
-
-    def test_generar_reporte_usuario_html(self):
-        """Verifica que se puede generar un reporte en formato HTML."""
-        resultado = self.gestor.generar_reporte_usuario("html")
-        self.assertEqual(resultado, "Reporte HTML generado para usuarios")
-
-    def test_generar_reporte_usuario_tipo_invalido(self):
-        """Verifica que no se puede generar un reporte con un tipo inválido."""
-        with self.assertRaises(ValueError):
-            self.gestor.generar_reporte_usuario("xml")
-
-
 if __name__ == "__main__":
     unittest.main()

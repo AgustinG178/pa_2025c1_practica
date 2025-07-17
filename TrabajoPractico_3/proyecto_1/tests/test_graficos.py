@@ -8,6 +8,9 @@ from modules.graficos import (
 )
 import os
 
+import matplotlib
+matplotlib.use('Agg')
+
 class TestGraficadoraTorta(unittest.TestCase):
     @patch("modules.graficos.plt")
     @patch("modules.graficos.os.makedirs")

@@ -100,25 +100,30 @@ reclamos_info = [
     "Las fotocopiadoras no tienen tinta",
     "No hay formularios disponibles en ventanilla",
     "Los horarios publicados en la cartelera están desactualizados",
+    "El proyector del aula 9 parpadea constantemente",
+    "No hay señal de internet en el laboratorio de informática",
+    "Las puertas del edificio principal no cierran bien",
+    "Falta ventilación adecuada en el gimnasio",
+    "Los baños no tienen papel higiénico ni jabón líquido",
+    "El sistema de alarma de incendios se activa sin razón",
+    "El ascensor del módulo B hace ruidos extraños",
+    "Las luces del pasillo del tercer piso están quemadas",
+    "No funciona el timbre de la entrada principal",
+    "Los enchufes del aula 5 no tienen corriente",
+    "El aire acondicionado del laboratorio de química gotea agua",
+    "El sistema de reserva de salas a veces no confirma la reserva",
+    "El proyector no conecta con la laptop en la sala de profesores",
+    "El teclado de la computadora del aula 7 está roto",
+    "Hay cables sueltos en el área de laboratorio de física",
+    "Las ventanas del aula 3 no se pueden cerrar",
+    "Falta iluminación en el estacionamiento trasero",
+    "El servicio de limpieza no pasó por el comedor esta semana",
+    "No hay jabón en los lavamanos del baño de damas",
+    "El sistema de acceso con tarjeta no reconoce algunas credenciales"
 ]
 
 # ─── Script Principal ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    """
-    conn = sqlite3.connect("data/base_datos.db")
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA foreign_keys = OFF;")
-    try:
-        cursor.execute("DELETE FROM usuarios_reclamos;")
-    except Exception as e:
-        print("No se pudo borrar usuarios_reclamos:", e)
-    cursor.execute("DELETE FROM reclamos;")
-    cursor.execute("DELETE FROM usuarios;")
-    conn.commit()
-    conn.close()
-    print("Base de datos limpiada.")
-"""
-    # Crear usuarios
     for u in usuarios_info:
         try:
             rol = u.get("rol", 0)
@@ -142,11 +147,10 @@ if __name__ == "__main__":
         print("✖ No se encontraron usuarios válidos para asignar reclamos.")
         exit()
 
-    for i, desc in enumerate(reclamos_info * 2):  # duplicamos para más volumen
+    for i, desc in enumerate(reclamos_info):
         try:
             usuario = choice(usuarios_db)
             clasificacion = clf.clasificar([desc])[0]
-            # Generar resuelto_en aleatorio o None
             resuelto_en = randint(1, 30) if randint(0, 1) else None
             estado = "resuelto" if resuelto_en is not None else "pendiente"
             fecha_random = datetime.utcnow() - timedelta(days=randint(0, 60))
@@ -160,7 +164,7 @@ if __name__ == "__main__":
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
-            modelo.cantidad_adherentes = randint(0,35)  # Simular adherentes
+            modelo.cantidad_adherentes = randint(0,35)  
             modelo.tiempo_estimado = randint(1, 10) if estado == "pendiente" else 0
             modelo.resuelto_en = resuelto_en
 

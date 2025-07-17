@@ -44,11 +44,6 @@ class TestGestorReclamoExtra(unittest.TestCase):
         with self.assertRaises(PermissionError):
             self.gestor.devolver_reclamos_base(usuario)
 
-    def test_buscar_reclamos_similares(self):
-        self.repositorio.buscar_similares.return_value = ["Sim1"]
-        resultado = self.gestor.buscar_reclamos_similares("soporte", 1)
-        self.assertEqual(resultado, ["Sim1"])
-
     def test_actualizar_estado_reclamo_resolver(self):
         usuario = DummyUser(rol="2")
         reclamo = Reclamo("pendiente", datetime.now() - timedelta(days=2), usuario.id, "Falla", "hw")

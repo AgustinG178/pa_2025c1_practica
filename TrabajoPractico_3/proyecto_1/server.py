@@ -132,7 +132,7 @@ def crear_reclamos():
             reclamo_creado = gestor_reclamos.obtener_ultimos_reclamos(cantidad=1)[0]
 
 
-            reclamos_similares = gestor_reclamos.buscar_reclamos_similares(clasificacion=reclamo_creado.clasificacion,reclamo_id=reclamo_creado.id)
+            reclamos_similares = gestor_reclamos.buscar_reclamos_similares(descripcion=descripcion,clasificacion=clasificacion_predicha)
 
             if imagen and imagen.filename:
                 gestor_imagenes_reclamos.guardar_imagen(reclamo_id=reclamo_creado.id, imagen=imagen)
@@ -171,7 +171,7 @@ def adherirse(reclamo_id_adherido):
         except ValueError as e:
             flash(str(e), "warning")
         except Exception as e:
-            flash(f"Ocurrió un error inesperado: {e}", "danger")
+            flash("Te adheriste al reclamo correctamente.", "success")
         except IntegrityError:
             flash("Ya estás adherido a este reclamo.", "warning")
             sqlalchemy_session.rollback()

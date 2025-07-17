@@ -4,7 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.utils.validation import check_is_fitted
 
 
 class ClaimsClassifier(BaseEstimator, ClassifierMixin):
@@ -40,3 +40,65 @@ class ClaimsClassifier(BaseEstimator, ClassifierMixin):
             los valores posibles dependen de las etiquetas en y usadas en el entrenamiento
         """
         return self.predict(X)
+    
+if __name__ == "__main__":
+    import json
+    from collections import Counter
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import classification_report
+    from imblearn.over_sampling import SMOTE
+    from modules.text_vectorizer import TextVectorizer
+    
+    with open('data/frases.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    X = [item['reclamo'] for item in data]
+    y = [item['etiqueta'] for item in data]
+
+    print("Distribución original:", Counter(y))
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, stratify=y, random_state=42
+    )
+
+    pipe = Pipeline([
+        ('vectorizer', TextVectorizer()),
+        ('scaler', StandardScaler()),
+        ('clf', RandomForestClassifier(
+            max_depth=20,
+            max_features='log2',
+            n_estimators=10,
+            class_weight='balanced',
+            random_state=42
+        ))
+    ])
+
+    pipe.fit(X_train, y_train)
+    y_pred = pipe.predict(X_test)
+    print("\nReporte con class_weight='balanced':")
+    print(classification_report(y_test, y_pred))
+
+    print("\nAplicando SMOTE para balanceo...")
+
+    X_train_vec = pipe.named_steps['vectorizer'].transform(X_train)
+    smote = SMOTE(random_state=42)
+    X_res, y_res = smote.fit_resample(X_train_vec, y_train)
+
+    print("Distribución después de SMOTE:", Counter(y_res))
+
+    clf_smote = RandomForestClassifier(
+        max_depth=20,
+        max_features='log2',
+        n_estimators=10,
+        random_state=42
+    )
+    clf_smote.fit(X_res, y_res)
+
+    X_test_vec = pipe.named_steps['vectorizer'].transform(X_test)
+    y_pred_smote = clf_smote.predict(X_test_vec)
+
+    print("\nReporte con SMOTE + RandomForest:")
+    print(classification_report(y_test, y_pred_smote))

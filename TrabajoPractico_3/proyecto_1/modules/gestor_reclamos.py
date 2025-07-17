@@ -5,6 +5,7 @@ from datetime import datetime, UTC
 from modules.login import FlaskLoginUser
 from modules.modelos import ModeloReclamo,ModeloUsuario
 from datetime import date
+from modules.text_vectorizer import TextVectorizer
 
 #session = crear_engine()
 #repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
@@ -78,20 +79,32 @@ class GestorReclamo:
         
         raise PermissionError(f"El usuario {usuario.nombre_de_usuario} no posee los permisos para realizar dicha petición")
     
-    def buscar_reclamos_similares(self,clasificacion:str,reclamo_id:int):
+    def buscar_reclamos_similares(self, descripcion: str, clasificacion: str, top_n: int = 10):
+        from sklearn.metrics.pairwise import cosine_similarity
+        import numpy as np
+    
         """
-        Se devuelven todos los reclamos similares asociados a uno creado
+        Retorna los reclamos más similares al texto dado usando similitud de coseno (es una medida que calcula el ángulo entre dos vectores para determinar cuán similares son en dirección).
         """
+        reclamos_existentes = self.repositorio_reclamo.obtener_todos_los_registros()
+        if clasificacion:
+            reclamos_existentes = [r for r in reclamos_existentes if r.clasificacion == clasificacion]
 
-        if clasificacion and reclamo_id:
-            try:
+        if not reclamos_existentes:
+            return []
 
-                return self.repositorio_reclamo.buscar_similares(clasificacion=clasificacion,reclamo_id=reclamo_id)
-            except Exception as e:
+        textos = [r.contenido for r in reclamos_existentes]
+        vectorizer = TextVectorizer()
+        vectorizer.fit(textos + [descripcion])  # Entrenamos incluyendo el nuevo texto
 
-                print(f"Error: {e} al intentar buscar similares")
+        vectores_existentes = vectorizer.transform(textos)
+        vector_nuevo = vectorizer.transform([descripcion])
 
-        raise ValueError("Verifique los datos ingresados")
+        similitudes = cosine_similarity(vector_nuevo, vectores_existentes)[0]
+        indices_similares = np.argsort(similitudes)[::-1][:top_n]
+
+        similares = [reclamos_existentes[i] for i in indices_similares if similitudes[i] > 0.1]
+        return similares
 
     def actualizar_estado_reclamo(self, usuario: FlaskLoginUser, reclamo: Reclamo,accion:str,tiempo_estimado:int=None):
 
@@ -156,7 +169,6 @@ class GestorReclamo:
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id)
 
         modelo_reclamo_adherir = self.repositorio_reclamo.mapear_reclamo_a_modelo(reclamo=reclamo_a_adherir)        
-
         
     def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
         #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
@@ -174,7 +186,6 @@ class GestorReclamo:
             self.repositorio_reclamo.commit()
         except Exception as e:
             print(f"No fue posible adherir al usuario, error {e}")
-
         
     def obtener_ultimos_reclamos(self,cantidad:int):
         """
@@ -203,8 +214,6 @@ if __name__ == "__main__": #pragma: no cover
 
     # 2. Crear repositorio y gestor
     #repositorio = RepositorioReclamosSQLAlchemy(session)
-    
-    
 
     #gestor = GestorReclamo(repositorio, clasificador)
     repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
@@ -251,12 +260,10 @@ if __name__ == "__main__": #pragma: no cover
     print("Prueba OK, usuario adherido al reclamo.")
     """
 
-
     #ultimos_reclamos = gestor_reclamo.obtener_ultimos_reclamos(cantidad=4)
     
     #for reclamo in ultimos_reclamos:
     #   print(reclamo)
-
 
     # except Exception as e:
     #     print("Error al agregar adherente:", e)
