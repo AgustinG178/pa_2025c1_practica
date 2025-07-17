@@ -80,7 +80,7 @@ class GestorReclamo:
         
         raise PermissionError(f"El usuario {usuario.nombre_de_usuario} no posee los permisos para realizar dicha petición")
     
-    def buscar_reclamos_similares(self, descripcion: str, clasificacion: str, top_n: int = 10):
+    def buscar_reclamos_similares(self, descripcion: str, clasificacion: str, top_n: int = 15):
         from sklearn.metrics.pairwise import cosine_similarity
         import numpy as np
         """
@@ -189,67 +189,38 @@ class GestorReclamo:
 if __name__ == "__main__": #pragma: no cover
 
     from modules.config import crear_engine
-    from modules.modelos import ModeloUsuario, ModeloReclamo
 
-    # 1. Crear engine y session (usa tu configuración real o una in-memory SQLite)
-    engine, Session = crear_engine()  
+    engine, Session = crear_engine()
     session = Session()
+    repositorio = RepositorioReclamosSQLAlchemy(session)
 
-    # 2. Crear repositorio y gestor
-    #repositorio = RepositorioReclamosSQLAlchemy(session)
+    pruebas = repositorio.obtener_todos_los_registros()
 
-    #gestor = GestorReclamo(repositorio, clasificador)
-    repo_usuarios = RepositorioUsuariosSQLAlchemy(session)
-    repositorio_reclamos = RepositorioReclamosSQLAlchemy(session)
+    gestor = GestorReclamo(repositorio)  
 
-    gestor_reclamo =GestorReclamo(repositorio_reclamo=repositorio_reclamos)
-    # 3. Crear usuario y reclamo en DB para la prueba
+    total_vp = 0
+    total_fn = 0
 
-    usuario_1 =  repo_usuarios.obtener_registro_por_filtro(campo = "nombre_de_usuario" , valor = "esteban")
-    usuario_2 =  repo_usuarios.obtener_registro_por_filtro(campo = "nombre_de_usuario" , valor = "nicora")
+    for prueba in pruebas:
+        descripcion = prueba.contenido
+        clasificacion = prueba.clasificacion
+        
+        similares_reales = set(r.id for r in gestor.repositorio_reclamo.buscar_similares(clasificacion, prueba.id))
+        
+        similares_predichos = gestor.buscar_reclamos_similares(descripcion, clasificacion)
+        ids_predichos = set(r.id for r in similares_predichos) 
 
-    print("[DEBUG] Usuario creado:", usuario_1)
-    #session.add(usuario)
-    print("[DEBUG] Usuario agregado a la sesión.")
-    #session.commit()  # para que usuario.id se genere
-    #print("[DEBUG] Usuario presente en la base de datos con ID:", usuario.id)
+        vp = len(ids_predichos.intersection(similares_reales))
+        fn = len(similares_reales - ids_predichos)
 
-    reclamo = Reclamo(
-        estado="pendiente",
-        fecha_hora=datetime.now(),
-        contenido="Reclamo prueba",
-        clasificacion="soporte informático",
-        usuario_id=usuario_1.id
-    )
-    modelo_r = repositorio_reclamos.mapear_reclamo_a_modelo(reclamo)
-    repositorio_reclamos.guardar_registro(modelo_r)
-    print("[DEBUG] Reclamo creado:", modelo_r)
-    print("[DEBUG] Reclamo guardado en la base de datos con ID:", modelo_r.id)
+        total_vp += vp
+        total_fn += fn
 
-    # Recuperar el reclamo desde la sesión para trabajar con relaciones
-    modelo_r_db = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
+        print(f"Para '{descripcion}': VP={vp}, FN={fn}")
 
-    # Probar agregar adherente
-    modelo_usuario = repo_usuarios.buscar_usuario(nombre_de_usuario=usuario_2.nombre_de_usuario)
-    resultado = gestor_reclamo.agregar_adherente(modelo_r_db.id, modelo_usuario)
+    recall = total_vp / (total_vp + total_fn) if (total_vp + total_fn) > 0 else 0
+    print(f"\nRecall global del modelo: {recall:.2f}")
 
-    # Volver a consultar para ver los usuarios adheridos
-    reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
-    print([u.nombre_de_usuario for u in reclamo_actualizado.usuarios])
-
-    # Opcional: verificar si el usuario está adherido realmente
-    """reclamo_actualizado = session.query(ModeloReclamo).filter_by(id=modelo_r.id).first()
-    assert reclamo_actualizado.cantidad_adherentes > 0, "El reclamo no tiene adherentes."
-    print("Prueba OK, usuario adherido al reclamo.")
-    """
-
-    #ultimos_reclamos = gestor_reclamo.obtener_ultimos_reclamos(cantidad=4)
-    
-    #for reclamo in ultimos_reclamos:
-    #   print(reclamo)
-
-    # except Exception as e:
-    #     print("Error al agregar adherente:", e)
 
 
 
