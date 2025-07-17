@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 from datetime import datetime, timedelta
 from modules.reclamo import Reclamo
-from modules.modelos import ModeloUsuario, ModeloReclamo
+from modules.modelos import ModeloReclamo
 from modules.gestor_reclamos import GestorReclamo
 
 class DummyUser:
