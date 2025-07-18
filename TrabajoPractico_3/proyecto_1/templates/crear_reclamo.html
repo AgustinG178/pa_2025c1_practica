@@ -21,19 +21,19 @@
     {% endif %}
     {% endwith %}
     <main>
-    <form action="{{ url_for('crear_reclamos') }}" method="POST" enctype="multipart/form-data">
-        <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" name="descripcion" required />
-       <br>
-       <br> 
-        <label for="imagen" class = "label-file">Adjuntar imagen (opcional)</label>
-        <input type= "file" id ="imagen" name = "imagen" accept="image/*" style="display: none;"/>
-        <br>
-        <img id="preview" src="#" alt="Vista previa" style="display:none; max-width:200px; margin-top:10px;" />
-        <br>
-        <button type="submit">Crear Reclamo</button>
-    </form>
-
+    <div class="formulario-contenedor">
+        <form action="{{ url_for('crear_reclamos') }}" method="POST" enctype="multipart/form-data">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" required oninput="ajustarAltura(this)" style="resize: none;"></textarea>
+            <br><br>
+            <label for="imagen" class="label-file">Adjuntar imagen (opcional)</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*" style="display: none;" />
+            <br>
+            <img id="preview" src="#" alt="Vista previa" style="display:none; max-width:200px; margin-top:10px;" />
+            <br>
+            <button type="submit">Crear Reclamo</button>
+        </form>
+    </div>
     <div style="text-align:center;">
         <a href="{{ url_for('inicio') }}" class="enlace-boton">volver</a>
     </div>
@@ -53,6 +53,11 @@ document.getElementById("imagen").addEventListener("change", function(event) {
         preview.style.display = "none";
     }
 });
+
+function ajustarAltura(elemento) {
+    elemento.style.height = "auto"; // Restablece la altura para recalcular
+    elemento.style.height = (elemento.scrollHeight) + "px"; // Ajusta la altura al contenido
+}
 </script>
 </main>
 </body>

@@ -28,6 +28,7 @@
         <section>
             <h2>Reclamos Pendientes</h2>
             {% if reclamos %}
+            <div class="tabla-contenedor">
                 <table>
                     <thead>
                         <tr>
@@ -48,6 +49,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
             {% else %}
                 <p>No hay reclamos pendientes para mostrar.</p>
             {% endif %}

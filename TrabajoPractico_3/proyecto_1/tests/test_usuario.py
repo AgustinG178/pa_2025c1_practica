@@ -1,5 +1,5 @@
 import unittest
-from modules.usuarios import Usuario  # ajusta el import según tu proyecto
+from modules.usuarios import Usuario  
 
 class TestUsuario(unittest.TestCase):
     """Tests para la clase Usuario."""

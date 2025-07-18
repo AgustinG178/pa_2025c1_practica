@@ -106,6 +106,13 @@ class GeneradorReportes:
         agrupados_por_mes = Counter([r.fecha_hora.month for r in reclamos if r.fecha_hora])
         return dict(agrupados_por_mes)
     
+    def listar_clasificaciones_unicas(self):
+        """Devuelve una lista de clasificaciones únicas de reclamos."""
+        clasificaciones = self.repositorio_reclamos.session.query(
+            ModeloReclamo.clasificacion
+        ).distinct().all()
+        return [c[0] for c in clasificaciones]
+    
     def obtener_cantidades_adherentes(self, dias=365, clasificacion=None):
         """Obtiene las cantidades de adherentes de reclamos recientes, opcionalmente filtrados por clasificación."""
         fecha_limite = datetime.utcnow() - timedelta(days=dias)

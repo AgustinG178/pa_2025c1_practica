@@ -1244,3 +1244,47 @@ h3 {
     font-weight: 500;
 }   
 
+.tabla-contenedor {
+    margin: 0 90px; 
+    overflow-x: auto; 
+}
+
+table {
+    width: 100%; /* Asegura que la tabla ocupe el ancho del contenedor */
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1em;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.formulario-contenedor {
+    max-width: 500px; 
+    margin: 50px auto; 
+    padding: 20px; 
+    background-color: #fff; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    border: 1px solid #ddd; 
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bfc9d1;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    overflow: hidden; 
+    line-height: 1.5;
+}
+
+textarea:focus {
+    border-color: #003366;
+    outline: none;
+}

@@ -1,21 +1,17 @@
-from modules.repositorio import RepositorioReclamosSQLAlchemy, RepositorioUsuariosSQLAlchemy
+from modules.repositorio import RepositorioReclamosSQLAlchemy
 from modules.reclamo import Reclamo
 from modules.config import crear_engine
-from datetime import datetime, UTC
+from datetime import datetime
 from modules.login import FlaskLoginUser
-from modules.modelos import ModeloReclamo,ModeloUsuario
+from modules.modelos import ModeloUsuario
 from datetime import date
 from modules.text_vectorizer import TextVectorizer
 from sklearn.metrics import classification_report
 
-#session = crear_engine()
-#repositorio_reclamo = RepositorioReclamosSQLAlchemy(session)
-
 class GestorReclamo:
 
     """
-    La clase gestor reclamo establece una relacion entre el modelo de negocio con la capa de dominio, sin interaccionar (directamente) con la base de datos
-    a la hora de, por ejemplo, eliminar un reclamo.
+    La clase gestor reclamo establece una relacion entre el modelo de negocio con la capa de dominio, sin interaccionar (directamente) con la base de datos a la hora de, por ejemplo, eliminar un reclamo.
     Sus metodos son practicamente los mismos que los del repositorio.
     """
 
@@ -45,7 +41,7 @@ class GestorReclamo:
     def devolver_reclamo(self,reclamo_id) ->Reclamo:
 
         """
-        Se devuelve un reclamo accediendo a  este con su id
+        Se devuelve un reclamo accediendo a este con su id
         """
         try:
 
@@ -143,17 +139,16 @@ class GestorReclamo:
         """
         Se elimina un reclamo (accediendo a este con su id) asociado a un usuario.
         """
-
         try:
-
             self.repositorio_reclamo.eliminar_registro_por_id(reclamo_id)
-
             return f"El reclamo de id:{reclamo_id} se ha eliminado correctamente."
-
         except AttributeError:
             return f"El reclamo no existe y/o la id: {reclamo_id} no es correcta"      
         
     def agregar_adherente(self, reclamo_id, usuario: ModeloUsuario):
+        """
+        Agrega un adherente a un reclamo existente.
+        """
         #Devolvemos el reclamo como modelo para poder trabajar con su atributo usuarios
         reclamo_a_adherir = self.repositorio_reclamo.obtener_registro_por_filtro(filtro="id", valor=reclamo_id,mapeo=False)
 
@@ -186,8 +181,15 @@ class GestorReclamo:
 
             self.repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_modificado)
 
-if __name__ == "__main__": #pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
+    """
+    Evalúa el recall del modelo y el balanceo de clases (51.56%, 31.25%, 17.19%). 
+    Aunque hay leve desbalance, no impacta críticamente porque el sistema se usa en 
+    un entorno cerrado, con datos en constante actualización y sin requerimientos 
+    de recall alto. Se incluye por fuera del alcance formal del curso, como mejora exploratoria.
+    """
 
+    from collections import Counter
     from modules.config import crear_engine
 
     engine, Session = crear_engine()
@@ -196,19 +198,20 @@ if __name__ == "__main__": #pragma: no cover
 
     pruebas = repositorio.obtener_todos_los_registros()
 
-    gestor = GestorReclamo(repositorio)  
+    gestor = GestorReclamo(repositorio)
 
     total_vp = 0
     total_fn = 0
+    contador_clases = Counter()
 
     for prueba in pruebas:
         descripcion = prueba.contenido
         clasificacion = prueba.clasificacion
-        
+        contador_clases[clasificacion] += 1
+
         similares_reales = set(r.id for r in gestor.repositorio_reclamo.buscar_similares(clasificacion, prueba.id))
-        
         similares_predichos = gestor.buscar_reclamos_similares(descripcion, clasificacion)
-        ids_predichos = set(r.id for r in similares_predichos) 
+        ids_predichos = set(r.id for r in similares_predichos)
 
         vp = len(ids_predichos.intersection(similares_reales))
         fn = len(similares_reales - ids_predichos)
@@ -216,10 +219,25 @@ if __name__ == "__main__": #pragma: no cover
         total_vp += vp
         total_fn += fn
 
-        print(f"Para '{descripcion}': VP={vp}, FN={fn}")
+        # print(f"Para '{descripcion}': VP={vp}, FN={fn}")
 
     recall = total_vp / (total_vp + total_fn) if (total_vp + total_fn) > 0 else 0
     print(f"\nRecall global del modelo: {recall:.2f}")
+
+    total = sum(contador_clases.values())
+    print("\nDistribución de clases:")
+    for clasificacion, cantidad in contador_clases.items():
+        porcentaje = (cantidad / total) * 100
+        print(f"  {clasificacion}: {cantidad} ({porcentaje:.2f}%)")
+
+    max_porcentaje = max((cantidad / total) * 100 for cantidad in contador_clases.values())
+    min_porcentaje = min((cantidad / total) * 100 for cantidad in contador_clases.values())
+
+    if max_porcentaje - min_porcentaje > 40:
+        print("\n La base de datos está DESBALANCEADA.")
+    else:
+        print("\n La base de datos está relativamente balanceada.")
+        print("\nPara mejorar el modelo, considera ajustar los parámetros de búsqueda o aumentar la diversidad de los datos de entrenamiento.")
 
 
 
