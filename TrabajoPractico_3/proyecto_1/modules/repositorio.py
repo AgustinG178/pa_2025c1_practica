@@ -170,13 +170,14 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
 
         return self.mapear_modelo_a_reclamo(modelo) if mapeo else modelo
-
-    def obtener_registros_por_filtro(self, filtro,valor):
-        
+ 
+    def obtener_registros_por_filtro(self, filtro, valor, mapeo=True):
         """
         Obtiene todos los registros que coinciden con un filtro específico.
         """
         modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
+        if not mapeo:
+            return modelos
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
 
     def obtener_todos_los_registros(self):
@@ -233,22 +234,6 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         """Obtiene un reclamo según su ID."""
 
         return self.__session.query(ModeloReclamo).filter_by(id=id_reclamo).first()
-
-    def obtener_registros_por_filtro(self, filtro,valor):
-        
-        """
-        Obtiene todos los registros que coinciden con un filtro específico.
-        """
-        from sqlalchemy import func
-        if filtro == "clasificacion":
-            return self.session.query(ModeloReclamo).filter(
-                func.lower(ModeloReclamo.clasificacion) == valor.lower().strip()
-            ).all()
-        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
-
-        ultimos_modelos_reclamo = self.__session.query(ModeloReclamo).order_by(ModeloReclamo.fecha_hora.desc()).limit(limit).all()
-        return [self.mapear_modelo_a_reclamo(modelo) for modelo in ultimos_modelos_reclamo]
 
 
 if __name__ == "__main__": #pragma: no cover
