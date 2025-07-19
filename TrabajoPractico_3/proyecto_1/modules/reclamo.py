@@ -2,7 +2,7 @@ from datetime import datetime
 
 class Reclamo:
     """Clase para instanciar los reclamos echos por los usuarios"""
-    def __init__(self, estado: str, fecha_hora: datetime, contenido: str, clasificacion: str, usuario_id: int = None, **kwargs):
+    def __init__(self, estado: str, fecha_hora: datetime, contenido: str, clasificacion: str, usuario_id: int = None, usuarios_adheridos=None, **kwargs):
         self.__id = kwargs.get("id")  # se agrega solo si está presente
         self.__estado = estado
         self.__fecha_hora = fecha_hora
@@ -12,6 +12,7 @@ class Reclamo:
         self.__cantidad_adherentes = kwargs.get("cantidad_adherentes")
         self.__tiempo_estimado = kwargs.get("tiempo_estimado")
         self.__resuelto_en = kwargs.get("resuelto_en")
+        self.__usuarios_adheridos = usuarios_adheridos or []
 
     @property
     def id(self):
@@ -111,6 +112,14 @@ class Reclamo:
             self.__resuelto_en = nuevo_tiempo
         else:
             raise ValueError("El tiempo de resolución debe ser un entero no negativo.") 
+        
+    @property
+    def usuarios_adheridos(self):
+        return self.__usuarios_adheridos
+
+    @usuarios_adheridos.setter
+    def usuarios_adheridos(self, nuevos_usuarios):
+        self.__usuarios_adheridos = nuevos_usuarios
 
     def __repr__(self):
         return f"Reclamo(estado={self.estado}, fecha_hora={self.fecha_hora}, contenido={self.contenido}, clasificacion={self.clasificacion}, usuario_id={self.usuario_id})"

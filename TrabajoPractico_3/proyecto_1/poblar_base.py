@@ -3,7 +3,7 @@ from modules.repositorio import RepositorioUsuariosSQLAlchemy, RepositorioReclam
 from modules.gestor_usuario import GestorUsuarios
 from modules.gestor_reclamos import GestorReclamo
 from modules.config import crear_engine
-from random import choice, randint
+from random import choice, randint, sample
 from datetime import datetime, timedelta
 """
 poblar_base.py
@@ -164,12 +164,17 @@ if __name__ == "__main__":
             modelo = repo_reclamos.mapear_reclamo_a_modelo(reclamo)
             modelo.estado = estado
             modelo.fecha_hora = fecha_random
-            modelo.cantidad_adherentes = randint(0,35)  
+            modelo.cantidad_adherentes = randint(0,35)
             modelo.tiempo_estimado = randint(1, 10) if estado == "pendiente" else 0
             modelo.resuelto_en = resuelto_en
 
+            # Asignar adherentes aleatorios distintos del creador
+            otros_usuarios = [u for u in usuarios_db if u.id != usuario.id]
+            adherentes = sample(otros_usuarios, k=randint(0, min(5, len(otros_usuarios))))  # hasta 5 adherentes aleatorios
+            modelo.usuarios = adherentes + [usuario]  # agrego creador también para que quede vinculado
+
             repo_reclamos.guardar_registro(modelo)
-            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en departamento: {desc}")
+            print(f"✔ Reclamo [{estado}] creado para {usuario.nombre_de_usuario} en departamento: {desc} con {len(adherentes)} adherentes")
         except Exception as e:
             print(f"✖ Error creando reclamo '{desc}': {e}")
 

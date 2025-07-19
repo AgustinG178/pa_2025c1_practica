@@ -412,6 +412,9 @@ def manejo_reclamos():
         except Exception as e:
             flash("Hubo un error al obtener los reclamos: " + str(e), "danger")
             reclamos = []
+            
+    for reclamo in reclamos:
+        reclamo.adherentes_sin_creador = [u for u in reclamo.usuarios if u.id != reclamo.usuario_id]
 
     return render_template(
         'manejo_reclamos.html',

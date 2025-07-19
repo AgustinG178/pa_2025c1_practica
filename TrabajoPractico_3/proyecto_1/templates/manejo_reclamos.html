@@ -71,12 +71,13 @@
                             <td>{{ reclamo.id }}</td>
                             <td>{{ reclamo.usuario_id }}</td>
                             <td>
-                                {% if reclamo.cantidad_adherentes == 0 %}
-                                    Sin adherentes
-                                {% else %}
-                                    {{ reclamo.usuarios | map(attribute='id') | join(', ') }}
-                                {% endif %}
+                            {% if reclamo.adherentes_sin_creador|length == 0 %}
+                                Sin adherentes
+                            {% else %}
+                                {{ reclamo.adherentes_sin_creador | map(attribute='id') | join(', ') }}
+                            {% endif %}
                             </td>
+
                             <td>{{ reclamo.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
                             <td>{{ reclamo.estado }}</td>
                             <td>

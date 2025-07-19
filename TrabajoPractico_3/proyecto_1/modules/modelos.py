@@ -77,6 +77,10 @@ class ModeloReclamo(Base):
     Esto se implementa mediante una tabla intermedia que contiene claves foráneas de ambas tablas relacionadas. 
     Esta estructura facilita modelar relaciones complejas, como estudiantes inscritos en varios cursos o productos en múltiples órdenes. 
     '''
+    
+    @property
+    def adherentes_ids(self):
+        return [usuario.id for usuario in self.usuarios]    
 
     usuarios = relationship(
         "ModeloUsuario",

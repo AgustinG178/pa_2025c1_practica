@@ -4,6 +4,7 @@ from modules.usuarios import Usuario
 from modules.reclamo import Reclamo
 from modules.repositorio_ABC import Repositorio
 from sqlalchemy.orm import Session as SessionSQL
+from sqlalchemy.orm import joinedload
 
 engine, Session = crear_engine()  # Session es sessionmaker
 """
@@ -146,7 +147,8 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
     @staticmethod
     def mapear_modelo_a_reclamo(modelo: ModeloReclamo) -> Reclamo:
         """Convierte un modelo de SQLAlchemy en una entidad Reclamo."""
-        return Reclamo(
+        ids_adherentes = [u.id for u in modelo.usuarios] if modelo.usuarios else []
+        reclamo = Reclamo(
             id=modelo.id,
             estado=modelo.estado,
             fecha_hora=modelo.fecha_hora,
@@ -155,9 +157,14 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
             clasificacion=modelo.clasificacion,
             cantidad_adherentes=modelo.cantidad_adherentes,
             tiempo_estimado = modelo.tiempo_estimado,
-            resuelto_en = modelo.resuelto_en
+            resuelto_en = modelo.resuelto_en,
+            usuarios_adheridos=ids_adherentes 
         )
-
+        
+        reclamo.id = modelo.id
+        
+        return reclamo
+        
     def guardar_registro(self, modelo_reclamo: ModeloReclamo):
         """Guarda un nuevo reclamo en la base de datos."""
         if not isinstance(modelo_reclamo, ModeloReclamo):
@@ -170,12 +177,11 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
         modelo = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).first()
 
         return self.mapear_modelo_a_reclamo(modelo) if mapeo else modelo
- 
+
     def obtener_registros_por_filtro(self, filtro, valor, mapeo=True):
-        """
-        Obtiene todos los registros que coinciden con un filtro específico.
-        """
-        modelos = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor}).all()
+        query = self.__session.query(ModeloReclamo).filter_by(**{filtro: valor})
+        query = query.options(joinedload(ModeloReclamo.usuarios))  # Carga los usuarios adheridos, joinedload(ModeloReclamo.usuarios) fuerza el eager loading de la relación usuarios en la misma consulta, evitando lazy‐loading y problemas de N+1 queries.
+        modelos = query.all()
         if not mapeo:
             return modelos
         return [self.mapear_modelo_a_reclamo(modelo) for modelo in modelos]
