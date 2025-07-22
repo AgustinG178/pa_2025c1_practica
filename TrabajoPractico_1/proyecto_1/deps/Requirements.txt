@@ -1,6 +1,2 @@
 flask
 matplotlib
-os
-copy
-matplotlib.pyplot
-collections

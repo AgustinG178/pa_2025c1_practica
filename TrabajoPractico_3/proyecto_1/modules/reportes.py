@@ -124,13 +124,13 @@ class GeneradorReportes:
         reclamos = query.all()
         return [r.cantidad_adherentes for r in reclamos if r.cantidad_adherentes is not None]
         
-    def mediana_tiempo_resolucion(self, clasificacion=None):
-        """Calcula la mediana del tiempo de resolución de reclamos resueltos, opcionalmente filtrados."""
+    def mediana_tiempo_estimado(self, clasificacion=None):
+        """Calcula la mediana del tiempo estimado de reclamos pendientes, opcionalmente filtrados."""
         from modules.monticulos import MonticuloMediana  # Import aquí para evitar import circular
 
-        # Filtrar reclamos resueltos
-        query = self.repositorio_reclamos.session.query(ModeloReclamo.resuelto_en).filter(
-            ModeloReclamo.estado == 'resuelto'
+        # Filtrar reclamos pendientes
+        query = self.repositorio_reclamos.session.query(ModeloReclamo.tiempo_estimado).filter(
+            ModeloReclamo.estado == 'pendiente'
         )
         if clasificacion:
             query = query.filter(ModeloReclamo.clasificacion == clasificacion)
@@ -138,7 +138,7 @@ class GeneradorReportes:
         resultados = query.all()
         print("Resultados de la consulta:", resultados)
 
-        tiempos_resueltos = [reclamo.resuelto_en for reclamo in query if reclamo.resuelto_en is not None]
+        tiempos_resueltos = [reclamo.tiempo_estimado for reclamo in query if reclamo.tiempo_estimado is not None]
 
         if not tiempos_resueltos:
             return None
@@ -233,8 +233,8 @@ class ReportePDF(Reportes):
         mediana_adherentes = self.generador.calcular_mediana("cantidad_adherentes", clasificacion=clasificacion_usuario)
         mediana_resuelto_en = self.generador.calcular_mediana("resuelto_en", clasificacion=clasificacion_usuario)
 
-        # Usar mediana_tiempo_resolucion para tiempo_estimado
-        mediana_tiempo_estimado = self.generador.mediana_tiempo_resolucion(clasificacion=clasificacion_usuario)
+        # Usar mediana_tiempo_estimado para tiempo_estimado
+        mediana_tiempo_estimado = self.generador.mediana_tiempo_estimado(clasificacion=clasificacion_usuario)
 
         elementos.append(Paragraph(f"Mediana de Cantidad adherentes: {mediana_adherentes if mediana_adherentes is not None else 'No disponible'}", estilo_normal))
         elementos.append(Paragraph(f"Mediana de Tiempo estimado: {mediana_tiempo_estimado if mediana_tiempo_estimado is not None else 'No disponible'}", estilo_normal))
@@ -307,9 +307,10 @@ class ReporteHTML(Reportes):
             os.makedirs(carpeta, exist_ok=True)
 
         # Calcular medianas usando métodos específicos
-        mediana_adherentes = self.generador.calcular_mediana("cantidad_adherentes", clasificacion=clasificacion_usuario)
-        mediana_resuelto_en = self.generador.calcular_mediana("resuelto_en", clasificacion=clasificacion_usuario)
-        mediana_tiempo_estimado = self.generador.mediana_tiempo_resolucion(clasificacion=clasificacion_usuario)
+        mediana_adherentes      = self.generador.calcular_mediana("cantidad_adherentes", clasificacion=clasificacion_usuario)
+        mediana_tiempo_estimado = self.generador.mediana_tiempo_estimado(clasificacion=clasificacion_usuario)
+        mediana_resuelto_en     = self.generador.calcular_mediana("resuelto_en", clasificacion=clasificacion_usuario)
+
 
         reclamos = self.generador.repositorio_reclamos.obtener_registros_por_filtro(
             filtro="clasificacion", valor=clasificacion_usuario
@@ -397,7 +398,7 @@ class ReporteHTML(Reportes):
                         <td>{reclamo.fecha_hora.strftime('%Y-%m-%d %H:%M:%S')}</td>
                         <td>{reclamo.cantidad_adherentes}</td>
                         <td>{reclamo.resuelto_en if reclamo.resuelto_en else 'No resuelto'}</td>
-                        <td>{reclamo.tiempo_estimado if reclamo.tiempo_estimado else 'No disponible'}</td>
+                        <td>{reclamo.tiempo_estimado if reclamo.tiempo_estimado else '------'}</td>
                     </tr>
                 """
 
@@ -421,7 +422,7 @@ if __name__ == '__main__':  # pragma: no cover
     clasificacion = "maestranza"
 
     mediana_cant_adh = generador.calcular_mediana("cantidad_adherentes", clasificacion)
-    mediana_tiempo = generador.mediana_tiempo_resolucion(clasificacion)
+    mediana_tiempo = generador.mediana_tiempo_estimado(clasificacion)
     mediana_resuelto = generador.calcular_mediana("resuelto_en", clasificacion)
     print("Mediana cantidad_adherentes:", mediana_cant_adh)
     print("Mediana tiempo_estimado:", mediana_tiempo)

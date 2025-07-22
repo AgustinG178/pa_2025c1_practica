@@ -6,7 +6,6 @@ from modules.login import FlaskLoginUser
 from modules.modelos import ModeloUsuario
 from datetime import date
 from modules.text_vectorizer import TextVectorizer
-from sklearn.metrics import classification_report
 
 class GestorReclamo:
 
