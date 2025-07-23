@@ -24,27 +24,6 @@ class GestorBaseDatos:
         self.session = self.Session()
         return self.session is not None
 
-    def guardar_usuario(self, usuario):
-        self.session.add(usuario)
-        self.session.commit()
-
-    def guardar_reclamo(self, reclamo):
-        self.session.add(reclamo)
-        self.session.commit()
-
-    def actualizar_reclamo(self, reclamo_actualizado: Reclamo):
-        self.session.merge(reclamo_actualizado)
-        self.session.commit()
-
-    def obtener_reclamos(self, **filtros):
-        query = self.session.query(Reclamo)
-        for attr, value in filtros.items():
-            query = query.filter(getattr(Reclamo, attr) == value)
-        return query.all()
-
-    def obtener_reclamo_por_id(self, reclamo_id):
-        return self.session.query(Reclamo).filter_by(id=reclamo_id)
-
     def desconectar(self):
         if self.session:
             self.session.close()
