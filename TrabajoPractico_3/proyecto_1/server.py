@@ -232,9 +232,20 @@ def analitica_reclamos():
 
     if tiempos_resolucion:
         monticulo = MonticuloMediana(tiempos_resolucion)
-        mediana = monticulo.obtener_mediana()
+        mediana_resolucion = monticulo.obtener_mediana()
     else:
         mediana = 0
+
+    tiempo_estimado = [r.tiempo_estimado for r in reclamos if r.tiempo_estimado]
+
+    if tiempo_estimado:
+
+        monticulo = MonticuloMediana(tiempo_estimado)
+
+        mediana_estimado = monticulo.obtener_mediana()
+
+    else:
+        mediana_estimado = 0
 
     graficadora = Graficadora(
         generador_reportes=GeneradorReportes(repo_reclamos),
@@ -253,7 +264,8 @@ def analitica_reclamos():
         'analitica_reclamos.html',
         cantidad_total=cantidad_total,
         promedio_adherentes=promedio_adherentes,
-        mediana=mediana,
+        mediana_resolucion=mediana_resolucion,
+        mediana_estimado=mediana_estimado,
         ruta_nube=rutas.get("nube_palabras"),
         ruta_histograma=rutas.get("histograma"),
         ruta_torta=rutas.get("torta"),
