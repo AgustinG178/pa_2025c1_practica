@@ -5,6 +5,9 @@ from modules.gestor_reclamos import GestorReclamo
 from modules.config import crear_engine
 from random import choice, randint
 from datetime import datetime, timedelta
+import nltk
+nltk.download("punkt_tab")
+
 """
 poblar_base.py
 

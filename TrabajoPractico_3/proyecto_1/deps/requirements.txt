@@ -11,3 +11,4 @@ numpy
 cachelib
 pytest
 pytest-cov
+flask_bootstrap
