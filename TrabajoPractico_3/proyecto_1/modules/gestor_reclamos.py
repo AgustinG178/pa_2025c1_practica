@@ -110,23 +110,35 @@ class GestorReclamo:
 
         if int(usuario.rol) in [2,3,4]:  #Los roles estan definidos en FlaskLoginUser
             try:
-                reclamo_a_modificar = self.__repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo.id})
+                reclamo_a_modificar = self.__repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo.id},mapeo=False)
+                
 
+                print(reclamo_a_modificar.estado)
                 if accion == "resolver":
+                    print(f"se paso la etapa para modificar el reclamo.")
                     reclamo_a_modificar.estado = "resuelto"
+
+                    print(f"Nuevo estado: {reclamo_a_modificar.estado}")
+
                     # Se resuelve el reclamo directamente, sin pasarlo de pendiente --> proceso
                     if reclamo_a_modificar.tiempo_estimado is None:
+                        print(f"el flujo debería ir por aqui")
                         dias = 0
                         reclamo_a_modificar.resuelto_en = dias
                         reclamo_a_modificar.tiempo_estimado = None
                         self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)
+
+                        reclamo_modificado = self.__repositorio_reclamo.obtener_registro_por_filtros(**{"id":reclamo.id})
+                        
+                
+                        self.__repositorio_reclamo.commit()
+                        print(f"reclamo modificado: {reclamo_modificado.estado}")
                         return
                     
                     if hasattr(reclamo, 'fecha_hora') and isinstance(reclamo.fecha_hora, datetime):
                         dias = (date.today() - reclamo.fecha_hora.date()).days
                     else:
                         dias = None  
-                    reclamo_a_modificar.resuelto_en = dias
                     reclamo_a_modificar.resuelto_en = dias
 
                     self.__repositorio_reclamo.modificar_registro(reclamo_a_modificar=reclamo_a_modificar)

@@ -17,6 +17,7 @@ from modules.monticulos import MonticuloMediana
 import pickle
 
 base_datos = GestorBaseDatos("sqlite:///docs/base_datos.db")
+
 base_datos.conectar()
 
 repo_usuarios = RepositorioUsuariosSQLAlchemy(base_datos.session)
@@ -385,6 +386,8 @@ def manejo_reclamos():
 
         try:
             if accion == "resolver":
+                print(f"accion> {accion}")
+
                 gestor_reclamos.actualizar_estado_reclamo(reclamo=reclamo, usuario=current_user, accion="resolver")
                 flash("Reclamo resuelto exitosamente.", "success")
             elif accion == "actualizar" and tiempo_estimado:
@@ -407,6 +410,13 @@ def manejo_reclamos():
             #Pasamos los reclamos como ModeloReclamo para que se pueda acceder a la variable usuarios y mostrar los ids de usuarios adheridos
             reclamos = gestor_reclamos.buscar_reclamos_por_filtro(filtro="clasificacion", valor=dpto,mapeo=False)
     
+            return render_template(
+                    'manejo_reclamos.html',
+                    reclamos=reclamos,
+                    usuario=current_user,
+                    selected_id=selected_id,
+                    date=date
+                )
         except Exception as e:
             flash("Hubo un error al obtener los reclamos: " + str(e), "danger")
             reclamos = []
