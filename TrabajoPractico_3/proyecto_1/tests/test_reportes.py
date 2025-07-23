@@ -80,13 +80,13 @@ class TestGeneradorReportes(unittest.TestCase):
         # Assert
         self.assertEqual(datos, {6: 2})
 
-    def test_mediana_tiempo_resolucion(self):
+    def test_mediana_tiempo_estimado(self):
         # Arrange
-        dummy = MagicMock(resuelto_en=10)
+        dummy = MagicMock(tiempo_estimado=10)
         self.repo.session.query.return_value.filter.return_value.__iter__.return_value = [dummy]
         self.repo.session.query.return_value.filter.return_value.all.return_value = [(10,)]
         # Act
-        resultado = self.generador.mediana_tiempo_resolucion()
+        resultado = self.generador.mediana_tiempo_estimado()
         # Assert
         self.assertEqual(resultado, 10)
 

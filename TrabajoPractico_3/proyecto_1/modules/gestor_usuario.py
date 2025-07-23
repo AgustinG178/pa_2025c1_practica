@@ -14,7 +14,6 @@ class GestorUsuarios:
         Intermediario entre el usuario y la base de datos, consiste de métodos para registrar, autenticar, cargar, actualizar, eliminar y buscar usuarios.
         """
 
-
     def registrar_nuevo_usuario(self, nombre, apellido, email, nombre_de_usuario, password, rol, claustro):
         if self.repositorio.obtener_registro_por_filtro("email", email):
             raise ValueError("El usuario ya está registrado, por favor inicie sesión")
@@ -76,6 +75,7 @@ class GestorUsuarios:
         if not usuario:
             raise ValueError("Usuario no encontrado")
         return usuario
+    
 if __name__ == "__main__":
     session = GestorBaseDatos("sqlite:///data/base_datos.db")
     session.conectar()

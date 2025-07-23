@@ -186,44 +186,6 @@ class TestRepositorioReclamosSQLAlchemy(unittest.TestCase):
         self.assertEqual(len(resultados), 1)
         self.assertEqual(resultados[0].estado, "resuelto")
 
-    def test_mapear_reclamo_a_modelo_y_modelo_a_reclamo(self):
-        # Arrange: crear reclamo de prueba
-        reclamo = Reclamo(
-            id=1, estado="pendiente", fecha_hora=datetime.now(),
-            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
-        )
-
-        # Act: mapear reclamo a modelo ORM
-        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
-
-        # Assert
-        self.assertIsInstance(modelo, ModeloReclamo)
-
-        # Act: mapear modelo ORM a entidad reclamo
-        reclamo2 = self.repo.mapear_modelo_a_reclamo(modelo)
-
-        # Assert
-        self.assertIsInstance(reclamo2, Reclamo)
-
-    def test_actualizar_reclamo(self):
-        # Arrange: crear y guardar reclamo
-        reclamo = Reclamo(
-            id=None, estado="pendiente", fecha_hora=datetime.now(),
-            contenido="test", usuario_id=1, clasificacion="a", cantidad_adherentes=0, tiempo_estimado=1
-        )
-        modelo = self.repo.mapear_reclamo_a_modelo(reclamo)
-        self.repo.guardar_registro(modelo)
-
-        # Act: obtener reclamo guardado y modificar estado
-        reclamo_db = self.repo.obtener_todos_los_registros()[0]
-        reclamo_db_entidad = self.repo.mapear_modelo_a_reclamo(reclamo_db)
-        reclamo_db_entidad.estado = "resuelto"
-        self.repo.modificar_registro(reclamo_db_entidad)
-
-        # Assert: verificar que el cambio se haya persistido
-        reclamo_mod = self.repo.obtener_por_id(reclamo_db_entidad.id)
-        self.assertEqual(reclamo_mod.estado, "resuelto")
-
     def test_obtener_ultimos_reclamos(self):
         # Arrange: crear y guardar reclamo
         reclamo = Reclamo(

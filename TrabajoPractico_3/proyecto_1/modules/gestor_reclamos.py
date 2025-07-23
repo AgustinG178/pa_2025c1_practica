@@ -89,8 +89,8 @@ class GestorReclamo:
             reclamos_existentes = [r for r in reclamos_existentes if r.clasificacion == clasificacion]
 
         if not reclamos_existentes:
-            return []
-
+            return [] 
+        
         textos = [r.contenido for r in reclamos_existentes]
         vectorizer = TextVectorizer()
         vectorizer.fit(textos + [descripcion])  # Entrenamos incluyendo el nuevo texto

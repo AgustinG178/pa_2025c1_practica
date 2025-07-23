@@ -19,4 +19,3 @@ omit =
     .statics/*
     poblar_base.py/*
     server.py/*
-
