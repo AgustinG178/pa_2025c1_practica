@@ -7,6 +7,8 @@ from modules.graficos import (
     Graficadora,
 )
 import os
+import matplotlib
+matplotlib.use('Agg')
 
 class TestGraficadoraTorta(unittest.TestCase):
     @patch("modules.graficos.plt")

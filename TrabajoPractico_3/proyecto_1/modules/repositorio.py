@@ -140,7 +140,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
         reclamo_db = self.__session.query(ModeloReclamo).filter_by(id=reclamo_a_modificar.id).first()
 
-        print(f"Estado inicial reclamo base: {reclamo_db.estado}")
+        
         if not reclamo_db:
             raise ValueError(f"No se encontró un reclamo con ID {reclamo_a_modificar.id}")
 
@@ -151,7 +151,7 @@ class RepositorioReclamosSQLAlchemy(Repositorio):
 
         reclamo_db.resuelto_en = reclamo_a_modificar.resuelto_en
 
-        print(f"Reclamo modificado base: {reclamo_db.estado}")
+
 
         self.__session.commit()
 

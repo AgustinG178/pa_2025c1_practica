@@ -154,10 +154,13 @@ def adherirse(reclamo_id_adherido):
         flash("Reclamo creado exitosamente.", "success")
     elif accion == "adherir":
         try:
-        
+            
+            #primero eliminamos el reclamo, sino ocurre la excepcion de IntegrityError y no se borra si ya estamos adheridos
+            gestor_reclamos.invalidar_reclamo(reclamo_id=reclamo_id_creado,gestor_imagen=gestor_imagenes_reclamos)
+
             gestor_reclamos.agregar_adherente(usuario=current_user,reclamo_id=reclamo_id_adherido,repositorio_usuarios=repo_usuarios)
             
-            gestor_reclamos.invalidar_reclamo(reclamo_id=reclamo_id_creado,gestor_imagen=gestor_imagenes_reclamos)
+            
 
 
 
